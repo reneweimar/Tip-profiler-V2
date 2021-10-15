@@ -6,6 +6,7 @@
 //! \Attention
 //-----------------------------------------------------------------------------
 #include "main.h"
+#include "power.h"
 //-----------------------------------------------------------------------------
 //! \brief      Initiates the power unit
 //! \details    Initiates the gpio and functions of the power unit

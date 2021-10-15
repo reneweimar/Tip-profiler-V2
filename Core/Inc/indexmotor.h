@@ -8,6 +8,7 @@
 #ifndef _IDX_FUNCTIONS_H
 #define _IDX_FUNCTIONS_H
 //-----------------------------------------------------------------------------
+#include "main.h"
 #include "stm32f1xx_hal.h"
 //-----------------------------------------------------------------------------
 #define FaultIdx_Pin GPIO_PIN_6
@@ -31,6 +32,8 @@
 #define A2Off()HAL_GPIO_WritePin(A2_GPIO_Port, A2_Pin,GPIO_PIN_RESET)
 #define IDX_Enable() HAL_GPIO_WritePin(SleepIdx_GPIO_Port, SleepIdx_Pin,GPIO_PIN_SET)
 #define IDX_Disable() HAL_GPIO_WritePin(SleepIdx_GPIO_Port, SleepIdx_Pin,GPIO_PIN_RESET)
+#define IDX_A() HAL_GPIO_ReadPin(A_GPIO_Port, A_Pin)
+#define IDX_B() HAL_GPIO_ReadPin(B_GPIO_Port, B_Pin)
 
 //-----------------------------------------------------------------------------
 //! \brief  Index motor structure
@@ -46,10 +49,12 @@ typedef struct
 //-----------------------------------------------------------------------------
 //IDX_functions
 //---------------------- SYSTEM ------------------------
-extern stcStepperMotor gIndexMotor;
-
-void IDX_Init(void);
-void IDX_Tick(void);
+extern stcDCMotor gIDX_Motor;
+extern void IDX_HandleEncoder (void);
+extern void IDX_DecEncoder (void);
+extern void IDX_IncEncoder (void);
+extern void IDX_Init(void);
+extern void IDX_Tick(void);
 
 #endif  // _IDX_FUNCTIONS_H
 

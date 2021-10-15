@@ -19,6 +19,17 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "strokemotor.h"
+#include "indexmotor.h"
+#include "tim.h"
+#include "usart.h"
+#include "dma.h"
+#include "adc.h"
+#include "i2c.h"
+#include "userinterface.h"
+#include "work.h"
+#include "eeprom.h"
+#include "cli.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 //#include "work.h"
@@ -88,6 +99,7 @@ int main(void)
   MX_DMA_Init();
   MX_ADC1_Init();
   MX_I2C1_Init();
+  MX_TIM1_Init();
   MX_TIM3_Init();
   MX_TIM5_Init();
   MX_TIM6_Init();

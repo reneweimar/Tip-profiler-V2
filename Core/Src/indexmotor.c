@@ -5,10 +5,13 @@
 //! \details
 //! \Attention
 //-----------------------------------------------------------------------------
+#include "indexmotor.h"
 #include "main.h"
+#include "gpio.h"
+#include "tim.h"
 //-----------------------------------------------------------------------------
 //! \Global step counter
-stcStepperMotor gIndexMotor;
+stcDCMotor gIDX_Motor;
 //-----------------------------------------------------------------------------
 //! \brief      Initiates the index motor unit
 //! \details    Defines the GPIO and interrupts related to the index motor
@@ -36,12 +39,12 @@ void IDX_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(SleepIdx_GPIO_Port, &GPIO_InitStruct);
-  GPIO_InitStruct.Pin = A1_Pin;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(A1_GPIO_Port, &GPIO_InitStruct);
-  GPIO_InitStruct.Pin = A2_Pin;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(A2_GPIO_Port, &GPIO_InitStruct);
+  //GPIO_InitStruct.Pin = A1_Pin;
+  //GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  //HAL_GPIO_Init(A1_GPIO_Port, &GPIO_InitStruct);
+  //GPIO_InitStruct.Pin = A2_Pin;
+  //GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  //HAL_GPIO_Init(A2_GPIO_Port, &GPIO_InitStruct);
   GPIO_InitStruct.Pin = FaultIdx_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
@@ -56,12 +59,43 @@ void IDX_Init(void)
   HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
-  gIndexMotor.StepsPerRevolution = 200;
-  gIndexMotor.StepDelay = 100; // = 100 * 100 us = 10 ms --> 200 * 10 ms --> 2 seconds per revolution
-  gIndexMotor.SetPosition = 0;
-  gIndexMotor.GetPosition = 0;
-  gIndexMotor.NrOfSteps = 4;
+  gIDX_Motor.PulsesPerRevolution = 12;
+
+  HAL_TIM_Base_Start(&htim1);
+
+  HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_1);
+  HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_2);
+  
 }
+//-----------------------------------------------------------------------------
+//! \brief      Calculates the motor speed
+//! \details    Counts the pulses per 100 us and converts to RPM
+//! \param      None
+void IDX_HandleEncoder (void)
+{
+  static uint8_t TickTime = 9; 
+  if (TickTime++ < 99) return; //100ms 
+  TickTime = 0;
+  
+  gIDX_Motor.GetSpeed = (int16_t) ((float) gIDX_Motor.Encoder / (float) gIDX_Motor.PulsesPerRevolution * 600);
+  gIDX_Motor.Encoder = 0;
+}
+//-----------------------------------------------------------------------------
+//! \brief      Handles the encoder
+//! \details    Decreases the encoder of the index motor with 1
+//! \param      None
+void IDX_DecEncoder (void)
+{
+  gIDX_Motor.Encoder --;
+}
+//-----------------------------------------------------------------------------
+//! \brief      Handles the encoder
+//! \details    Increases the encoder of the index motor with 1
+//! \param      None
+void IDX_IncEncoder (void)
+  {
+    gIDX_Motor.Encoder ++;
+  }
 //-----------------------------------------------------------------------------
 //! \brief      Handles the stepper motor control
 //! \details    Handles the stepper motor control by moving to the next step at

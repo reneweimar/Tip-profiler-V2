@@ -6,6 +6,16 @@
 //! \Attention  
 //-----------------------------------------------------------------------------
 #include "main.h"
+#include "userinterface.h"
+#include "stdlib.h"
+#include "stdio.h"
+#include "work.h"
+#include "fonts.h"
+#include "i2c.h"
+#include "ssd1306.h"
+#include "power.h"
+#include "eeprom.h"
+#include "string.h"
 //-----------------------------------------------------------------------------
 stcButtonStatus Button[NROFBUTTONS];
 uint16_t gCurrentScreen = 65535; //Undefined

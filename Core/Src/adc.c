@@ -19,6 +19,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "adc.h"
+#include "power.h"
 
 /* USER CODE BEGIN 0 */
 

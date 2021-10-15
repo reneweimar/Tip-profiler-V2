@@ -1,1 +1,2 @@
----- ,1 , Matches (0 in 0 files) ----
+---- #define A1_Pin Matches (1 in 1 files) ----
+Indexmotor.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):#define A1_Pin GPIO_PIN_14

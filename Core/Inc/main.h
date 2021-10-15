@@ -32,7 +32,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "stdio.h"
+/*#include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
 #include "adc.h"
@@ -50,12 +50,24 @@ extern "C" {
 #include "strokemotor.h"
 #include "power.h"
 #include "eeprom.h"
-
+*/
 /* USER CODE END Includes */
 
 /* defines ------------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
+//! \brief  Index motor structure
+typedef struct
+{
+    uint8_t PulsesPerRevolution;   //12
+    int16_t GetSpeed;
+    int16_t SetSpeed;
+    int32_t Encoder;
+    uint16_t TimerValue;
+    uint16_t TimerValueOld;
+    uint16_t TimePerRev;
+} stcDCMotor;
+
 
 /* USER CODE END ET */
 

@@ -6,6 +6,16 @@
 //! \Attention  
 //-----------------------------------------------------------------------------
 #include "main.h"
+#include "work.h"
+#include "string.h"
+#include "eeprom.h"
+#include "userinterface.h"
+#include "power.h"
+#include "adc.h"
+#include "strokemotor.h"
+#include "indexmotor.h"
+#include "i2c.h"
+#include "ssd1306.h"
 //-----------------------------------------------------------------------------
 //! \Global main and sub, current and previous status of the device
 stcStatus gStatus;
@@ -209,6 +219,7 @@ void WRK_HandleTickTime (void)
       WRK_HandleBatteryStatus();
       USR_HandleButtons();
       STR_HandleEncoder();
+      IDX_HandleEncoder();
     }
 }
 //-----------------------------------------------------------------------------

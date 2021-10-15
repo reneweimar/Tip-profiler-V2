@@ -6,6 +6,9 @@
 //! \Attention
 //-----------------------------------------------------------------------------
 #include "main.h"
+#include "strokemotor.h"
+#include "tim.h"
+#include "gpio.h"
 //-----------------------------------------------------------------------------
 stcDCMotor gSTR_Motor;
 //-----------------------------------------------------------------------------
@@ -18,8 +21,8 @@ void STR_HandleEncoder (void)
   if (TickTime++ < 99) return; //100ms 
   TickTime = 0;
   
-  gSTR_Motor.GetSpeed = (uint16_t) ((float) gSTR_Motor.Encoder / (float) gSTR_Motor.PulsesPerRevolution * 600);
-  gSTR_Motor.SetSpeed = (uint16_t) (720000 / ((float) gSTR_Motor.TimePerRev * (float) gSTR_Motor.PulsesPerRevolution));
+  gSTR_Motor.GetSpeed = (int16_t) ((float) gSTR_Motor.Encoder / (float) gSTR_Motor.PulsesPerRevolution * 600);
+  gSTR_Motor.SetSpeed = (int16_t) (720000 / ((float) gSTR_Motor.TimePerRev * (float) gSTR_Motor.PulsesPerRevolution));
   gSTR_Motor.Encoder = 0;
 }
 //-----------------------------------------------------------------------------
@@ -58,6 +61,7 @@ void STR_Init(void)
 
   gSTR_Motor.PulsesPerRevolution = 12;
 
+  HAL_TIM_Base_Start(&htim3);
   HAL_TIM_Base_Start(&htim6);
 }
 //-----------------------------------------------------------------------------
