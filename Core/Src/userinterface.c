@@ -611,7 +611,7 @@ void USR_ShowBattery (uint8_t PercentageNew)
       Bars = 3;
       sprintf(Percentage,"    %s","/");
     }
-    else if (Charging()) //Charging
+    else if (PWR_Charging() == 1) //Charging
     {
       Bars++;
       if (Bars == 4) Bars = 0;

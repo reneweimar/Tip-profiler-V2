@@ -24,11 +24,11 @@
 #define NotPluggedIn() (Charging()==0) && (StandBy() == 0)
 #define BATTVOLTAGEMIN          3600
 #define BATTVOLTAGEMAX          4125
-
 //-----------------------------------------------------------------------------
 //DSP_functions
 //---------------------- SYSTEM ------------------------
 extern void PWR_Init(void);
+extern uint8_t PWR_Charging(void);
 //-----------------------------------------------------------------------------
 #endif  // _PWR_FUNCTIONS_H
 

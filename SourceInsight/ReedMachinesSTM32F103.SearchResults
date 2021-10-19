@@ -1,2 +1,5 @@
----- #define A1_Pin Matches (1 in 1 files) ----
-Indexmotor.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):#define A1_Pin GPIO_PIN_14
+---- charging() Matches (4 in 2 files) ----
+Power.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  if (Charging()) //Charging input is on 
+Power.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):#define Charging() ((HAL_GPIO_ReadPin(Charging_GPIO_Port, Charging_Pin)==0) && (HAL_GPIO_ReadPin(StandBy_GPIO_Port, StandBy_Pin)==1))
+Power.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):#define PluggedIn() (Charging()||StandBy())
+Power.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):#define NotPluggedIn() (Charging()==0) && (StandBy() == 0)

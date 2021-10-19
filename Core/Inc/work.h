@@ -97,6 +97,7 @@ extern uint8_t gInitialized;
 extern uint8_t PluggedIn;
 extern uint8_t gServiceMenu;
 extern uint8_t gParameterMaxUser;
+extern uint8_t BattPercentage;
 extern uint16_t gMachine;
 extern uint16_t gParameterMaxService;
 extern uint8_t gCommandMaxUser;
