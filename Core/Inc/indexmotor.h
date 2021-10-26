@@ -34,18 +34,10 @@
 #define IDX_Disable() HAL_GPIO_WritePin(SleepIdx_GPIO_Port, SleepIdx_Pin,GPIO_PIN_RESET)
 #define IDX_A() HAL_GPIO_ReadPin(A_GPIO_Port, A_Pin)
 #define IDX_B() HAL_GPIO_ReadPin(B_GPIO_Port, B_Pin)
+#define IDX_CCW()		TIM1->CCR1
+#define IDX_CW() 		TIM1->CCR2
 
 //-----------------------------------------------------------------------------
-//! \brief  Index motor structure
-typedef struct
-{
-    uint8_t StepsPerRevolution;   //200
-    uint8_t NrOfSteps;            //4, bistable motor, so 2 phases, so 4 steps
-    int8_t CurrentStep;           //0 to 3
-    uint16_t StepDelay;
-    int32_t SetPosition;
-    int32_t GetPosition;
-} stcStepperMotor;
 //-----------------------------------------------------------------------------
 //IDX_functions
 //---------------------- SYSTEM ------------------------
@@ -55,6 +47,7 @@ extern void IDX_DecEncoder (void);
 extern void IDX_IncEncoder (void);
 extern void IDX_Init(void);
 extern void IDX_Tick(void);
+extern void IDX_HandleMotor (void);
 
 #endif  // _IDX_FUNCTIONS_H
 

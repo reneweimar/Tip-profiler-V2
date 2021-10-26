@@ -26,10 +26,13 @@ typedef enum
 {
     UNDEFINED=0,
     ACTIVE,
+    CCW,
+    CW,
     ENTERVALUE,
     EXECUTECOMMAND,
     INACTIVE,
     INITIALIZE,
+    READY,
     WAITFORSPLASHSCREEN,
     WAITFORUSER,
 }enuStatus;

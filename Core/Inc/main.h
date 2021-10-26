@@ -29,7 +29,7 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_hal.h"
-
+#include "work.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 /*#include "stdio.h"
@@ -59,13 +59,42 @@ extern "C" {
 //! \brief  Index motor structure
 typedef struct
 {
-    uint8_t PulsesPerRevolution;   //12
-    int16_t GetSpeed;
-    int16_t SetSpeed;
-    int32_t Encoder;
-    uint16_t TimerValue;
-    uint16_t TimerValueOld;
-    uint16_t TimePerRev;
+  enuStatus MainStatus;
+  enuStatus MainStatusOld;
+  enuStatus SubStatus;
+  enuStatus SubStatusOld;
+  uint8_t PositionControl;
+  uint8_t SpeedControl;
+  uint16_t P;
+	uint16_t I;
+	uint16_t D;
+	uint16_t PosP;
+	uint16_t PosI;
+	uint16_t PosD;
+  uint8_t PulsesPerRevolution;   //12
+  int16_t GetSpeed;
+  int16_t GetSpeedOld;
+  int16_t SetSpeed;
+  int16_t GetPosition;
+  int16_t SetPosition;
+  int16_t MaxSpeed;
+  int32_t Encoder;
+  int32_t EncoderMax;
+  uint16_t TimerValue;
+  uint16_t TimerValueOld;
+  uint16_t TimePerRev;
+  int32_t Control;
+  int32_t PosControl;
+  float ErrorPOld;
+	float ErrorP;
+	float ErrorI;
+	float ErrorD;
+	float PosErrorPOld;
+	float PosErrorP;
+	float PosErrorI;
+	float PosErrorD;
+	float PID;
+	float PosPID;
 } stcDCMotor;
 
 

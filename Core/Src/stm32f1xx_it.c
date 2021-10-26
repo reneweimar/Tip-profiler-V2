@@ -305,22 +305,22 @@ void EXTI9_5_IRQHandler(void)
 		{
 			if (IDX_B()) //Channel B high
 			{
-				IDX_IncEncoder();
+				IDX_DecEncoder();
 			}
 			else //Channel B low
 			{
-				IDX_DecEncoder();
+				IDX_IncEncoder();
 			}
 		}
 		else //Channel A low
 		{
 			if (IDX_B()) //Channel B high
 			{
-				IDX_DecEncoder();
+				IDX_IncEncoder();
 			}
 			else //Channel B low
 			{
-				IDX_IncEncoder();
+				IDX_DecEncoder();
 			}
 		}
   }

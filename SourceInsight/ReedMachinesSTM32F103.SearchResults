@@ -1,5 +1,9 @@
----- charging() Matches (4 in 2 files) ----
-Power.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  if (Charging()) //Charging input is on 
-Power.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):#define Charging() ((HAL_GPIO_ReadPin(Charging_GPIO_Port, Charging_Pin)==0) && (HAL_GPIO_ReadPin(StandBy_GPIO_Port, StandBy_Pin)==1))
-Power.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):#define PluggedIn() (Charging()||StandBy())
-Power.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):#define NotPluggedIn() (Charging()==0) && (StandBy() == 0)
+---- gIDX_Motor.Encoder Matches (8 in 1 files) ----
+
+Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  gIDX_Motor.EncoderMax = gIDX_Motor.Encoder;  
+Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  gIDX_Motor.Encoder = 0;
+Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  x = ((float) gIDX_Motor.EncoderMax) * 16667 / 1000; //100ms, 3ppr, reductor 30:1 -> Encoder/PPR/4/Reduction/Time in ms*60000 -> Encoder/3/4/100*60000 -> 1.667
+Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  gIDX_Motor.GetSpeed = (int16_t) ((float) gIDX_Motor.Encoder / (float) gIDX_Motor.PulsesPerRevolution * 600);
+Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  gIDX_Motor.Encoder = 0;
+Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  gIDX_Motor.Encoder --;
+Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    gIDX_Motor.Encoder ++;

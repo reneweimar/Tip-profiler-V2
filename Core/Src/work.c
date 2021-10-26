@@ -219,7 +219,8 @@ void WRK_HandleTickTime (void)
       WRK_HandleBatteryStatus();
       USR_HandleButtons();
       STR_HandleEncoder();
-      IDX_HandleEncoder();
+      //IDX_HandleEncoder();
+      IDX_HandleMotor();
     }
 }
 //-----------------------------------------------------------------------------

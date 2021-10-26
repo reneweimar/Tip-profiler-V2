@@ -65,8 +65,170 @@ void IDX_Init(void)
 
   HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_1);
   HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_2);
-  
+
+  gIDX_Motor.P = 255;
+  gIDX_Motor.I = 1;
+  gIDX_Motor.D = 255;
+  gIDX_Motor.PosP = 255;
+  gIDX_Motor.PosI = 1;
+  gIDX_Motor.PosD = 255;
+  gIDX_Motor.MaxSpeed = 20;
+  gIDX_Motor.SpeedControl = 1;
+  gIDX_Motor.PositionControl = 1;
+  gIDX_Motor.MainStatus=INACTIVE;
 }
+//-----------------------------------------------------------------------------
+//! \brief      Controls the index motor position PID
+//! \details    Calculates the PID value for the position control
+//! \param      None
+static void IDX_HandlePosPID (void)
+{
+    gIDX_Motor.PosErrorP = (float) (gIDX_Motor.SetPosition - gIDX_Motor.GetPosition)/10;
+    gIDX_Motor.PosErrorI = gIDX_Motor.PosErrorI + gIDX_Motor.PosErrorP;
+    gIDX_Motor.PosErrorD = gIDX_Motor.PosErrorP - gIDX_Motor.PosErrorPOld;
+    gIDX_Motor.PosErrorPOld = gIDX_Motor.PosErrorP;
+    gIDX_Motor.PosPID = gIDX_Motor.PosErrorP * gIDX_Motor.PosP + gIDX_Motor.PosErrorI * gIDX_Motor.PosI/10 + gIDX_Motor.PosErrorD * gIDX_Motor.PosD;
+    gIDX_Motor.PosControl = gIDX_Motor.PosControl + (int16_t) gIDX_Motor.PosPID;
+    if (gIDX_Motor.PosControl < -(gIDX_Motor.MaxSpeed * 5.333))
+    {
+        gIDX_Motor.PosControl = -(gIDX_Motor.MaxSpeed * 5.333);
+    }
+    if (gIDX_Motor.PosControl > (gIDX_Motor.MaxSpeed * 5.333))
+    {
+        gIDX_Motor.PosControl = gIDX_Motor.MaxSpeed * 5.333;
+    }
+    if (gIDX_Motor.SpeedControl)
+    {
+        gIDX_Motor.SetSpeed = gIDX_Motor.PosControl / 5.333;
+    }
+    else
+    {
+        gIDX_Motor.Control = gIDX_Motor.PosControl;
+    }
+}
+//-----------------------------------------------------------------------------
+//! \brief      Controls the index motor direction and speed
+//! \details    Sets the PWM with the calculated speed
+//! \param      None
+
+void IDX_Set (enuStatus newStatus, uint8_t newSpeed)
+{
+  switch (newStatus)
+  {
+    case CCW:
+    {
+      IDX_CCW() = newSpeed;
+      IDX_CW()=0;
+      break;
+    }
+    case CW:
+    {
+      IDX_CCW() = 0;
+      IDX_CW() = newSpeed;
+      break;
+    }
+    default:
+    {
+      IDX_CCW() = 0;
+      IDX_CW()=0;
+      break;
+    }
+  }
+}
+
+//-----------------------------------------------------------------------------
+//! \brief      Controls the index motor speed PID
+//! \details    Calculates the PID value for the speed control
+//! \param      None
+static void IDX_HandleSpeedPID (void) //newname
+{
+    gIDX_Motor.ErrorP = (float) (gIDX_Motor.SetSpeed - gIDX_Motor.GetSpeed)/10;
+    gIDX_Motor.ErrorI = gIDX_Motor.ErrorI + gIDX_Motor.ErrorP;
+    gIDX_Motor.ErrorD = gIDX_Motor.ErrorP - gIDX_Motor.ErrorPOld;
+    gIDX_Motor.ErrorPOld = gIDX_Motor.ErrorP;
+    gIDX_Motor.PID = gIDX_Motor.ErrorP * gIDX_Motor.P + gIDX_Motor.ErrorI * gIDX_Motor.I/100 + gIDX_Motor.ErrorD * gIDX_Motor.D;
+    gIDX_Motor.Control = gIDX_Motor.Control + (int16_t) gIDX_Motor.PID;
+    if (gIDX_Motor.Control < -10000)
+    {
+        gIDX_Motor.Control = -10000;
+    }
+    if (gIDX_Motor.Control > 10000)
+    {
+        gIDX_Motor.Control = 10000;
+    }
+}
+//-----------------------------------------------------------------------------
+//! \brief      Handles the index motor speed and position
+//! \details    Controls the motor
+//! \param      None
+void IDX_HandleMotor (void)
+{
+  float x;
+
+  static uint8_t TickTime = 2; 
+  if (TickTime++ < 9) return; //100ms 
+  TickTime = 0;
+
+  if (gIDX_Motor.MainStatus==INACTIVE)
+  {
+    gIDX_Motor.ErrorI = 0;
+    gIDX_Motor.PosErrorI = 0;
+    gIDX_Motor.Control = 0;
+    gIDX_Motor.PosControl = 0;
+    gIDX_Motor.SetSpeed = 0; 
+    return;
+  }
+  gIDX_Motor.EncoderMax = gIDX_Motor.Encoder;  
+  gIDX_Motor.Encoder = 0;
+  x = ((float) gIDX_Motor.EncoderMax) * 16667 / 1000; //10ms, 3ppr, reductor 30:1 -> Encoder/PPR/4/Reduction/Time in ms*60000 -> Encoder/3/4/30/100*60000 -> 16.667
+  
+  gIDX_Motor.GetSpeed = (int16_t) x; //Negative = CCW, positive = CW
+  gIDX_Motor.GetSpeedOld = gIDX_Motor.GetSpeed;
+  //Positioning PID
+  if (gIDX_Motor.PositionControl)
+  {
+      IDX_HandlePosPID();
+  }
+  //Speed PID
+  if (gIDX_Motor.SpeedControl)
+  {
+      IDX_HandleSpeedPID();
+  }
+  else if (gIDX_Motor.PositionControl == 0)
+  {
+      gIDX_Motor.Control = gIDX_Motor.SetSpeed * 5.333;
+  }
+  if (
+      //((gIDX_Motor.GetPosition >= gIDX_Motor.SetPosition) && (gIDX_Motor.PositionControl) && (gIDX_Motor.SetSpeed > 0)) ||
+      //((gIDX_Motor.GetPosition <= gIDX_Motor.SetPosition) && (gIDX_Motor.PositionControl) && (gIDX_Motor.SetSpeed < 0)) ||
+      ((gIDX_Motor.GetPosition == gIDX_Motor.SetPosition) && (gIDX_Motor.PositionControl)) ||
+      ((gIDX_Motor.GetSpeed == 0) && (gIDX_Motor.SetSpeed == 0) && (gIDX_Motor.PositionControl == 0))
+     )
+  {
+      IDX_Set(CW,0);
+      gIDX_Motor.MainStatus = INACTIVE;
+      gIDX_Motor.ErrorI = 0;
+      gIDX_Motor.PosErrorI = 0;
+      gIDX_Motor.Control = 0;
+      IDX_CCW() = 0;
+      IDX_CW() = 0;
+      gIDX_Motor.PosControl = 0;
+      gIDX_Motor.SetSpeed = 0;
+  }
+  else if (gIDX_Motor.Control < 0)
+  {
+      IDX_Set(CCW, - gIDX_Motor.Control/100);
+  }
+  else if (gIDX_Motor.Control > 0)
+  {
+      IDX_Set(CW, gIDX_Motor.Control/100);
+  }
+  else
+  {
+      IDX_Set(CCW, 0);
+  }
+}
+
 //-----------------------------------------------------------------------------
 //! \brief      Calculates the motor speed
 //! \details    Counts the pulses per 100 us and converts to RPM
@@ -87,6 +249,7 @@ void IDX_HandleEncoder (void)
 void IDX_DecEncoder (void)
 {
   gIDX_Motor.Encoder --;
+  gIDX_Motor.GetPosition --;
 }
 //-----------------------------------------------------------------------------
 //! \brief      Handles the encoder
@@ -95,6 +258,7 @@ void IDX_DecEncoder (void)
 void IDX_IncEncoder (void)
   {
     gIDX_Motor.Encoder ++;
+    gIDX_Motor.GetPosition ++;
   }
 //-----------------------------------------------------------------------------
 //! \brief      Handles the stepper motor control
