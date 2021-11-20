@@ -16,6 +16,7 @@
 #include "indexmotor.h"
 #include "i2c.h"
 #include "ssd1306.h"
+#include <stdlib.h>
 //-----------------------------------------------------------------------------
 //! \Global main and sub, current and previous status of the device
 stcStatus gStatus;
@@ -76,6 +77,11 @@ uint16_t gParameterMaxService = 9; //9 is last index
 uint16_t VirtAddVarTab[NB_OF_VAR] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119};
 
 uint16_t ParameterTemp[20];
+
+uint32_t HomeCnt,HomeCntDelay;
+
+
+float BatteryVoltage;
 //-----------------------------------------------------------------------------
 //! \brief      Initiates the work unit
 //! \details    Defines the parameters
@@ -167,7 +173,7 @@ void WRK_SetStatus (enuType newType, enuStatus newStatus)
         gStatus.SubStatus = newStatus;
     }
 }
-  float BatteryVoltage;
+  
 //-----------------------------------------------------------------------------
 //! \brief      Handles the ADC interrupt
 //! \details    Reads the ADC converted value 
@@ -263,21 +269,24 @@ void WRK_HandleCommand(uint8_t newCommand, uint16_t LastScreen)
       break;
   }
 }  
+
 //-----------------------------------------------------------------------------
 //! \brief      Handles the sequence
-//! \details    Handles actions to form th emain sequence 
+//! \details    Handles actions to form the emain sequence 
 //! \param      None
 void WRK_HandleSequence(void)
 {
   static uint8_t TickTime = 0; 
   static uint16_t LastScreen = 0;
   static uint16_t LastNormalScreen = 0;
+  static uint8_t CntStep;
   uint16_t TmpScreen;
   
   if (TickTime++ < 99) return; //100ms 
   TickTime = 0;
 
   gCounter.Sequence += 100;
+  if (HomeCntDelay) HomeCntDelay -= 100;
   
   if (PluggedIn())
   {
@@ -391,6 +400,44 @@ void WRK_HandleSequence(void)
     {
       switch (gStatus.SubStatus)
       {
+        case ENCODERTEST:
+        {
+          switch (CntStep)
+          {
+            case 0:  
+            case 1:
+            { 
+              gIDX_Motor.MainStatus = ACTIVE;
+              gIDX_Motor.SetPosition = 5000;
+              CntStep = 2;
+              break;
+            }
+            case 2:
+            {
+              if (abs(gIDX_Motor.GetPosition - 5000) < 3)
+              {
+                gIDX_Motor.MainStatus = ACTIVE;
+                gIDX_Motor.SetPosition = 0;  
+                CntStep = 3;
+              }
+              break;
+            }
+            case 3:
+            {
+              if (abs(gIDX_Motor.GetPosition) < 3)
+              {
+                gIDX_Motor.MainStatus = ACTIVE;
+                gIDX_Motor.SetPosition = 5000;  
+                CntStep = 2;
+              }
+              break;
+            }
+            default:
+              break;
+          }
+          
+          break;
+        }
         case UNDEFINED:
         {
             WRK_SetStatus(SubStatus,WAITFORSPLASHSCREEN);
@@ -408,8 +455,19 @@ void WRK_HandleSequence(void)
           }
           break;
         }
+        case WAITFORINDEX:
+        {
+          if (IDX_Set(HOME)== READY)
+          {
+            IDX_Set(UNDEFINED);
+            WRK_SetStatus(SubStatus,WAITFORUSER);
+          }
+          break;
+        }
         case WAITFORUSER:
         {
+          
+          
           USR_ButtonPressed(BtnOk,1,1); //Get the waitforreleased flag
             
           if (USR_ButtonWaitForRelease(BtnOk)==1)
@@ -425,6 +483,11 @@ void WRK_HandleSequence(void)
                   USR_ShowScreen (10101);
               }
             }
+            else if (gCurrentScreen == 10) //Find HOME screen
+            {
+              WRK_SetStatus(SubStatus,WAITFORINDEX);  
+            }
+            
           }
           else if (USR_ButtonPressed(BtnRight,1,1) == 1)
           {
@@ -493,5 +556,6 @@ void WRK_HandleSequence(void)
         break;
   }
 }
+
 //-----------------------------------------------------------------------------
 

@@ -51,12 +51,14 @@ void PWR_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   
+  __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
-  HAL_GPIO_WritePin(StandBy_GPIO_Port, StandBy_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(Sensors_GPIO_Port, Sensors_Pin, GPIO_PIN_RESET);
 
   GPIO_InitStruct.Pin = Charging_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(Charging_GPIO_Port, &GPIO_InitStruct);
   GPIO_InitStruct.Pin = StandBy_Pin;
@@ -64,6 +66,13 @@ void PWR_Init(void)
   GPIO_InitStruct.Pin = Power_Pin;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(Power_GPIO_Port, &GPIO_InitStruct);
+  GPIO_InitStruct.Pin = Sensors_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(Sensors_GPIO_Port, &GPIO_InitStruct);
+
+  PWR_SensorsOn();
 }
 //-----------------------------------------------------------------------------
 

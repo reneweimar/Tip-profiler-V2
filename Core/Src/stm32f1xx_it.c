@@ -209,7 +209,7 @@ void SysTick_Handler(void)
 void EXTI0_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI0_IRQn 0 */
-
+  if (gIDX_ResetPosition) TIM8->CNT = 32767;
   /* USER CODE END EXTI0_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
   /* USER CODE BEGIN EXTI0_IRQn 1 */
@@ -235,6 +235,24 @@ void EXTI1_IRQHandler(void)
   /* USER CODE BEGIN EXTI0_IRQn 1 */
 
   /* USER CODE END EXTI0_IRQn 1 */
+}
+
+/**
+  * @brief This function handles EXTI line2 interrupt.
+  */
+void EXTI2_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI2_IRQn 0 */
+  if (HomeCntDelay == 0)
+  {
+    HomeCnt++;
+    HomeCntDelay = 300; //300 ms debounce
+  }
+  /* USER CODE END EXTI2_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_2);
+  /* USER CODE BEGIN EXTI2_IRQn 1 */
+
+  /* USER CODE END EXTI2_IRQn 1 */
 }
 
 /**
@@ -299,35 +317,9 @@ void ADC1_2_IRQHandler(void)
 void EXTI9_5_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI9_5_IRQn 0 */
-  if(__HAL_GPIO_EXTI_GET_IT(A_Pin) != RESET) //Interrupt from encoder channel A of index motor
-  {
-    if (IDX_A())  //Channel A high
-		{
-			if (IDX_B()) //Channel B high
-			{
-				IDX_DecEncoder();
-			}
-			else //Channel B low
-			{
-				IDX_IncEncoder();
-			}
-		}
-		else //Channel A low
-		{
-			if (IDX_B()) //Channel B high
-			{
-				IDX_IncEncoder();
-			}
-			else //Channel B low
-			{
-				IDX_DecEncoder();
-			}
-		}
-  }
   /* USER CODE END EXTI9_5_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_5);
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_6);
-  HAL_GPIO_EXTI_IRQHandler(A_Pin);
   /* USER CODE BEGIN EXTI9_5_IRQn 1 */
 
   /* USER CODE END EXTI9_5_IRQn 1 */
@@ -339,12 +331,8 @@ void EXTI9_5_IRQHandler(void)
 void EXTI15_10_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI15_10_IRQn 0 */
-  if(__HAL_GPIO_EXTI_GET_IT(B_Pin) != RESET) //Interrupt from encoder channel A of index motor
-  {
-  }
   /* USER CODE END EXTI15_10_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_10);
-  HAL_GPIO_EXTI_IRQHandler(B_Pin);
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_12);
   /* USER CODE BEGIN EXTI15_10_IRQn 1 */
 

@@ -20,6 +20,9 @@
 #define MotFwd_GPIO_Port GPIOB
 #define FaultStr_Pin GPIO_PIN_2
 #define FaultStr_GPIO_Port GPIOB
+#define STR_Enable() HAL_GPIO_WritePin(SleepStr_GPIO_Port, SleepStr_Pin,GPIO_PIN_SET)
+#define STR_Disable() HAL_GPIO_WritePin(SleepStr_GPIO_Port, SleepStr_Pin,GPIO_PIN_RESET)
+
 //-----------------------------------------------------------------------------
 extern stcDCMotor gSTR_Motor;
 //-----------------------------------------------------------------------------

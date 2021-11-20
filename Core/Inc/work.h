@@ -28,14 +28,25 @@ typedef enum
     ACTIVE,
     CCW,
     CW,
+    ENCODERTEST,
     ENTERVALUE,
     EXECUTECOMMAND,
+    HOME,
     INACTIVE,
     INITIALIZE,
     READY,
+    WAITFORHOMESENSOR,
+    WAITFORINDEX,
     WAITFORSPLASHSCREEN,
     WAITFORUSER,
 }enuStatus;
+typedef enum
+{
+  TASK_IDLE=0,
+  TASK_BUSY,
+  TASK_ERROR,
+  TASK_READY
+} enuTask;
 //-----------------------------------------------------------------------------
 //! \brief  Status type enumeration
 typedef enum
@@ -106,6 +117,8 @@ extern uint16_t gParameterMaxService;
 extern uint8_t gCommandMaxUser;
 extern uint16_t gCommandMaxService;
 extern uint16_t VirtAddVarTab[NB_OF_VAR];
+extern uint32_t HomeCnt;
+extern uint32_t HomeCntDelay;
 extern StcMachine gMachineType[2];
 extern StcCommands gCommands[];
 extern stcCounter gCounter;

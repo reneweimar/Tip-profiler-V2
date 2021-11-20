@@ -38,31 +38,41 @@ void STR_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
 
   HAL_GPIO_WritePin(SleepStr_GPIO_Port, SleepStr_Pin, GPIO_PIN_RESET);
+  
   GPIO_InitStruct.Pin = IntEncoder_Pin;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
   HAL_GPIO_Init(IntEncoder_GPIO_Port, &GPIO_InitStruct);
   GPIO_InitStruct.Pin = IntHome_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   HAL_GPIO_Init(IntHome_GPIO_Port, &GPIO_InitStruct);
-  GPIO_InitStruct.Pin = SleepStr_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  HAL_GPIO_Init(SleepStr_GPIO_Port, &GPIO_InitStruct);
   GPIO_InitStruct.Pin = FaultStr_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(FaultStr_GPIO_Port, &GPIO_InitStruct);
+  GPIO_InitStruct.Pin = SleepStr_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(SleepStr_GPIO_Port, &GPIO_InitStruct);
 
-  HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(EXTI1_IRQn, 2, 0);
   HAL_NVIC_EnableIRQ(EXTI1_IRQn);
 
-  HAL_NVIC_SetPriority(EXTI2_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(EXTI2_IRQn, 2, 0);
   HAL_NVIC_EnableIRQ(EXTI2_IRQn);
 
   gSTR_Motor.PulsesPerRevolution = 12;
 
   HAL_TIM_Base_Start(&htim3);
-  HAL_TIM_Base_Start(&htim6);
+  
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
+
+  //HAL_TIM_Base_Start(&htim6);
+
+  STR_Enable();
 }
 //-----------------------------------------------------------------------------
 
