@@ -42,16 +42,6 @@
 *.idb
 *.pdb
 
-# SourceInsight files
-*.IAB
-*.IAD
-*.PFI
-*.PO
-*.PR
-*.PRI
-*.PS
-*.WK3
-
 # Kernel Module Compile Results
 *.mod*
 *.cmd
