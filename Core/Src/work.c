@@ -182,7 +182,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc1)
 {
 
 
-  BatteryVoltage = (uint16_t) ((float) HAL_ADC_GetValue(hadc1) / 4095 * 4250);
+  BatteryVoltage = (uint16_t) ((float) HAL_ADC_GetValue(hadc1) / 4095 * 4210); //4210 = 3300 * (9100 + 33000) / 33000
   if (BatteryVoltage <= BATTVOLTAGEMIN)
     BattPercentage = 0;  
   else if (BatteryVoltage>= BATTVOLTAGEMAX)
