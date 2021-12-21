@@ -122,6 +122,7 @@ extern uint16_t gParameterMaxService;
 extern uint8_t gCommandMaxUser;
 extern uint16_t gCommandMaxService;
 extern uint16_t VirtAddVarTab[NB_OF_VAR];
+extern uint16_t ADC_Converted_Values[1];
 extern uint32_t HomeCnt;
 extern uint32_t HomeCntDelay;
 extern StcMachine gMachineType[2];

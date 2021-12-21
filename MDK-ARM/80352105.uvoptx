@@ -285,6 +285,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>HomeCnt,0x0A</ItemText>
         </Ww>
+        <Ww>
+          <count>26</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>ADC_Converted_Values,0x0A</ItemText>
+        </Ww>
       </WatchWindow1>
       <MemoryWindow1>
         <Mm>

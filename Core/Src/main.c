@@ -121,6 +121,7 @@ int main(void)
   HAL_TIM_Encoder_Start(&htim8,TIM_CHANNEL_ALL); 
   TIM8->CNT = 32767;
   //TIM8
+  HAL_ADC_Start_DMA(&hadc1,(uint32_t*) &ADC_Converted_Values,1);
   gInitialized = 1;
   /* USER CODE END 2 */
 
