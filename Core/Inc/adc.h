@@ -30,8 +30,6 @@
 
 /* USER CODE END Includes */
 
-extern ADC_HandleTypeDef hadc1;
-
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
@@ -39,6 +37,9 @@ extern ADC_HandleTypeDef hadc1;
 void MX_ADC1_Init(void);
 
 /* USER CODE BEGIN Prototypes */
+
+extern ADC_HandleTypeDef hadc1;
+extern DMA_HandleTypeDef hdma_adc1;
 
 /* USER CODE END Prototypes */
 

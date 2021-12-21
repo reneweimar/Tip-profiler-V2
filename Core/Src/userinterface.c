@@ -643,6 +643,7 @@ void USR_ShowBattery (uint8_t PercentageNew)
           sprintf(Percentage," %u%%",BatteryPercentage);
       }
     }
+    
     ssd1306_DrawRectangle(Black,78, 0,24,7,0);
     ssd1306_SetCursor(XPos, 0);
     ssd1306_WriteStringEightBitFont(Percentage, Font_6x7, White);

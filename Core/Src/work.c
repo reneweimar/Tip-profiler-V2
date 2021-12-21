@@ -18,6 +18,8 @@
 #include "ssd1306.h"
 #include <stdlib.h>
 //-----------------------------------------------------------------------------
+//! \Global ADC result
+uint16_t ADC_Converted_Values[1];
 //! \Global main and sub, current and previous status of the device
 stcStatus gStatus;
 //! \Global counter structure
@@ -173,23 +175,6 @@ void WRK_SetStatus (enuType newType, enuStatus newStatus)
         gStatus.SubStatus = newStatus;
     }
 }
-  
-//-----------------------------------------------------------------------------
-//! \brief      Handles the ADC interrupt
-//! \details    Reads the ADC converted value 
-//! \param      None
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc1)
-{
-
-
-  BatteryVoltage = (uint16_t) ((float) HAL_ADC_GetValue(hadc1) / 4095 * 4210); //4210 = 3300 * (9100 + 33000) / 33000
-  if (BatteryVoltage <= BATTVOLTAGEMIN)
-    BattPercentage = 0;  
-  else if (BatteryVoltage>= BATTVOLTAGEMAX)
-    BattPercentage = 100;  
-  else
-    BattPercentage = (uint8_t) (((BatteryVoltage - BATTVOLTAGEMIN)/(BATTVOLTAGEMAX-BATTVOLTAGEMIN))* 100 );
-}
 
 //-----------------------------------------------------------------------------
 //! \brief      Handles the battery status
@@ -198,18 +183,25 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc1)
 void WRK_HandleBatteryStatus (void)
 {
     static uint16_t TickTime = 0; 
-//    static uint8_t PercentageOld = 0;
-//    uint8_t PercentageNew;
-    
+    static uint8_t ConvertedValueOld;
     if (TickTime++ < 499) return; //4997ms 
     TickTime = 0;
-    
-    HAL_ADC_Start_IT(&hadc1);
-    USR_ShowBattery(BattPercentage);
-    //add battery analog input voltage measurement
-    //PercentageNew = ..... convert analog value
-    //if (PercentageNew != PercentageOld)
-    //USR_ShowBattery(PercentageNew);
+
+    if (gStatus.SubStatus == WAITFORUSER) 
+    { 
+      if (ConvertedValueOld != ADC_Converted_Values[0])
+      {
+        BatteryVoltage = (uint16_t) ((float) ADC_Converted_Values[0] / 4095 * 4210); //4210 = 3300 * (9100 + 33000) / 33000
+        if (BatteryVoltage <= BATTVOLTAGEMIN)
+          BattPercentage = 0;  
+        else if (BatteryVoltage>= BATTVOLTAGEMAX)
+          BattPercentage = 100;  
+        else
+          BattPercentage = (uint8_t) (((BatteryVoltage - BATTVOLTAGEMIN)/(BATTVOLTAGEMAX-BATTVOLTAGEMIN))* 100 );
+        ConvertedValueOld = ADC_Converted_Values[0];
+        USR_ShowBattery(BattPercentage);
+      }
+    }
 }
 //-----------------------------------------------------------------------------
 //! \brief      Handles the tick time counter
@@ -221,8 +213,7 @@ void WRK_HandleTickTime (void)
     {
       gCounter.Delay ++;
       WRK_HandleSequence();
-      //if (gStatus.SubStatus == WAITFORUSER) 
-        WRK_HandleBatteryStatus();
+      WRK_HandleBatteryStatus();
       USR_HandleButtons();
       STR_HandleEncoder();
       //IDX_HandleEncoder();
