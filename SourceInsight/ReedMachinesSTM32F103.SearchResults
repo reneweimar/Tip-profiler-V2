@@ -1,3 +1,9 @@
----- handlepospid Matches (2 in 1 files) ----
-Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):static void IDX_HandlePosPID (void)
-Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      IDX_HandlePosPID();
+---- gSTR_Motor.Encoder Matches (8 in 3 files) ----
+Main.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    if ((gSTR_Status.MainStatus == GOTOSTARTPOSITION) && (gSTR_Status.SubStatus == WAITFORSTARTPOSITION) && (gSTR_Motor.Encoder == 150))
+Stm32f1xx_it.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  gSTR_Motor.Encoder++;
+Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  int Encoder = gSTR_Motor.Encoder;
+Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          if (gSTR_Motor.Encoder == Encoder)
+Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  					gSTR_Motor.Encoder = 0;
+Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            Encoder = gSTR_Motor.Encoder;
+Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          if (gSTR_Motor.Encoder == Encoder)
+Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            Encoder = gSTR_Motor.Encoder;

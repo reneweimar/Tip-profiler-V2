@@ -31,6 +31,7 @@ typedef enum
     ENCODERTEST,
     ENTERVALUE,
     EXECUTECOMMAND,
+    GOTOSTARTPOSITION,
     HOME,
     INACTIVE,
     INITIALIZE,
@@ -38,6 +39,8 @@ typedef enum
     WAITFORHOMESENSOR,
     WAITFORINDEX,
     WAITFORSPLASHSCREEN,
+    WAITFORSTARTPOSITION,
+    WAITFORSTROKEMOTOR,
     WAITFORUSER,
 }enuStatus;
 typedef enum
@@ -52,7 +55,9 @@ typedef enum
 typedef enum
 {
     MainStatus,
+    MainStatusOld,
     SubStatus,
+    SubStatusOld,
 } enuType;
 //-----------------------------------------------------------------------------
 //! \brief  Status storage structure

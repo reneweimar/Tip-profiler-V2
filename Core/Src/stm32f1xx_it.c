@@ -220,15 +220,15 @@ void EXTI0_IRQHandler(void)
 void EXTI1_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI1_IRQn 0 */
-  static uint8_t CntInterrupt;
-  CntInterrupt ++;
-  if (CntInterrupt >= 12) //12 pulses per revolution, so average 12 pulses to get whole revolution
-  {
-    CntInterrupt = 0;
-    gSTR_Motor.TimerValueOld = gSTR_Motor.TimerValue; 
-    gSTR_Motor.TimerValue = TIM6->CNT;
-    gSTR_Motor.TimePerRev = gSTR_Motor.TimerValue - gSTR_Motor.TimerValueOld;
-  }        
+  //static uint8_t CntInterrupt;
+  //CntInterrupt ++;
+  //if (CntInterrupt >= 12) //12 pulses per revolution, so average 12 pulses to get whole revolution
+  //{
+  //  CntInterrupt = 0;
+  //  gSTR_Motor.TimerValueOld = gSTR_Motor.TimerValue; 
+  //  gSTR_Motor.TimerValue = TIM6->CNT;
+  //  gSTR_Motor.TimePerRev = gSTR_Motor.TimerValue - gSTR_Motor.TimerValueOld;
+  //}        
   gSTR_Motor.Encoder++;
   /* USER CODE END EXTI1_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
@@ -243,11 +243,7 @@ void EXTI1_IRQHandler(void)
 void EXTI2_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI2_IRQn 0 */
-  if (HomeCntDelay == 0)
-  {
-    HomeCnt++;
-    HomeCntDelay = 300; //300 ms debounce
-  }
+  STR_SetPWM(CW,0);
   /* USER CODE END EXTI2_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_2);
   /* USER CODE BEGIN EXTI2_IRQn 1 */

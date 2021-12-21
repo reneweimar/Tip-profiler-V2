@@ -238,7 +238,7 @@
         <Ww>
           <count>16</count>
           <WinNumber>1</WinNumber>
-          <ItemText>TIM1,0x0A</ItemText>
+          <ItemText>gSTR_Status</ItemText>
         </Ww>
         <Ww>
           <count>17</count>
@@ -278,7 +278,7 @@
         <Ww>
           <count>24</count>
           <WinNumber>1</WinNumber>
-          <ItemText>TIM3</ItemText>
+          <ItemText>TIM3,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>25</count>

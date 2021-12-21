@@ -189,7 +189,6 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc1)
     BattPercentage = 100;  
   else
     BattPercentage = (uint8_t) (((BatteryVoltage - BATTVOLTAGEMIN)/(BATTVOLTAGEMAX-BATTVOLTAGEMIN))* 100 );
-  
 }
 
 //-----------------------------------------------------------------------------
@@ -204,7 +203,7 @@ void WRK_HandleBatteryStatus (void)
     
     if (TickTime++ < 499) return; //4997ms 
     TickTime = 0;
-
+    
     HAL_ADC_Start_IT(&hadc1);
     USR_ShowBattery(BattPercentage);
     //add battery analog input voltage measurement
@@ -222,7 +221,8 @@ void WRK_HandleTickTime (void)
     {
       gCounter.Delay ++;
       WRK_HandleSequence();
-      WRK_HandleBatteryStatus();
+      //if (gStatus.SubStatus == WAITFORUSER) 
+        WRK_HandleBatteryStatus();
       USR_HandleButtons();
       STR_HandleEncoder();
       //IDX_HandleEncoder();
@@ -460,14 +460,30 @@ void WRK_HandleSequence(void)
           if (IDX_Set(HOME)== READY)
           {
             IDX_Set(UNDEFINED);
+            WRK_SetStatus(SubStatus,WAITFORSTROKEMOTOR);
+          }
+          break;
+        }
+        case WAITFORSTROKEMOTOR:
+        {
+          if (STR_Set(HOME)== READY)
+          {
+            STR_Set(UNDEFINED);
+            WRK_SetStatus(SubStatus,WAITFORUSER);
+          }
+          break;
+        }
+        case WAITFORSTARTPOSITION:
+        {
+          if (STR_Set(GOTOSTARTPOSITION)== READY)
+          {
+            STR_Set(UNDEFINED);
             WRK_SetStatus(SubStatus,WAITFORUSER);
           }
           break;
         }
         case WAITFORUSER:
         {
-          
-          
           USR_ButtonPressed(BtnOk,1,1); //Get the waitforreleased flag
             
           if (USR_ButtonWaitForRelease(BtnOk)==1)
@@ -486,6 +502,10 @@ void WRK_HandleSequence(void)
             else if (gCurrentScreen == 10) //Find HOME screen
             {
               WRK_SetStatus(SubStatus,WAITFORINDEX);  
+            }
+            else if (gCurrentScreen == 20) //Goto START screen
+            {
+              WRK_SetStatus(SubStatus,WAITFORSTARTPOSITION);  
             }
             
           }

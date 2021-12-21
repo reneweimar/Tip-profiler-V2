@@ -11,6 +11,8 @@
 #include "gpio.h"
 //-----------------------------------------------------------------------------
 stcDCMotor gSTR_Motor;
+enuSTR_Unit gSTR_Status;
+
 //-----------------------------------------------------------------------------
 //! \brief      Calculates the motor speed
 //! \details    Counts the pulses per 100 us and converts to RPM
@@ -18,12 +20,16 @@ stcDCMotor gSTR_Motor;
 void STR_HandleEncoder (void)
 {
   static uint8_t TickTime = 8; 
+  static int EncoderOld;
+  
+  
   if (TickTime++ < 99) return; //100ms 
   TickTime = 0;
-  
-  gSTR_Motor.GetSpeed = (int16_t) ((float) gSTR_Motor.Encoder / (float) gSTR_Motor.PulsesPerRevolution * 600);
+  int Encoder = gSTR_Motor.Encoder;
+  int EncoderValue = Encoder - EncoderOld;
+  EncoderOld = Encoder;
+  gSTR_Motor.GetSpeed = (int16_t) ((float) EncoderValue / (float) gSTR_Motor.PulsesPerRevolution * 600);
   gSTR_Motor.SetSpeed = (int16_t) (720000 / ((float) gSTR_Motor.TimePerRev * (float) gSTR_Motor.PulsesPerRevolution));
-  gSTR_Motor.Encoder = 0;
 }
 //-----------------------------------------------------------------------------
  //! \brief      Initiates the stroke motor unit
@@ -42,7 +48,7 @@ void STR_Init(void)
   GPIO_InitStruct.Pin = IntEncoder_Pin;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   HAL_GPIO_Init(IntEncoder_GPIO_Port, &GPIO_InitStruct);
   GPIO_InitStruct.Pin = IntHome_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
@@ -74,5 +80,169 @@ void STR_Init(void)
 
   STR_Enable();
 }
+
+//-----------------------------------------------------------------------------
+//! \brief      Sets the STR_Unit status
+//! \details    Sets the selected status (main or sub) and stores the 
+//! previous status
+//! \param[in]  newType   MainStatus or SubStatus
+//! \param[in]  newStatus New status for the selected status
+void STR_SetStatus (enuType newType, enuStatus newStatus)
+{
+    if (newType == MainStatus)
+    {
+        gSTR_Status.MainStatusOld = gSTR_Status.MainStatus;
+        gSTR_Status.MainStatus = newStatus;
+        gSTR_Status.SubStatusOld = gSTR_Status.SubStatus;
+        gSTR_Status.SubStatus = UNDEFINED;
+    }
+    else
+    {
+        gSTR_Status.SubStatusOld = gSTR_Status.SubStatus;
+        gSTR_Status.SubStatus = newStatus;
+    }
+}
+
+//-----------------------------------------------------------------------------
+//! \brief       Sets the stroke motor status
+//! \details     Sets the PWM with the calculated speed
+//! \param [in]  enuStatus newStatus
+//! \param [out] enuStatus STR_Motor.SubStatus or READY
+enuStatus STR_Set(enuStatus newStatus)
+{
+  if (gSTR_Status.MainStatus == newStatus) //Task already running
+  {
+    if (gSTR_Status.SubStatus != READY)
+    {
+      if (gSTR_Status.MainStatus == gSTR_Status.SubStatus)
+      {
+        STR_SetStatus(SubStatus,READY);
+      }
+      else
+      {
+        gSTR_HandleTasks();
+      }
+    }
+  }
+  else
+  {
+    STR_SetStatus(MainStatus,newStatus);
+  }
+  return gSTR_Status.SubStatus;
+}
+
+//-----------------------------------------------------------------------------
+//! \brief      Controls the stroke motor direction and speed
+//! \details    Sets the PWM with the calculated speed
+//! \param      None
+
+void STR_SetPWM (enuStatus newStatus, uint8_t newSpeed)
+{
+  switch (newStatus)
+  {
+    case CCW:
+    {
+      STR_CW() = 100 - newSpeed;
+      STR_CCW()=100;
+      break;
+    }
+    case CW:
+    {
+      STR_CW() = 100;
+      STR_CCW() = 100 - newSpeed;
+      break;
+    }
+    default:
+    {
+      STR_CCW() = 100;
+      STR_CW()=100;
+      break;
+    }
+  }
+}
+
+//-----------------------------------------------------------------------------
+//! \brief       Handles the tasks of the stroke motor
+//! \details     Evaluates the home sensor and encoder
+//! \param       None
+void gSTR_HandleTasks(void)
+{
+  static int Encoder;
+  
+  switch (gSTR_Status.MainStatus)
+  {
+    case UNDEFINED:
+    {
+      break;
+    }
+    case HOME:
+    {
+      switch (gSTR_Status.SubStatus)
+      {
+        case UNDEFINED:
+        {
+          if (STR_HomeOff()) //Homesensor is on, so nothing to do
+          {
+            STR_SetStatus(SubStatus, HOME);
+          }
+          else
+          {
+            STR_SetPWM(CW,50);
+            STR_SetStatus(SubStatus,WAITFORHOMESENSOR);
+          }  
+          break;
+        }
+        case WAITFORHOMESENSOR:
+        {
+					//TODO timeout
+          if (gSTR_Motor.Encoder == Encoder)
+          {
+  					gSTR_Motor.Encoder = 0;
+            STR_SetStatus(SubStatus, HOME);
+          }
+          else 
+          {
+            Encoder = gSTR_Motor.Encoder;
+          }
+          break;
+        }
+        default:
+          break;
+      }
+      break;
+    }
+    case GOTOSTARTPOSITION:
+    {
+      switch (gSTR_Status.SubStatus)
+      {
+        case UNDEFINED:
+        {
+          STR_SetPWM(CW,50);
+          STR_SetStatus(SubStatus,WAITFORSTARTPOSITION);
+          break;
+        }
+        case WAITFORSTARTPOSITION:
+        {
+					//TODO timeout
+          if (gSTR_Motor.Encoder == Encoder)
+          {
+            STR_SetStatus(SubStatus, GOTOSTARTPOSITION);
+          }
+          else 
+          {
+            Encoder = gSTR_Motor.Encoder;
+          }
+          break;
+        }
+        default:
+          break;
+      }
+      break;
+    }
+    default:
+      break;
+  }
+}
+
 //-----------------------------------------------------------------------------
 

@@ -128,6 +128,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    if ((gSTR_Status.MainStatus == GOTOSTARTPOSITION) && (gSTR_Status.SubStatus == WAITFORSTARTPOSITION) && (gSTR_Motor.Encoder == 150))
+    {
+      STR_SetPWM(CW,0);  
+    }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

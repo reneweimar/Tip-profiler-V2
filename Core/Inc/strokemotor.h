@@ -22,14 +22,32 @@
 #define FaultStr_GPIO_Port GPIOB
 #define STR_Enable() HAL_GPIO_WritePin(SleepStr_GPIO_Port, SleepStr_Pin,GPIO_PIN_SET)
 #define STR_Disable() HAL_GPIO_WritePin(SleepStr_GPIO_Port, SleepStr_Pin,GPIO_PIN_RESET)
+#define STR_HomeOn() HAL_GPIO_ReadPin(IntHome_GPIO_Port, IntHome_Pin)==1
+#define STR_HomeOff() HAL_GPIO_ReadPin(IntHome_GPIO_Port, IntHome_Pin)==0
+#define STR_CCW()		TIM3->CCR3
+#define STR_CW() 		TIM3->CCR4
+typedef  struct
+{
+  enuStatus MainStatus;
+  enuStatus MainStatusOld;
+  enuStatus SubStatus;
+  enuStatus SubStatusOld;
+} enuSTR_Unit;
+
 
 //-----------------------------------------------------------------------------
 extern stcDCMotor gSTR_Motor;
+extern enuSTR_Unit gSTR_Status;
 //-----------------------------------------------------------------------------
 //STR_functions
 //---------------------- SYSTEM ------------------------
+void gSTR_HandleTasks(void);
+
+extern enuStatus STR_Set(enuStatus newStatus);
 extern void STR_Init(void);
 extern void STR_HandleEncoder (void);
+extern void STR_SetPWM (enuStatus newStatus, uint8_t newSpeed);
+extern void STR_SetStatus (enuType newType, enuStatus newStatus);
 
 #endif  // _STR_FUNCTIONS_H
 
