@@ -217,11 +217,34 @@ void gSTR_HandleTasks(void)
       {
         case UNDEFINED:
         {
-          STR_SetPWM(CW,50);
-          STR_SetStatus(SubStatus,WAITFORSTARTPOSITION);
+          if (STR_HomeOff()) //Homesensor is on, so stroke motor is home
+          {
+            STR_SetPWM(CW,50);
+            STR_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
+          }
+          else //Goto home position first
+          {
+            STR_SetPWM(CW,50);
+            STR_SetStatus(SubStatus,WAITFORHOMESENSOR);
+          }  
           break;
         }
-        case WAITFORSTARTPOSITION:
+        case WAITFORHOMESENSOR:
+        {
+					//TODO timeout
+          if (gSTR_Motor.Encoder == Encoder)
+          {
+  					gSTR_Motor.Encoder = 0;
+            STR_SetPWM(CW,50);
+            STR_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
+          }
+          else 
+          {
+            Encoder = gSTR_Motor.Encoder;
+          }
+          break;
+        }
+        case WAITFORSTROKEMOTORSTART:
         {
 					//TODO timeout
           if (gSTR_Motor.Encoder == Encoder)

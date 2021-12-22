@@ -187,8 +187,8 @@ void WRK_HandleBatteryStatus (void)
     if (TickTime++ < 499) return; //4997ms 
     TickTime = 0;
 
-    if (gStatus.SubStatus == WAITFORUSER) 
-    { 
+    //if (gStatus.SubStatus == WAITFORUSER) 
+    //{ 
       if (ConvertedValueOld != ADC_Converted_Values[0])
       {
         BatteryVoltage = (uint16_t) ((float) ADC_Converted_Values[0] / 4095 * 4210); //4210 = 3300 * (9100 + 33000) / 33000
@@ -201,7 +201,7 @@ void WRK_HandleBatteryStatus (void)
         ConvertedValueOld = ADC_Converted_Values[0];
         USR_ShowBattery(BattPercentage);
       }
-    }
+    //}
 }
 //-----------------------------------------------------------------------------
 //! \brief      Handles the tick time counter
@@ -282,14 +282,14 @@ void WRK_HandleSequence(void)
   if (PluggedIn())
   {
     gCounter.User = 0;
-    ssd1306_SetContrast(&hi2c1,HIGHCONTRAST);
+    ssd1306_SetContrast(HIGHCONTRAST);
   }
   else 
   {
     if (gCounter.User < 0xffffffff) gCounter.User += 100;
     if ((gCounter.User > LOWPOWERTIME)&&(SCREENSAVERON)) 
     {
-      ssd1306_SetContrast(&hi2c1,LOWCONTRAST);
+      ssd1306_SetContrast(LOWCONTRAST);
     }
   }
   
@@ -446,16 +446,24 @@ void WRK_HandleSequence(void)
           }
           break;
         }
-        case WAITFORINDEX:
+        case WAITFORINDEXHOME:
+        case WAITFORINDEXSTART:
         {
           if (IDX_Set(HOME)== READY)
           {
             IDX_Set(UNDEFINED);
-            WRK_SetStatus(SubStatus,WAITFORSTROKEMOTOR);
+            if (gStatus.SubStatus == WAITFORINDEXSTART)
+            {
+              WRK_SetStatus(SubStatus,WAITFORUSER);
+            }
+            else
+            {
+              WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORHOME);
+            }
           }
           break;
         }
-        case WAITFORSTROKEMOTOR:
+        case WAITFORSTROKEMOTORHOME:
         {
           if (STR_Set(HOME)== READY)
           {
@@ -464,12 +472,12 @@ void WRK_HandleSequence(void)
           }
           break;
         }
-        case WAITFORSTARTPOSITION:
+        case WAITFORSTROKEMOTORSTART:
         {
           if (STR_Set(GOTOSTARTPOSITION)== READY)
           {
             STR_Set(UNDEFINED);
-            WRK_SetStatus(SubStatus,WAITFORUSER);
+            WRK_SetStatus(SubStatus,WAITFORINDEXSTART);
           }
           break;
         }
@@ -492,13 +500,12 @@ void WRK_HandleSequence(void)
             }
             else if (gCurrentScreen == 10) //Find HOME screen
             {
-              WRK_SetStatus(SubStatus,WAITFORINDEX);  
+              WRK_SetStatus(SubStatus,WAITFORINDEXHOME);  
             }
             else if (gCurrentScreen == 20) //Goto START screen
             {
-              WRK_SetStatus(SubStatus,WAITFORSTARTPOSITION);  
+              WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);  
             }
-            
           }
           else if (USR_ButtonPressed(BtnRight,1,1) == 1)
           {
