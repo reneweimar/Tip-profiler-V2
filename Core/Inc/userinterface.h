@@ -9,6 +9,7 @@
 #define _USR_FUNCTIONS_H
 //-----------------------------------------------------------------------------
 #include "stm32f1xx_hal.h"
+#include "ssd1306.h"
 //-----------------------------------------------------------------------------
 
 #define USR_PRESSTIMEMAX 5000
@@ -56,6 +57,7 @@ typedef struct
 //-----------------------------------------------------------------------------
 //USR_functions
 //---------------------- SYSTEM ------------------------
+void USR_DrawLogo (SSD1306_COLOR color);
 extern uint16_t gCurrentScreen;
 extern void USR_EnterValue(int16_t NewNumber);
 extern void USR_SaveParameter(void);

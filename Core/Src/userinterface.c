@@ -25,6 +25,7 @@ uint8_t CursorPosition;
 uint8_t gParameterDigits;
 uint8_t gParameterDecimals;
 
+
 //-----------------------------------------------------------------------------
 //! \brief      Fills the values for entering values and starts the screen
 //! \details    Sets the max and min values, value, and curserlocation
@@ -173,13 +174,13 @@ void USR_Init(void)
     GPIO_InitStruct.Pin = BtnCommon2_Pin;
     HAL_GPIO_Init(BtnCommon2_GPIO_Port, &GPIO_InitStruct);
     
-    if (ssd1306_Init(&hi2c1) != 0) 
+    if (ssd1306_Init() != 0) 
     {
         Error_Handler();
     }
     HAL_Delay(100);
-    ssd1306_Fill(Black);
-    ssd1306_UpdateScreen(&hi2c1);
+    ssd1306_Fill();//ssd1306_Fill(Black);
+    ssd1306_UpdateScreen();
     HAL_Delay(100);
 }
 //-----------------------------------------------------------------------------
@@ -221,7 +222,7 @@ void USR_ShowMessage(uint16_t NewMessage)
     default:
       break;
   }
-  ssd1306_UpdateScreen(&hi2c1);
+  ssd1306_UpdateScreen();
 }
 
 //-----------------------------------------------------------------------------
@@ -262,7 +263,7 @@ void USR_ShowScreen(uint16_t NewScreen)
       {
         USR_ClearScreen(0);
         ssd1306_SetCursor(15, 5);
-        ssd1306_DrawLogo(White);
+        USR_DrawLogo(White);
         ssd1306_SetCursor(60, 5);
         ssd1306_WriteStringEightBitFont("VERSION:", Font_6x7, White);
         ssd1306_SetCursor(60, 15);
@@ -554,10 +555,10 @@ void USR_ShowScreen(uint16_t NewScreen)
               ssd1306_WriteStringEightBitFont("                    ", Font_6x7, White);
         }
         ssd1306_SetCursor(0, 57);
-        //if (gServiceMenu)
+        if (gServiceMenu)
           ssd1306_WriteStringEightBitFont("&$,*   ", Font_6x7, White);
-        //else
-        //  ssd1306_WriteStringEightBitFont("&$*    ", Font_6x7, White);
+        else
+          ssd1306_WriteStringEightBitFont("&$*    ", Font_6x7, White);
         ssd1306_SetCursor(80, 57);
         if (gServiceMenu)
         {
@@ -574,7 +575,7 @@ void USR_ShowScreen(uint16_t NewScreen)
         break;
       }
     }
-    ssd1306_UpdateScreen(&hi2c1);
+    ssd1306_UpdateScreen();
 }
 //-----------------------------------------------------------------------------
 //! \brief      Shows the battery percentage and symbol
@@ -648,7 +649,7 @@ void USR_ShowBattery (uint8_t PercentageNew)
     ssd1306_SetCursor(XPos, 0);
     ssd1306_WriteStringEightBitFont(Percentage, Font_6x7, White);
     ssd1306_DrawBattery(White,Bars,115,0);
-    ssd1306_UpdateScreen(&hi2c1);
+    ssd1306_UpdateScreen();
 }
 //-----------------------------------------------------------------------------
 //! \brief      Clears the screen
@@ -666,8 +667,7 @@ void USR_ClearScreen (uint8_t ShowTitle)
     ssd1306_DrawRectangle(White,0,10,128,1,0);
     ssd1306_DrawRectangle(White,0,54,128,1,0);
   }
-  
-  ssd1306_UpdateScreen(&hi2c1);
+  ssd1306_UpdateScreen();
 }
 //-----------------------------------------------------------------------------
 //! \brief      Handles the button TimeOn and WaitForRelease counter
@@ -715,7 +715,7 @@ void USR_HandleButtons (void)
       if (Pushed[i]==1) //Button is pushed
       {
         gCounter.User = 0;
-        ssd1306_SetContrast(&hi2c1,HIGHCONTRAST);
+        ssd1306_SetContrast(HIGHCONTRAST);
         if ((Button[i].TimeOn <= USR_PRESSTIMEMAX) && (Button[i].WaitForRelease == 0))
         {
           Button[i].TimeOn += 10;
@@ -764,6 +764,40 @@ uint8_t USR_ButtonPressed (enuButtons ReqButton, uint16_t ReqTime, uint8_t ReqWa
 uint8_t USR_ButtonWaitForRelease (enuButtons ReqButton)
 {
   return Button[(uint8_t) ReqButton].WaitForRelease;
+}
+//-----------------------------------------------------------------------------
+//! \brief      Draws the logo on the screen
+//! \details    Draws reed machines logoin te screen buffer
+//! \param[in]  SSD1306_COLOR color -> Logo color (Black or white)
+void USR_DrawLogo (SSD1306_COLOR color)
+{
+  uint8_t i,j,k;
+  uint8_t EndColumn;
+  uint32_t b;
+
+  
+  for (i = 0; i < 43; i++)
+  {
+    for (k = 0; k<3; k++)
+    {
+      b = Logo37x43[i*4+k];
+      if (k==2)
+        EndColumn = 5;
+      else
+        EndColumn = 16;
+      for (j = 0; j < EndColumn; j++)
+      {
+        if ((b << j) & 0x8000)
+        {
+          ssd1306_DrawPixel(SSD1306.CurrentX + j + 16*k, (SSD1306.CurrentY + i), (SSD1306_COLOR) color);
+        }
+        else
+        {
+          ssd1306_DrawPixel(SSD1306.CurrentX + j +16*k, (SSD1306.CurrentY + i), (SSD1306_COLOR)!color);
+        }
+      }
+    }
+  }
 }
 
 

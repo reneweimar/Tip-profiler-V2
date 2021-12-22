@@ -1,9 +1,19 @@
----- gSTR_Motor.Encoder Matches (8 in 3 files) ----
-Main.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    if ((gSTR_Status.MainStatus == GOTOSTARTPOSITION) && (gSTR_Status.SubStatus == WAITFORSTARTPOSITION) && (gSTR_Motor.Encoder == 150))
-Stm32f1xx_it.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  gSTR_Motor.Encoder++;
-Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  int Encoder = gSTR_Motor.Encoder;
-Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          if (gSTR_Motor.Encoder == Encoder)
-Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  					gSTR_Motor.Encoder = 0;
-Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            Encoder = gSTR_Motor.Encoder;
-Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          if (gSTR_Motor.Encoder == Encoder)
-Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            Encoder = gSTR_Motor.Encoder;
+---- 10201 Matches (20 in 2 files) ----
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    case 10201: //Factory reset.
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      if ((gCurrentScreen >= (10201 + gCommandMaxService + 1))&&(gCurrentScreen <10300)) gCurrentScreen = 10201;
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      if (gCurrentScreen == 10200) gCurrentScreen = 10201 + gCommandMaxService;
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      if ((gCurrentScreen >= 10201 + gCommandMaxUser + 1)&&(gCurrentScreen <10300)) gCurrentScreen = 10201;
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      if (gCurrentScreen == 10200) gCurrentScreen = 10201 + gCommandMaxUser;
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      case 10201:
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        TopPage = gCurrentScreen - (gCurrentScreen-1)%3;   //10202 -> 10202 - 1 = 10201, 10204 -> 10204 - 0 = 10204
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          if (i + TopPage - 10201 < gCommandMaxService + 1)
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            if ((gServiceMenu) || (gCommands[i + TopPage - 10201].UserAccess))
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              sprintf(strValue, "  %s", gCommands[i + TopPage - 10201].Name);
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          sprintf(strValue, "    %u-%01u", ((TopPage-10201)/3)+1,(gCommandMaxService+3)/3);
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          sprintf(strValue, "    %u-%01u", ((TopPage-10201)/3)+1,(gCommandMaxUser+3)/3);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            WRK_HandleCommand(gCommands[gCurrentScreen-10201].BtnOK_Command, gCurrentScreen);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            WRK_HandleCommand(gCommands[gCurrentScreen-10201].BtnMenu_Command, gCurrentScreen);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            WRK_HandleCommand(gCommands[gCurrentScreen-10201].BtnLeft_Command, gCurrentScreen);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            WRK_HandleCommand(gCommands[gCurrentScreen-10201].BtnRight_Command, gCurrentScreen);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            WRK_HandleCommand(gCommands[gCurrentScreen-10201].BtnUp_Command, gCurrentScreen);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            WRK_HandleCommand(gCommands[gCurrentScreen-10201].BtnDown_Command, gCurrentScreen);
