@@ -27,11 +27,35 @@ Project File Date:  09/30/2021
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'd:\Keil_v5\ARM\ARMCC\Bin'
 Build target '80352105'
+compiling main.c...
+compiling ssd1306.c...
+..\Core\Src\ssd1306.c(38): warning:  #815-D: type qualifier on return type is meaningless
+  static const uint16_t width(void)  { return SSD1306_WIDTH; };
+..\Core\Src\ssd1306.c(39): warning:  #815-D: type qualifier on return type is meaningless
+  static const uint16_t height(void)  { return SSD1306_HEIGHT; };
+..\Core\Src\ssd1306.c(738): warning:  #188-D: enumerated type mixed with another type
+          ssd1306_DrawPixel(SSD1306.CurrentX + j, SSD1306.CurrentY + i, !color);
+..\Core\Src\ssd1306.c(867): warning:  #177-D: variable "status"  was declared but never referenced
+    uint8_t status = 0;
+..\Core\Src\ssd1306.c(1060): warning:  #167-D: argument of type "volatile uint8_t *" is incompatible with parameter of type "uint8_t *"
+      HAL_I2C_Mem_Write_DMA(&SSD1306_I2C_PORT, SSD1306_I2C_ADDR, 0x00, 1, &i2c_command, 1);
+..\Core\Src\ssd1306.c(1073): warning:  #167-D: argument of type "volatile uint8_t *" is incompatible with parameter of type "uint8_t *"
+      HAL_I2C_Mem_Write_DMA(&SSD1306_I2C_PORT, SSD1306_I2C_ADDR, 0x00, 1, &i2c_command, 1);
+..\Core\Src\ssd1306.c(1113): warning:  #167-D: argument of type "volatile uint8_t *" is incompatible with parameter of type "uint8_t *"
+            HAL_I2C_Mem_Write_DMA(&SSD1306_I2C_PORT, SSD1306_I2C_ADDR, 0x00, 1, &i2c_command, 1);
+..\Core\Src\ssd1306.c(1137): warning:  #167-D: argument of type "volatile uint8_t *" is incompatible with parameter of type "uint8_t *"
+            HAL_I2C_Mem_Write_DMA(&SSD1306_I2C_PORT, SSD1306_I2C_ADDR, 0x00, 1, &i2c_command, 1);
+..\Core\Src\ssd1306.c(480): warning:  #177-D: function "ssd1306_DegToRad"  was declared but never referenced
+  static float ssd1306_DegToRad(float par_deg)
+..\Core\Src\ssd1306.c(486): warning:  #177-D: function "ssd1306_NormalizeTo0_360"  was declared but never referenced
+  static uint16_t ssd1306_NormalizeTo0_360(uint16_t par_deg)
+..\Core\Src\ssd1306.c: 10 warnings, 0 errors
 compiling work.c...
+compiling userinterface.c...
 linking...
-Program Size: Code=29628 RO-data=6096 RW-data=2360 ZI-data=4888  
+Program Size: Code=29644 RO-data=6096 RW-data=2360 ZI-data=4904  
 FromELF: creating hex file...
-"80352105\80352105.axf" - 0 Error(s), 0 Warning(s).
+"80352105\80352105.axf" - 0 Error(s), 10 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -54,7 +78,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.2.0
-Build Time Elapsed:  00:00:01
+Build Time Elapsed:  00:00:03
 </pre>
 </body>
 </html>

@@ -276,7 +276,7 @@ void USR_ShowScreen(uint16_t NewScreen)
         {
           ssd1306_WriteStringEightBitFont("OBOE    ", Font_6x7, White);
         }
-        else
+        else if (gMachine==100)
         {
           ssd1306_WriteStringEightBitFont("BASSOON ", Font_6x7, White);
         }

@@ -45,36 +45,50 @@ uint16_t gCommandMaxService = sizeof(gCommands)/sizeof(gCommands[0])-1;
 //! \Global parameters container
 StcParameters DefaultsMachine0[20] = 
 { 
-  {"SCRAPE WIDTH      ",0,1160,780,"MM",3,1,1,0},
-  {"SCRAPE WIDTH INNER",0,1160,390,"MM",3,1,1,0},
-  {"SCRAPE SPEED      ",0,200,200,"RPS",1,1,1,0},
-  {"SIDE STEP SIZE    ",5,99,30,"MM",2,2,1,0},
-  {"SCREEN SAVER      ",0,100,0,"-",1,0,0,1},
-  {"MACHINE TYPE      ",0,100,0,"-",1,0,0,1},
-  {"SIDE STEP OFFSET  ",-100,100,0,"MM",3,2,0,0},
-  {"SCRAPE SPEED MAX  ",10,200,200,"RPS",2,1,0,0},
-  {"SCRAPE SPEED MIN  ",10,100,10,"RPS",2,1,0,0},
-  {"SCRAPE SPEED MAX  ",10,200,200,"RPS",2,1,0,0}  
+{"SCRAPE WIDTH      ",0,1160,780,"MM",3,1,1,0},
+{"SCRAPE WIDTH INNER",0,200,390,"MM",3,1,1,0},
+{"SCRAPE SPEED      ",0,200,200,"RPS",1,1,1,0},
+{"SIDE STEP SMALL   ",5,50,30,"MM",3,2,1,0},
+{"SIDE STEP BIG     ",30,100,50,"MM",3,2,1,0},
+{"SCREEN SAVER      ",0,100,0,"-",1,0,0,1},
+{"MACHINE TYPE      ",0,100,0,"-",1,0,0,1},
+{"SIDE STEP OFFSET  ",-100,100,0,"MM",3,2,0,0},
+{"SCRAPE SPEED MAX  ",10,200,200,"RPS",2,1,0,0},
+{"SCRAPE SPEED MIN  ",10,100,10,"RPS",2,1,0,0},
+{"SCRAPE SPEED MAX  ",10,200,200,"RPS",2,1,0,0},
+{"SCRAPE WIDTH MAX  ",0,2500,1160,"MM",3,1,0,0},
+{"SCRAPE WIDTH FACT ",0,2500,780,"MM",3,1,0,0},
+{"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0},
+{"SIDE ST SMALL FACT",500,30,0,"MM",3,2,0,0},
+{"SIDE ST BIG FACT  ",500,30,0,"MM",3,2,0,0},
+
 };
 StcParameters DefaultsMachine1[20] = 
 { 
-  {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0},
-  {"SCRAPE WIDTH INNER",0,2400,830,"MM",3,1,1,0},
-  {"SCRAPE SPEED      ",0,200,200,"RPS",1,1,1,0},
-  {"SIDE STEP SIZE    ",5,99,40,"MM",2,2,1,0},
-  {"SCREEN SAVER      ",0,100,0,"-",1,0,0,1},
-  {"MACHINE TYPE      ",0,100,0,"-",1,0,0,1},
-  {"SIDE STEP OFFSET  ",-100,100,0,"MM",3,2,0,0},
-  {"SCRAPE SPEED MAX  ",10,200,200,"RPS",2,1,0,0},
-  {"SCRAPE SPEED MIN  ",10,100,10,"RPS",2,1,0,0},
-  {"SCRAPE SPEED MAX  ",10,200,200,"RPS",2,1,0,0}      
+{"SCRAPE WIDTH      ",2400,1660,0,"MM",3,1,1,0},
+{"SCRAPE WIDTH INNER",200,830,0,"MM",3,1,1,0},
+{"SCRAPE SPEED      ",0,200,200,"RPS",1,1,1,0},
+{"SIDE STEP SMALL   ",60,40,5,"MM",3,2,1,0},
+{"SIDE STEP BIG     ",100,60,40,"MM",3,2,1,0},
+{"SCREEN SAVER      ",0,100,0,"-",1,0,0,1},
+{"MACHINE TYPE      ",0,100,0,"-",1,0,0,1},
+{"SIDE STEP OFFSET  ",-100,100,0,"MM",3,2,0,0},
+{"SCRAPE SPEED MAX  ",10,200,200,"RPS",2,1,0,0},
+{"SCRAPE SPEED MIN  ",10,100,10,"RPS",2,1,0,0},
+{"SCRAPE SPEED MAX  ",10,200,200,"RPS",2,1,0,0},
+{"SCRAPE WIDTH MAX  ",2500,2400,0,"MM",3,1,0,0},
+{"SCRAPE WIDTH FACT ",0,2500,1160,"MM",3,1,0,0},
+{"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0},
+{"SIDE ST SMALL FACT",500,40,0,"MM",3,2,0,0},
+{"SIDE ST BIG FACT  ",500,40,0,"MM",3,2,0,0},
+
 };
 //! \Global Service flag
 uint8_t gServiceMenu;
 //! \Global User parameter max flag
 uint8_t gParameterMaxUser;
 //! \Global Service parameter max flag
-uint16_t gParameterMaxService = 9; //9 is last index
+uint16_t gParameterMaxService = 15; //9 is last index
 //! \Global virtual tab for eeprom simulation
 uint16_t VirtAddVarTab[NB_OF_VAR] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119};
 

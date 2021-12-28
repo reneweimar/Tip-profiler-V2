@@ -18,5 +18,6 @@
 #define SSD1306_128X64            // SSD1306_128X32 or SSD1306_128X64
 #define SSD1306_USE_DMA       1   // 0: not used I2C DMA mode, 1: used I2C DMA mode
 #define SSD1306_CONTUPDATE    1   // 0: continue update mode disable, 1: continue update mode enable (only DMA MODE)
+#define SH1106
 
 #endif /* SSD1306_DEFINES_H_ */

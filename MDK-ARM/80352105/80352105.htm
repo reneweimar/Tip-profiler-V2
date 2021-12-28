@@ -3,7 +3,7 @@
 <title>Static Call Graph - [80352105\80352105.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image 80352105\80352105.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Wed Dec 22 17:23:51 2021
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Tue Dec 28 13:57:05 2021
 <BR><P>
 <H3>Maximum Stack Usage =        232 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -942,7 +942,7 @@ Global Symbols
 <LI><a href="#[4c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;I2C_DMAXferCplt
 </UL>
 
-<P><STRONG><a name="[9c]"></a>HAL_I2C_MemTxCpltCallback</STRONG> (Thumb, 178 bytes, Stack size 24 bytes, ssd1306.o(i.HAL_I2C_MemTxCpltCallback))
+<P><STRONG><a name="[9c]"></a>HAL_I2C_MemTxCpltCallback</STRONG> (Thumb, 182 bytes, Stack size 24 bytes, ssd1306.o(i.HAL_I2C_MemTxCpltCallback))
 <BR><BR>[Stack]<UL><LI>Max Depth = 152<LI>Call Chain = HAL_I2C_MemTxCpltCallback &rArr; HAL_I2C_Mem_Write_DMA &rArr; I2C_RequestMemoryWrite &rArr; I2C_WaitOnMasterAddressFlagUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ssd1306_RasterIntCallback
@@ -1680,7 +1680,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[118]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WRK_HandleSequence
 </UL>
 
-<P><STRONG><a name="[ff]"></a>USR_ShowScreen</STRONG> (Thumb, 3226 bytes, Stack size 64 bytes, userinterface.o(i.USR_ShowScreen))
+<P><STRONG><a name="[ff]"></a>USR_ShowScreen</STRONG> (Thumb, 3232 bytes, Stack size 64 bytes, userinterface.o(i.USR_ShowScreen))
 <BR><BR>[Stack]<UL><LI>Max Depth = 152<LI>Call Chain = USR_ShowScreen &rArr; ssd1306_WriteStringEightBitFont &rArr; ssd1306_WriteCharEightBitFont &rArr; ssd1306_DrawPixel
 </UL>
 <BR>[Calls]<UL><LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USR_ClearScreen
@@ -1932,7 +1932,7 @@ Global Symbols
 <LI><a href="#[118]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WRK_HandleSequence
 </UL>
 
-<P><STRONG><a name="[10e]"></a>ssd1306_SetCursor</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, ssd1306.o(i.ssd1306_SetCursor))
+<P><STRONG><a name="[10e]"></a>ssd1306_SetCursor</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, ssd1306.o(i.ssd1306_SetCursor))
 <BR><BR>[Called By]<UL><LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USR_ShowScreen
 <LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USR_ShowMessage
 <LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USR_ShowBattery

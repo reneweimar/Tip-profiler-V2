@@ -880,7 +880,11 @@ void ssd1306_SetContrast(uint8_t NewContrast)
 //
 void ssd1306_SetCursor(uint8_t x, uint8_t y)
 {
-  SSD1306.CurrentX = x;
+  #if (SSD1306_WIDTH == 130)
+		SSD1306.CurrentX = x+2;
+	#else
+		SSD1306.CurrentX = x;
+	#endif
   SSD1306.CurrentY = y;
 }
 
