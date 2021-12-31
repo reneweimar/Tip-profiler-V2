@@ -29,7 +29,7 @@ void STR_HandleEncoder (void)
   int EncoderValue = Encoder - EncoderOld;
   EncoderOld = Encoder;
   gSTR_Motor.GetSpeed = (int16_t) ((float) EncoderValue / (float) gSTR_Motor.PulsesPerRevolution * 600);
-  gSTR_Motor.SetSpeed = (int16_t) (720000 / ((float) gSTR_Motor.TimePerRev * (float) gSTR_Motor.PulsesPerRevolution));
+  //gSTR_Motor.SetSpeed = (int16_t) (720000 / ((float) gSTR_Motor.TimePerRev * (float) gSTR_Motor.PulsesPerRevolution));
 }
 //-----------------------------------------------------------------------------
  //! \brief      Initiates the stroke motor unit
@@ -48,7 +48,7 @@ void STR_Init(void)
   GPIO_InitStruct.Pin = IntEncoder_Pin;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
   HAL_GPIO_Init(IntEncoder_GPIO_Port, &GPIO_InitStruct);
   GPIO_InitStruct.Pin = IntHome_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
@@ -76,9 +76,78 @@ void STR_Init(void)
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
 
-  //HAL_TIM_Base_Start(&htim6);
+  gSTR_Motor.P = 1.0;
+  gSTR_Motor.I = 0.005;
+  gSTR_Motor.D = 0.5;
+  gSTR_Motor.SpeedControl = 1;
+}
 
-  STR_Enable();
+
+//-----------------------------------------------------------------------------
+//! \brief      Controls the stroke motor speed PID
+//! \details    Calculates the PID value for the speed control
+//! \param      None
+static void STR_HandleSpeedPID (void) 
+{
+    gSTR_Motor.ErrorP = (float) (gSTR_Motor.SetSpeed - gSTR_Motor.GetSpeed);
+    gSTR_Motor.ErrorI = gSTR_Motor.ErrorI + gSTR_Motor.ErrorP;
+    gSTR_Motor.ErrorD = gSTR_Motor.ErrorP - gSTR_Motor.ErrorPOld;
+    gSTR_Motor.ErrorPOld = gSTR_Motor.ErrorP;
+    gSTR_Motor.PID = gSTR_Motor.ErrorP * gSTR_Motor.P + gSTR_Motor.ErrorI * gSTR_Motor.I + gSTR_Motor.ErrorD * gSTR_Motor.D;
+    gSTR_Motor.Control = gSTR_Motor.Control + (int16_t) gSTR_Motor.PID;
+    if (gSTR_Motor.Control < -10000)
+    {
+        gSTR_Motor.Control = -10000;
+    }
+    if (gSTR_Motor.Control > 10000)
+    {
+        gSTR_Motor.Control = 10000;
+    }
+}
+
+//-----------------------------------------------------------------------------
+//! \brief      Handles the stroke motor position
+//! \details    Controls the motor
+//! \param      None
+void STR_HandleMotor (void)
+{
+  static uint8_t TickTime = 8; 
+  
+  if (TickTime++ < 99) return; //100ms 
+  TickTime = 0;
+
+  int Encoder = gSTR_Motor.Encoder;
+  int EncoderValue = Encoder - gSTR_Motor.EncoderOld;
+  gSTR_Motor.EncoderOld = Encoder;
+  gSTR_Motor.GetSpeed = (int16_t) ((float) EncoderValue / (float) gSTR_Motor.PulsesPerRevolution * 600);
+
+  if (gSTR_Motor.MainStatus==INACTIVE)
+  {
+    STR_Disable();
+    gSTR_Motor.ErrorI = 0;
+    gSTR_Motor.PosErrorI = 0;
+    gSTR_Motor.Control = 0;
+    gSTR_Motor.PosControl = 0;
+    gSTR_Motor.SetSpeed = 0;
+    return;
+  }
+  else
+  {
+    STR_Enable();
+  }
+ 
+  if (gSTR_Motor.SpeedControl)
+  {
+      STR_HandleSpeedPID();
+  }
+  if (gSTR_Motor.MainStatus==ACTIVE)
+  {
+      STR_SetPWM(CW, gSTR_Motor.Control/100);
+  }
+  else
+  {
+    STR_Stop();
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -101,6 +170,23 @@ void STR_SetStatus (enuType newType, enuStatus newStatus)
         gSTR_Status.SubStatusOld = gSTR_Status.SubStatus;
         gSTR_Status.SubStatus = newStatus;
     }
+}
+
+//-----------------------------------------------------------------------------
+//! \brief       Stops the stroke motor as fast as possible
+//! \details     Sets the PWM to 0 and motor to INACTIVE
+//! \param       None
+void STR_Stop(void)
+{
+  STR_SetPWM(CW,0);
+  gSTR_Motor.MainStatus = INACTIVE;
+  gSTR_Motor.ErrorI = 0;
+  gSTR_Motor.PosErrorD = 0;
+  gSTR_Motor.PosErrorI = 0;
+  gSTR_Motor.PosPID = 0;
+  gSTR_Motor.Control = 0;
+  gSTR_Motor.PosControl = 0;
+  gSTR_Motor.SetSpeed = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -187,7 +273,8 @@ void gSTR_HandleTasks(void)
           }
           else
           {
-            STR_SetPWM(CW,50);
+            gSTR_Motor.MainStatus = ACTIVE;
+            gSTR_Motor.SetSpeed = STR_HOMESPEED;//STR_SetPWM(CW,50);
             STR_SetStatus(SubStatus,WAITFORHOMESENSOR);
           }  
           break;
@@ -195,9 +282,10 @@ void gSTR_HandleTasks(void)
         case WAITFORHOMESENSOR:
         {
 					//TODO timeout
-          if (gSTR_Motor.Encoder == Encoder)
+          if ((gSTR_Motor.Encoder == Encoder) && (STR_HomeOff()))
           {
   					gSTR_Motor.Encoder = 0;
+            gSTR_Motor.EncoderOld = 0;
             STR_SetStatus(SubStatus, HOME);
           }
           else 
@@ -217,14 +305,15 @@ void gSTR_HandleTasks(void)
       {
         case UNDEFINED:
         {
+          gSTR_Motor.MainStatus = ACTIVE;
           if (STR_HomeOff()) //Homesensor is on, so stroke motor is home
           {
-            STR_SetPWM(CW,50);
+            gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;//STR_SetPWM(CW,50);
             STR_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
           }
           else //Goto home position first
           {
-            STR_SetPWM(CW,50);
+            gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;//STR_SetPWM(CW,50);
             STR_SetStatus(SubStatus,WAITFORHOMESENSOR);
           }  
           break;
@@ -232,10 +321,12 @@ void gSTR_HandleTasks(void)
         case WAITFORHOMESENSOR:
         {
 					//TODO timeout
-          if (gSTR_Motor.Encoder == Encoder)
+          if ((gSTR_Motor.Encoder == Encoder) && (STR_HomeOff()) && (gSTR_Motor.GetSpeed == 0)) //Motor has stopped and home switch is on
           {
-  					gSTR_Motor.Encoder = 0;
-            STR_SetPWM(CW,50);
+            gSTR_Motor.Encoder = 0;
+            gSTR_Motor.EncoderOld = 0;
+						gSTR_Motor.MainStatus = ACTIVE;
+            gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;//STR_SetPWM(CW,50);
             STR_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
           }
           else 
@@ -247,7 +338,7 @@ void gSTR_HandleTasks(void)
         case WAITFORSTROKEMOTORSTART:
         {
 					//TODO timeout
-          if (gSTR_Motor.Encoder == Encoder)
+          if ((gSTR_Motor.Encoder == Encoder)&& (gSTR_Motor.Encoder >= STARTPOSITION - 50)) //Motor has stopped and encoder position is aroung start position
           {
             STR_SetStatus(SubStatus, GOTOSTARTPOSITION);
           }
@@ -266,6 +357,7 @@ void gSTR_HandleTasks(void)
       break;
   }
 }
+
 
 //-----------------------------------------------------------------------------
 

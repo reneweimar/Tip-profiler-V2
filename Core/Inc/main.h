@@ -67,9 +67,9 @@ typedef struct
   uint8_t SpeedControl;
   uint16_t Ratio;
   uint16_t UmPerRev;
-  uint16_t P;
-	uint16_t I;
-	uint16_t D;
+  float P;
+	float I;
+	float D;
 	float PosP;
 	float PosI;
 	float PosD;
@@ -82,6 +82,7 @@ typedef struct
   float GetUm;
   int16_t MaxSpeed;
   int32_t Encoder;
+  int32_t EncoderOld;
   int32_t EncoderMax;
   uint16_t TimerValue;
   uint16_t TimerValueOld;

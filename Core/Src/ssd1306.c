@@ -35,8 +35,8 @@ SSD1306_Geometry display_geometry = SSD1306_GEOMETRY;
 //
 //  Get a width and height screen size
 //
-static const uint16_t width(void)  { return SSD1306_WIDTH; };
-static const uint16_t height(void)  { return SSD1306_HEIGHT; };
+uint16_t width(void) { return SSD1306_WIDTH; };
+uint16_t height(void) { return SSD1306_HEIGHT; };
 
 uint16_t ssd1306_GetWidth(void)
 {
@@ -70,7 +70,7 @@ uint8_t ssd1306_Init(void)
   }
 
   // Wait for the screen to boot
-  HAL_Delay(100);
+  HAL_Delay(500);
 
   /* Init LCD */
   ssd1306_WriteCommand(DISPLAYOFF);
@@ -102,7 +102,7 @@ uint8_t ssd1306_Init(void)
 
   if (display_geometry == GEOMETRY_128_64)
   {
-    ssd1306_WriteCommand(0xCF);
+    ssd1306_WriteCommand(0xEF);
   }
   else if (display_geometry == GEOMETRY_128_32)
   {
@@ -477,13 +477,13 @@ void ssd1306_Polyline(const SSD1306_VERTEX *par_vertex, uint16_t par_size)
 */
 
 /*Convert Degrees to Radians*/
-static float ssd1306_DegToRad(float par_deg)
+/*static float ssd1306_DegToRad(float par_deg)
 {
   return par_deg * 3.14 / 180.0;
 }
-
+*/
 /*Normalize degree to [0;360]*/
-static uint16_t ssd1306_NormalizeTo0_360(uint16_t par_deg)
+/*static uint16_t ssd1306_NormalizeTo0_360(uint16_t par_deg)
 {
   uint16_t loc_angle;
   if(par_deg <= 360)
@@ -497,6 +497,7 @@ static uint16_t ssd1306_NormalizeTo0_360(uint16_t par_deg)
   }
   return loc_angle;
 }
+*/
 /*DrawArc. Draw angle is beginning from 4 quart of trigonometric circle (3pi/2)
  * start_angle in degree
  * sweep in degree
@@ -735,7 +736,7 @@ char ssd1306_WriteChar(char ch, FontDef Font,SSD1306_COLOR color)
       }
       else
       {
-        ssd1306_DrawPixel(SSD1306.CurrentX + j, SSD1306.CurrentY + i, !color);
+        ssd1306_DrawPixel(SSD1306.CurrentX + j, SSD1306.CurrentY + i, (SSD1306_COLOR) !color);
       }
     }
   }
@@ -864,7 +865,7 @@ void ssd1306_DrawBattery (SSD1306_COLOR color, uint8_t newBars, uint8_t newX, ui
 //! \param[in]  uint8_t NewContrast
 void ssd1306_SetContrast(uint8_t NewContrast)
 {
-  uint8_t status = 0;
+  //uint8_t status = 0;
   static uint8_t OldContrast;
   if (HAL_I2C_GetState(&SSD1306_I2C_PORT) != HAL_I2C_STATE_READY) return;
   if (OldContrast!=NewContrast)
@@ -1039,14 +1040,15 @@ void HAL_I2C_MemTxCpltCallback(I2C_HandleTypeDef *hi2c)
 #elif SSD1306_CONTUPDATE == 1
 
 volatile uint8_t ssd1306_command = 0;
-volatile uint8_t i2c_command = 0;
+//volatile uint8_t i2c_command = 0;
+uint8_t i2c_command = 0;
 volatile uint8_t ssd1306_ContUpdate = 0;
 volatile uint8_t ssd1306_RasterIntRegs = 0;
 
 //
 //  Send a byte to the command register
 //
-  void ssd1306_WriteCommand(uint8_t command)
+void ssd1306_WriteCommand( uint8_t command)
 {
   if(ssd1306_updatestatus)
   {

@@ -8,6 +8,9 @@
 #ifndef _STR_FUNCTIONS_H
 #define _STR_FUNCTIONS_H
 //-----------------------------------------------------------------------------
+#define STR_GOTOSTARTSPEED 750
+#define STR_HOMESPEED 750
+#define STARTPOSITION 300
 #define IntEncoder_Pin GPIO_PIN_1
 #define IntEncoder_GPIO_Port GPIOA
 #define IntHome_Pin GPIO_PIN_2
@@ -45,9 +48,11 @@ void gSTR_HandleTasks(void);
 
 extern enuStatus STR_Set(enuStatus newStatus);
 extern void STR_Init(void);
+extern void STR_HandleMotor (void);
 extern void STR_HandleEncoder (void);
 extern void STR_SetPWM (enuStatus newStatus, uint8_t newSpeed);
 extern void STR_SetStatus (enuType newType, enuStatus newStatus);
+extern void STR_Stop(void);
 
 #endif  // _STR_FUNCTIONS_H
 

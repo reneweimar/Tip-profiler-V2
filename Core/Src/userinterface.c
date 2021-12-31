@@ -692,7 +692,7 @@ void USR_HandleButtons (void)
   }
   else if (TickTime == 5)
   {
-    Pushed[1] = BtnMenuLeft_Pushed();
+    Pushed[1] = BtnMenuLeft_Pushed() ;
     Pushed[3] = BtnUpDown_Pushed();
     Pushed[5] = BtnOkRight_Pushed();
   }
@@ -712,7 +712,7 @@ void USR_HandleButtons (void)
     //Handle the buttons
     for(uint8_t i=0;i<NROFBUTTONS;i++)
     {
-      if (Pushed[i]==1) //Button is pushed
+      if (Pushed[i]== 1) //Button is pushed
       {
         gCounter.User = 0;
         ssd1306_SetContrast(HIGHCONTRAST);

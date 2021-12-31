@@ -1,15 +1,3 @@
----- SSD1306_Buffer Matches (16 in 2 files) ----
-Ssd1306.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):static uint8_t SSD1306_Buffer[SSD1306_BUFFER_SIZE];
-Ssd1306.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  for(i = 0; i < sizeof(SSD1306_Buffer); i++)
-Ssd1306.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    SSD1306_Buffer[i] = (SSD1306.Color == Black) ? 0x00 : 0xFF;
-Ssd1306.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    SSD1306_Buffer[x + (y / 8) * width()] |= 1 << (y % 8);
-Ssd1306.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    SSD1306_Buffer[x + (y / 8) * width()] &= ~(1 << (y % 8));
-Ssd1306.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  uint8_t * bufferPtr = SSD1306_Buffer;
-Ssd1306.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  uint8_t *bufferPtr = SSD1306_Buffer;
-Ssd1306.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  memset(SSD1306_Buffer, 0, SSD1306_BUFFER_SIZE);
-Ssd1306.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    ssd1306_WriteData(&SSD1306_Buffer[SSD1306_WIDTH * i], width());
-Ssd1306.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          HAL_I2C_Mem_Write_DMA(&SSD1306_I2C_PORT, SSD1306_I2C_ADDR, 0x40, 1, &SSD1306_Buffer[SSD1306_WIDTH * ((ssd1306_updatestatus >> 2) & (SSD1306_HEIGHT / 8 - 1))], width());
-Ssd1306.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          HAL_I2C_Mem_Write_DMA(&SSD1306_I2C_PORT, SSD1306_I2C_ADDR, 0x40, 1, &SSD1306_Buffer[SSD1306_WIDTH * ((ssd1306_updatestatus >> 2) & (SSD1306_HEIGHT / 8 - 1))], width());
-Ssd1306.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):#define SSD1306_BUFFER_SIZE   (SSD1306_WIDTH * SSD1306_HEIGHT / 8)
-Ssd1306.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):void ssd1306_UpdateScreen(void);      /* copy the contents of the Screenbuffer (SSD1306_Buffer) to the display */
-Ssd1306.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):void ssd1306_UpdateScreen(void);      /* copy the contents of the Screenbuffer (SSD1306_Buffer) to the display */
+---- gSTR_Motor.SetSpeed = 0; Matches (2 in 1 files) ----
+Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    gSTR_Motor.SetSpeed = 0; 
+Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    gSTR_Motor.SetSpeed = 0;
