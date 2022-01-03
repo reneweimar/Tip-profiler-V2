@@ -16,7 +16,7 @@
 #define LOWPOWERTIME            10000
 #define LOWCONTRAST             100
 #define HIGHCONTRAST            255
-#define NROFMACHINETYPES        3
+#define NROFMACHINETYPES        4
 #define NB_OF_VAR               20*NROFMACHINETYPES //(20 per machine type)
 #define SCREENSAVERON           gMachineType[gMachine/100].Parameters[4].Value==100
 
@@ -92,12 +92,6 @@ typedef struct
 {
   char Name[21];
   uint8_t UserAccess;
-  uint8_t BtnOK_Command;
-  uint8_t BtnMenu_Command;
-  uint8_t BtnLeft_Command;
-  uint8_t BtnUp_Command;
-  uint8_t BtnDown_Command;
-  uint8_t BtnRight_Command;
 } StcCommands;
 //-----------------------------------------------------------------------------
 //! \brief  Machinetype storage structure

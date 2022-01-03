@@ -18,7 +18,7 @@
 #include "string.h"
 //-----------------------------------------------------------------------------
 stcButtonStatus Button[NROFBUTTONS];
-uint16_t gCurrentScreen = 65535; //Undefined
+uint32_t gCurrentScreen = 0xffffffff; //Undefined
 uint16_t gCurrentMessage = 0;
 uint8_t gParameterNumber;
 int16_t gParameterValue;
@@ -181,94 +181,12 @@ void USR_Init(void)
     ssd1306_UpdateScreen();
     HAL_Delay(100);
 }
-//-----------------------------------------------------------------------------
-//! \brief      Displays a message on the screen
-//! \details    Displays a message on the OLED display
-//! \param[in]  uint16_t NewMessage
-void USR_ShowMessage(uint16_t NewMessage)
-{
-  gCurrentMessage = NewMessage;
-  switch (NewMessage)
-  {   
-    case 20101: //Factory reset.
-    {
-      ssd1306_SetCursor(0, 0);
-      ssd1306_WriteStringEightBitFont("FACTORY RESET", Font_6x7, White);
-      ssd1306_SetCursor(0, 16);
-      ssd1306_WriteStringEightBitFont("THIS WILL ERASE ALL  ", Font_6x7, White);
-      ssd1306_SetCursor(0, 28);
-      ssd1306_WriteStringEightBitFont("CHANGES! PRESS OK TO ", Font_6x7, White);
-      ssd1306_SetCursor(0, 40);
-      ssd1306_WriteStringEightBitFont("RESET OR # TO CANCEL ", Font_6x7, White);
-      ssd1306_SetCursor(0, 57);
-      ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
-      ssd1306_SetCursor(0, 57);
-      ssd1306_WriteStringEightBitFont("#OK", Font_6x7, White);
-      break;
-    }
-    case 20201: //Set stroke length: Press OK for goto HOME position
-    {
-      ssd1306_SetCursor(0, 0);
-      ssd1306_WriteStringEightBitFont("STROKE LENGTH", Font_6x7, White);
-      ssd1306_SetCursor(0, 16);
-      ssd1306_WriteStringEightBitFont("PRESS OK TO GO TO THE", Font_6x7, White);
-      ssd1306_SetCursor(0, 28);
-      ssd1306_WriteStringEightBitFont("STROKE LENGTH ADJUST ", Font_6x7, White);
-      ssd1306_SetCursor(0, 40);
-      ssd1306_WriteStringEightBitFont("POSITION.            ", Font_6x7, White);
-      ssd1306_SetCursor(0, 57);
-      ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
-      ssd1306_SetCursor(0, 57);
-      ssd1306_WriteStringEightBitFont("*OK    ", Font_6x7, White);
-      break;
-    }
-    case 20202: //Set stroke length
-    {
-      ssd1306_SetCursor(0, 0);
-      ssd1306_WriteStringEightBitFont("STROKE LENGTH", Font_6x7, White);
-      ssd1306_SetCursor(0, 16);
-      ssd1306_WriteStringEightBitFont("AFTER ADJUST PRESS:  ", Font_6x7, White);
-      ssd1306_SetCursor(0, 28);
-      ssd1306_WriteStringEightBitFont("OK: START POSITION   ", Font_6x7, White);
-      ssd1306_SetCursor(0, 40);
-      ssd1306_WriteStringEightBitFont(" *: CANCEL           ", Font_6x7, White);
-      ssd1306_SetCursor(0, 57);
-      ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
-      ssd1306_SetCursor(0, 57);
-      ssd1306_WriteStringEightBitFont("*OK    ", Font_6x7, White);
-      break;
-    }
-    case 20301: //Stroke motor
-    {
-      ssd1306_SetCursor(0, 0);
-      ssd1306_WriteStringEightBitFont("STROKE MOTOR ", Font_6x7, White);
-      ssd1306_SetCursor(0, 16);
-      ssd1306_WriteStringEightBitFont("      $ FASTER       ", Font_6x7, White);
-      ssd1306_SetCursor(0, 28);
-      ssd1306_WriteStringEightBitFont("# ON            , OFF", Font_6x7, White);
-      ssd1306_SetCursor(0, 40);
-      ssd1306_WriteStringEightBitFont("      & SLOWER       ", Font_6x7, White);
-      ssd1306_SetCursor(0, 57);
-      ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
-      ssd1306_SetCursor(0, 57);
-      ssd1306_WriteStringEightBitFont("#,$&*  ", Font_6x7, White);
-      break;
-    }
-    default:
-    {
-      ssd1306_SetCursor(0, 16);
-      ssd1306_WriteStringEightBitFont("SCREEN MISSING", Font_6x7, White);
-      break;
-    }
-  }
-  ssd1306_UpdateScreen();
-}
 
 //-----------------------------------------------------------------------------
 //! \brief      Displays screens
 //! \details    Displays the corrsponding screen on the OLED display
 //! \param[in]  uint16_t NewScreen
-void USR_ShowScreen(uint16_t NewScreen)
+void USR_ShowScreen(uint32_t NewScreen)
 {
     char strValue[50];
     int16_t Dig3, Dig2, Dig1, Dig0;  
@@ -526,7 +444,6 @@ void USR_ShowScreen(uint16_t NewScreen)
         ssd1306_WriteStringEightBitFont(",", Font_6x7,White);
         break;
       }
-
       case 10201:
       case 10202:
       case 10203:
@@ -580,7 +497,95 @@ void USR_ShowScreen(uint16_t NewScreen)
         ssd1306_WriteStringEightBitFont(",", Font_6x7,White);
         break;
       }
-      default:
+      case 1020101: //Factory reset.
+      {
+        ssd1306_SetCursor(0, 0);
+        ssd1306_WriteStringEightBitFont("FACTORY RESET", Font_6x7, White);
+        ssd1306_SetCursor(0, 16);
+        ssd1306_WriteStringEightBitFont("THIS WILL ERASE ALL  ", Font_6x7, White);
+        ssd1306_SetCursor(0, 28);
+        ssd1306_WriteStringEightBitFont("CHANGES! PRESS OK TO ", Font_6x7, White);
+        ssd1306_SetCursor(0, 40);
+        ssd1306_WriteStringEightBitFont("RESET OR * TO CANCEL ", Font_6x7, White);
+        ssd1306_SetCursor(0, 57);
+        ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
+        ssd1306_SetCursor(0, 57);
+        ssd1306_WriteStringEightBitFont("#OK", Font_6x7, White);
+        break;
+      }
+      case 1020201: //Set stroke length: Press OK for goto HOME position
+      {
+        ssd1306_SetCursor(0, 0);
+        ssd1306_WriteStringEightBitFont("STROKE LENGTH", Font_6x7, White);
+        ssd1306_SetCursor(0, 16);
+        ssd1306_WriteStringEightBitFont("PRESS OK TO GO TO THE", Font_6x7, White);
+        ssd1306_SetCursor(0, 28);
+        ssd1306_WriteStringEightBitFont("STROKE LENGTH ADJUST ", Font_6x7, White);
+        ssd1306_SetCursor(0, 40);
+        ssd1306_WriteStringEightBitFont("POSITION.            ", Font_6x7, White);
+        ssd1306_SetCursor(0, 57);
+        ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
+        ssd1306_SetCursor(0, 57);
+        ssd1306_WriteStringEightBitFont("*OK    ", Font_6x7, White);
+        break;
+      }
+      case 1020202: //Set stroke length: PLEASE WAIT
+      case 1020204: 
+      {
+        ssd1306_SetCursor(0, 16);
+        ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
+        ssd1306_SetCursor(0, 28);
+        ssd1306_WriteStringEightBitFont("     PLEASE WAIT     ", Font_6x7, White);
+        ssd1306_SetCursor(0, 40);
+        ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
+        ssd1306_SetCursor(0, 57);
+        ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
+        break;
+      }
+      case 1020203: //Set stroke length
+      {
+        ssd1306_SetCursor(0, 16);
+        ssd1306_WriteStringEightBitFont("AFTER ADJUST PRESS:  ", Font_6x7, White);
+        ssd1306_SetCursor(0, 28);
+        ssd1306_WriteStringEightBitFont("OK: START POSITION   ", Font_6x7, White);
+        ssd1306_SetCursor(0, 40);
+        ssd1306_WriteStringEightBitFont(" *: CANCEL           ", Font_6x7, White);
+        ssd1306_SetCursor(0, 57);
+        ssd1306_WriteStringEightBitFont("*OK    ", Font_6x7, White);
+        break;
+      }
+
+      case 1020301: //Stroke motor
+      {
+        ssd1306_SetCursor(0, 0);
+        ssd1306_WriteStringEightBitFont("STROKE MOTOR ", Font_6x7, White);
+        ssd1306_SetCursor(0, 16);
+        ssd1306_WriteStringEightBitFont("      $ FASTER       ", Font_6x7, White);
+        ssd1306_SetCursor(0, 28);
+        ssd1306_WriteStringEightBitFont("# ON            , OFF", Font_6x7, White);
+        ssd1306_SetCursor(0, 40);
+        ssd1306_WriteStringEightBitFont("      & SLOWER       ", Font_6x7, White);
+        ssd1306_SetCursor(0, 57);
+        ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
+        ssd1306_SetCursor(0, 57);
+        ssd1306_WriteStringEightBitFont("#,$&*  ", Font_6x7, White);
+        break;
+      }
+      case 10101:
+      case 10102:
+      case 10103:
+      case 10104:
+      case 10105:
+      case 10106:
+      case 10107:
+      case 10108:
+      case 10109:
+      case 10110:
+      case 10111:
+      case 10112:
+      case 10113:
+      case 10114:
+      case 10115:
       {
         //Find the top of the page
         TopPage = gCurrentScreen - gCurrentScreen%3;   //10102 -> 10102 - 1 = 10101, 10104 -> 10104 - 0 = 10104
@@ -627,6 +632,17 @@ void USR_ShowScreen(uint16_t NewScreen)
         ssd1306_WriteStringEightBitFont(",", Font_6x7,White);
         break;
       }
+			default:
+			{
+				ssd1306_SetCursor(0, 16);
+        ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
+        ssd1306_SetCursor(0, 28);
+        ssd1306_WriteStringEightBitFont("SCREEN MISSING       ", Font_6x7, White);
+        ssd1306_SetCursor(0, 40);
+        ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
+        ssd1306_SetCursor(0, 57);
+        ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
+			}
     }
     ssd1306_UpdateScreen();
 }

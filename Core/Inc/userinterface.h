@@ -62,8 +62,7 @@ typedef struct
 //USR_functions
 //---------------------- SYSTEM ------------------------
 void USR_DrawLogo (SSD1306_COLOR color);
-extern uint16_t gCurrentScreen;
-extern uint16_t gCurrentMessage;
+extern uint32_t gCurrentScreen;
 extern void USR_EnterValue(int16_t NewNumber);
 extern void USR_SaveParameter(void);
 extern void USR_CursorRight(void);
@@ -72,8 +71,7 @@ extern void USR_CursorUp(void);
 extern void USR_CursorDown(void);
 extern uint8_t USR_ButtonWaitForRelease (enuButtons ReqButton);
 extern void USR_Init(void);
-extern void USR_ShowMessage(uint16_t NewMessage);
-extern void USR_ShowScreen(uint16_t NewScreen);
+extern void USR_ShowScreen(uint32_t NewScreen);
 extern void USR_ShowBattery (uint8_t PercentageNew);
 extern void USR_ClearScreen (uint8_t ShowTitle);
 extern void USR_HandleButtons (void);

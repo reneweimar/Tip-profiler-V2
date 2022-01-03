@@ -37,9 +37,9 @@ StcMachine gMachineType[NROFMACHINETYPES];
 //! \Global commands container
 StcCommands gCommands[] =
 {
-  {"RESET TO FACTORY  ",1,11,0,0,0,0,0},
-  {"SET STROKE LENGTH ",1,21,0,0,0,0,0},
-  {"STROKE MOTOR      ",0,31,0,32,34,35,33},
+  {"RESET TO FACTORY   ",1},
+  {"SET STROKE LENGTH  ",1},
+  {"STROKE MOTOR       ",0},
 };
 //! \Global User command max flag
 uint8_t gCommandMaxUser;
@@ -145,7 +145,8 @@ void WRK_Init(void)
   }
   strcpy(gMachineType[0].Name, "OBOE");
   strcpy(gMachineType[1].Name, "BASSOON");
-  strcpy(gMachineType[2].Name, "KLARINET");
+  strcpy(gMachineType[2].Name, "CLARINET");
+  strcpy(gMachineType[3].Name, "BAGPIPE");
     
   EE_ReadVariable(6, &gMachine);
   
@@ -257,49 +258,47 @@ void WRK_HandleTickTime (void)
       STR_HandleMotor();
     }
 }
+
 //-----------------------------------------------------------------------------
 //! \brief      Handles the command
 //! \details    Handles actions to form th emain sequence 
 //! \param[in]  uint16_t newCommand
 //! \param[in]  uint16_t LastScreen
-void WRK_HandleCommand(uint8_t newCommand, uint16_t LastScreen)
+void WRK_HandleCommand(uint32_t newCommand)
 {
+	newCommand = (gCurrentScreen - 1020000) * 10 + newCommand;
   switch (newCommand)
   {
-    case 0: //Cancel, go back
+    case 1010: //Cancel, go back
+		case 2010: //Cancel, go back
+	  case 3010: //Cancel, go back
     {
-      USR_ShowScreen (LastScreen); 
+      USR_ShowScreen (gCurrentScreen / 100); 
       WRK_SetStatus(MainStatus,ACTIVE);
       WRK_SetStatus(SubStatus,WAITFORUSER);
       break;
     }
-    case 11: //Reset factory
+    case 1011: //Reset factory OK
     {
       WRK_ResetFactory();
-      USR_ShowScreen (LastScreen); 
+      USR_ShowScreen (gCurrentScreen / 100); 
       WRK_SetStatus(MainStatus,ACTIVE);
       WRK_SetStatus(SubStatus,WAITFORUSER);
       break;
     } 
-    case 21: //Set stroke length: OK -> INDEX HOME Position -> STROKE HOME position, Second time OK -> Goto START and menu up
+    case 2011: //Set stroke length: OK -> INDEX HOME Position -> STROKE HOME position
     {
-      if (gCurrentMessage == 20201) //First time OK
-      {
-        WRK_SetStatus(MainStatus, ACTIVE);
-        WRK_SetStatus(SubStatus, WAITFORINDEXHOME);
-      }
-      else
-      {
-        WRK_SetStatus(MainStatus, ACTIVE);
-        WRK_SetStatus(SubStatus, WAITFORSTROKEMOTORSTART);
-      }
-      break;
-    }
-    case 22: //Set stroke length: 1. goto START Position after setting stroke length
-    {
+      USR_ShowScreen (gCurrentScreen + 1);   
       WRK_SetStatus(MainStatus, ACTIVE);
-      WRK_SetStatus(SubStatus, WAITFORSTROKEMOTORSTART);
-      break;
+      WRK_SetStatus(SubStatus, WAITFORINDEXHOME);
+			break;
+		}
+		case 2031: //Second time OK -> Goto START and menu up
+		{
+      USR_ShowScreen (gCurrentScreen + 1);   
+			WRK_SetStatus(MainStatus, ACTIVE);
+			WRK_SetStatus(SubStatus, WAITFORSTROKEMOTORSTART);
+			break;
     }
     case 32: //Stroke motor on
     {
@@ -375,24 +374,24 @@ void WRK_HandleSequence(void)
       {
         case UNDEFINED:
         {      
-          USR_ShowMessage((gCurrentScreen - 10000) * 100 + 1);
+          USR_ShowScreen(gCurrentScreen * 100 + 1);
           WRK_SetStatus(SubStatus,WAITFORUSER);
           break;
         }
-        case WAITFORUSER:
+        case WAITFORUSER: //Execute command
         {
-          if (USR_ButtonPressed(BtnOk,USR_SHORTPRESSTIME,1)==1) //Execute command
-            WRK_HandleCommand(gCommands[gCurrentScreen-10201].BtnOK_Command, gCurrentScreen);
-          else if (USR_ButtonPressed(BtnMenu,USR_SHORTPRESSTIME,1)==1)
-            WRK_HandleCommand(gCommands[gCurrentScreen-10201].BtnMenu_Command, gCurrentScreen);
+          if (USR_ButtonPressed(BtnMenu,USR_SHORTPRESSTIME,1)==1)
+            WRK_HandleCommand(0);
+					else if (USR_ButtonPressed(BtnOk,USR_SHORTPRESSTIME,1)==1) 
+            WRK_HandleCommand(1);
           else if (USR_ButtonPressed(BtnLeft, USR_SHORTPRESSTIME,1)==1)
-            WRK_HandleCommand(gCommands[gCurrentScreen-10201].BtnLeft_Command, gCurrentScreen);
+            WRK_HandleCommand(2);
           else if (USR_ButtonPressed(BtnRight, USR_SHORTPRESSTIME,1)==1)
-            WRK_HandleCommand(gCommands[gCurrentScreen-10201].BtnRight_Command, gCurrentScreen);
+            WRK_HandleCommand(3);
           else if (USR_ButtonPressed(BtnUp,USR_SHORTPRESSTIME,1)==1)
-            WRK_HandleCommand(gCommands[gCurrentScreen-10201].BtnUp_Command, gCurrentScreen);
+            WRK_HandleCommand(4);
           else if (USR_ButtonPressed(BtnDown, USR_SHORTPRESSTIME,1)==1)
-            WRK_HandleCommand(gCommands[gCurrentScreen-10201].BtnDown_Command, gCurrentScreen);
+            WRK_HandleCommand(5);
           break;
         }
         default:
@@ -532,7 +531,7 @@ void WRK_HandleSequence(void)
             if (gCurrentScreen > 10200)
             {
               WRK_SetStatus(MainStatus,EXECUTECOMMAND);  
-              USR_ShowMessage(gCurrentMessage + 1);
+              USR_ShowScreen(gCurrentScreen + 1);
             }
             WRK_SetStatus(SubStatus,WAITFORUSER);
           }
@@ -545,7 +544,7 @@ void WRK_HandleSequence(void)
             STR_Set(UNDEFINED);
             if (gCurrentScreen > 10200)
             {
-              USR_ShowScreen (gCurrentScreen); 
+              USR_ShowScreen (gCurrentScreen/100); 
               WRK_SetStatus(MainStatus,ACTIVE);
               WRK_SetStatus(SubStatus,WAITFORUSER);
             }
@@ -597,8 +596,9 @@ void WRK_HandleSequence(void)
               LastScreen = gCurrentScreen;
               WRK_SetStatus(MainStatus,ENTERVALUE);
             }
-            else 
+            else //Command screen 
             {
+              LastScreen = gCurrentScreen;
               WRK_SetStatus(MainStatus,EXECUTECOMMAND);
               break;
             }
