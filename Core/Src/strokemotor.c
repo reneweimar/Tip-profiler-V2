@@ -308,6 +308,8 @@ void gSTR_HandleTasks(void)
           gSTR_Motor.MainStatus = ACTIVE;
           if (STR_HomeOff()) //Homesensor is on, so stroke motor is home
           {
+            gSTR_Motor.Encoder = 0;
+            gSTR_Motor.EncoderOld = 0;
             gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;//STR_SetPWM(CW,50);
             STR_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
           }

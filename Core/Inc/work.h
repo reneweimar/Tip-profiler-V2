@@ -16,8 +16,8 @@
 #define LOWPOWERTIME            10000
 #define LOWCONTRAST             100
 #define HIGHCONTRAST            255
-#define NB_OF_VAR               40 //(20 per machine type)
-#define NROFMACHINETYPES        2
+#define NROFMACHINETYPES        3
+#define NB_OF_VAR               20*NROFMACHINETYPES //(20 per machine type)
 #define SCREENSAVERON           gMachineType[gMachine/100].Parameters[4].Value==100
 
 //-----------------------------------------------------------------------------
@@ -36,6 +36,7 @@ typedef enum
     INACTIVE,
     INITIALIZE,
     READY,
+    WAITFORCOMMANDFINISHED,
     WAITFORHOMESENSOR,
     WAITFORINDEXHOME,
     WAITFORINDEXSTART,
@@ -82,6 +83,8 @@ typedef struct
   uint8_t Decimals;
   uint8_t UserAccess;
   uint8_t Global;
+  uint16_t MasterCounter;
+  uint16_t ServiceCounter;
 } StcParameters;
 //-----------------------------------------------------------------------------
 //! \brief  Parameter storage structure
@@ -100,7 +103,7 @@ typedef struct
 //! \brief  Machinetype storage structure
 typedef struct
 {
-  char Name[21];  //OBOE, BASSOON
+  char Name[21];  //OBOE, BASSOON, future -> KLARINET
   StcParameters Parameters[20];
 } StcMachine;
 //-----------------------------------------------------------------------------
@@ -126,7 +129,8 @@ extern uint16_t VirtAddVarTab[NB_OF_VAR];
 extern uint16_t ADC_Converted_Values[1];
 extern uint32_t HomeCnt;
 extern uint32_t HomeCntDelay;
-extern StcMachine gMachineType[2];
+extern stcStatus gWRK_Status;
+extern StcMachine gMachineType[NROFMACHINETYPES];
 extern StcCommands gCommands[];
 extern stcCounter gCounter;
 //-----------------------------------------------------------------------------

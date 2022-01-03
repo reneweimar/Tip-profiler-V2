@@ -1,3 +1,8 @@
----- gSTR_Motor.SetSpeed = 0; Matches (2 in 1 files) ----
-Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    gSTR_Motor.SetSpeed = 0; 
-Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    gSTR_Motor.SetSpeed = 0;
+---- gCommandMaxService Matches (7 in 3 files) ----
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      if ((gCurrentScreen >= (10201 + gCommandMaxService + 1))&&(gCurrentScreen <10300)) gCurrentScreen = 10201;
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      if (gCurrentScreen == 10200) gCurrentScreen = 10201 + gCommandMaxService;
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          if (i + TopPage - 10201 < gCommandMaxService)
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          sprintf(strValue, "    %u-%01u", ((TopPage-10201)/3)+1,(gCommandMaxService+3)/3);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):uint16_t gCommandMaxService = sizeof(gCommands)/sizeof(gCommands[0]);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  for (uint8_t i=1; i<gCommandMaxService ;i++) //Always assume at least 1 User parameter
+Work.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):extern uint16_t gCommandMaxService;

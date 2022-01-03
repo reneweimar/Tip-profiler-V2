@@ -14,6 +14,8 @@
 
 #define USR_PRESSTIMEMAX 5000
 #define USR_SHORTPRESSTIME 1
+#define USR_REPEATDELAYFIRST 10
+#define USR_REPEATDELAYSECOND 3
 #define NROFBUTTONS 6
 #define BtnMenuLeft_Pin GPIO_PIN_10
 #define BtnMenuLeft_GPIO_Port GPIOC
@@ -51,6 +53,8 @@ typedef enum
 typedef struct
 {
   uint8_t WaitForRelease;
+  uint8_t WaitForReleaseOld;
+  uint8_t DelayCounter;
   uint16_t TimeOn;
   uint16_t TimeOff;
 } stcButtonStatus;
@@ -59,6 +63,7 @@ typedef struct
 //---------------------- SYSTEM ------------------------
 void USR_DrawLogo (SSD1306_COLOR color);
 extern uint16_t gCurrentScreen;
+extern uint16_t gCurrentMessage;
 extern void USR_EnterValue(int16_t NewNumber);
 extern void USR_SaveParameter(void);
 extern void USR_CursorRight(void);

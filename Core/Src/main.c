@@ -129,10 +129,13 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    if ((gSTR_Status.MainStatus == GOTOSTARTPOSITION) && (gSTR_Status.SubStatus == WAITFORSTROKEMOTORSTART) && (gSTR_Motor.Encoder == STARTPOSITION))
+  if ((gSTR_Status.MainStatus == GOTOSTARTPOSITION) && (gSTR_Status.SubStatus == WAITFORSTROKEMOTORSTART))
+	{
+		if (gSTR_Motor.Encoder == 300)
     {
       STR_Stop();
     }
+	}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

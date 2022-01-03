@@ -21,7 +21,7 @@
 //! \Global ADC result
 uint16_t ADC_Converted_Values[1];
 //! \Global main and sub, current and previous status of the device
-stcStatus gStatus;
+stcStatus gWRK_Status;
 //! \Global counter structure
 stcCounter gCounter;
 //! \Global Initialization flag
@@ -30,66 +30,83 @@ uint8_t gInitialized = 0;
 uint8_t BattPercentage = 50;
 //! \Global machine type 0 (oboe), type 1 (Bassoon)
 uint16_t gMachine;
+//! \Global Command to repeat
+uint8_t gRepeatCommand;
 //! \Global parameters container defaults for machine type 0 (oboe)
 StcMachine gMachineType[NROFMACHINETYPES];
 //! \Global commands container
 StcCommands gCommands[] =
 {
-  {"RESET TO FACTORY  ",1,2,1,1,1,1,1},
-  {"STROKE MOTOR      ",0,1,1,3,5,6,4}  
+  {"RESET TO FACTORY  ",1,11,0,0,0,0,0},
+  {"SET STROKE LENGTH ",1,21,0,0,0,0,0},
+  {"STROKE MOTOR      ",0,31,0,32,34,35,33},
 };
 //! \Global User command max flag
 uint8_t gCommandMaxUser;
 //! \Global Service command max flag
 uint16_t gCommandMaxService = sizeof(gCommands)/sizeof(gCommands[0])-1;
 //! \Global parameters container
-StcParameters DefaultsMachine0[20] = 
-{ 
-{"SCRAPE WIDTH      ",0,1160,780,"MM",3,1,1,0},
-{"SCRAPE WIDTH INNER",0,200,390,"MM",3,1,1,0},
-{"SCRAPE SPEED      ",0,200,200,"RPS",1,1,1,0},
-{"SIDE STEP SMALL   ",5,50,30,"MM",3,2,1,0},
-{"SIDE STEP BIG     ",30,100,50,"MM",3,2,1,0},
-{"SCREEN SAVER      ",0,100,0,"-",1,0,0,1},
-{"MACHINE TYPE      ",0,100,0,"-",1,0,0,1},
-{"SIDE STEP OFFSET  ",-100,100,0,"MM",3,2,0,0},
-{"SCRAPE SPEED MAX  ",10,200,200,"RPS",2,1,0,0},
-{"SCRAPE SPEED MIN  ",10,100,10,"RPS",2,1,0,0},
-{"SCRAPE SPEED MAX  ",10,200,200,"RPS",2,1,0,0},
-{"SCRAPE WIDTH MAX  ",0,2500,1160,"MM",3,1,0,0},
-{"SCRAPE WIDTH FACT ",0,2500,780,"MM",3,1,0,0},
-{"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0},
-{"SIDE ST SMALL FACT",500,30,0,"MM",3,2,0,0},
-{"SIDE ST BIG FACT  ",500,30,0,"MM",3,2,0,0},
-
-};
-StcParameters DefaultsMachine1[20] = 
-{ 
-{"SCRAPE WIDTH      ",2400,1660,0,"MM",3,1,1,0},
-{"SCRAPE WIDTH INNER",200,830,0,"MM",3,1,1,0},
-{"SCRAPE SPEED      ",0,200,200,"RPS",1,1,1,0},
-{"SIDE STEP SMALL   ",60,40,5,"MM",3,2,1,0},
-{"SIDE STEP BIG     ",100,60,40,"MM",3,2,1,0},
-{"SCREEN SAVER      ",0,100,0,"-",1,0,0,1},
-{"MACHINE TYPE      ",0,100,0,"-",1,0,0,1},
-{"SIDE STEP OFFSET  ",-100,100,0,"MM",3,2,0,0},
-{"SCRAPE SPEED MAX  ",10,200,200,"RPS",2,1,0,0},
-{"SCRAPE SPEED MIN  ",10,100,10,"RPS",2,1,0,0},
-{"SCRAPE SPEED MAX  ",10,200,200,"RPS",2,1,0,0},
-{"SCRAPE WIDTH MAX  ",2500,2400,0,"MM",3,1,0,0},
-{"SCRAPE WIDTH FACT ",0,2500,1160,"MM",3,1,0,0},
-{"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0},
-{"SIDE ST SMALL FACT",500,40,0,"MM",3,2,0,0},
-{"SIDE ST BIG FACT  ",500,40,0,"MM",3,2,0,0},
-
+StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
+{ //OBOE
+	{ 
+    {"SCRAPE WIDTH      ",0,1160,780,"MM",3,1,1,0},
+    {"SCRAPE WIDTH INNER",0,200,390,"MM",3,1,1,0},
+    {"SCRAPE SPEED      ",0,200,200,"RPS",1,1,1,0},
+    {"SIDE STEP SMALL   ",5,50,30,"MM",3,2,1,0},
+    {"SIDE STEP BIG     ",30,100,50,"MM",3,2,1,0},
+    {"SCREEN SAVER      ",0,100,0,"-",1,0,0,1},
+    {"MACHINE TYPE      ",0,100,0,"-",1,0,0,1},
+    {"SIDE STEP OFFSET  ",-100,100,0,"MM",3,2,0,0},
+    {"SCRAPE SPEED MIN  ",10,100,10,"RPS",2,1,0,0},
+    {"SCRAPE SPEED MAX  ",10,200,200,"RPS",2,1,0,0},
+    {"SCRAPE WIDTH MAX  ",0,2500,1160,"MM",3,1,0,0},
+    {"SCRAPE WIDTH FACT ",0,2500,780,"MM",3,1,0,0},
+    {"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0},
+    {"SIDE ST SMALL FACT",0,500,30,"MM",3,2,0,0},
+    {"SIDE ST BIG FACT  ",0,500,30,"MM",3,2,0,0},
+	},
+	{ //BASSOON
+      {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0},
+      {"SCRAPE WIDTH INNER",0,200,830,"MM",3,1,1,0},
+      {"SCRAPE SPEED      ",200,0,200,"RPS",1,1,1,0},
+      {"SIDE STEP SMALL   ",5,60,40,"MM",3,2,1,0},
+      {"SIDE STEP BIG     ",40,100,60,"MM",3,2,1,0},
+      {"SCREEN SAVER      ",0,0,100,"-",1,0,0,1},
+      {"MACHINE TYPE      ",0,0,100,"-",1,0,0,1},
+      {"SIDE STEP OFFSET  ",0,-100,100,"MM",3,2,0,0},
+      {"SCRAPE SPEED MIN  ",10,10,100,"RPS",2,1,0,0},
+      {"SCRAPE SPEED MAX  ",200,10,200,"RPS",2,1,0,0},
+      {"SCRAPE WIDTH MAX  ",0,2500,2400,"MM",3,1,0,0},
+      {"SCRAPE WIDTH FACT ",0,2500,1160,"MM",3,1,0,0},
+      {"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0},
+      {"SIDE ST SMALL FACT",0,500,40,"MM",3,2,0,0},
+      {"SIDE ST BIG FACT  ",0,500,40,"MM",3,2,0,0},
+	},
+	{ //KLARINET
+      {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0},
+      {"SCRAPE WIDTH INNER",0,200,830,"MM",3,1,1,0},
+      {"SCRAPE SPEED      ",200,0,200,"RPS",1,1,1,0},
+      {"SIDE STEP SMALL   ",5,60,40,"MM",3,2,1,0},
+      {"SIDE STEP BIG     ",40,100,60,"MM",3,2,1,0},
+      {"SCREEN SAVER      ",0,0,100,"-",1,0,0,1},
+      {"MACHINE TYPE      ",0,0,100,"-",1,0,0,1},
+      {"SIDE STEP OFFSET  ",0,-100,100,"MM",3,2,0,0},
+      {"SCRAPE SPEED MIN  ",10,10,100,"RPS",2,1,0,0},
+      {"SCRAPE SPEED MAX  ",200,10,200,"RPS",2,1,0,0},
+      {"SCRAPE WIDTH MAX  ",0,2500,2400,"MM",3,1,0,0},
+      {"SCRAPE WIDTH FACT ",0,2500,1160,"MM",3,1,0,0},
+      {"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0},
+      {"SIDE ST SMALL FACT",0,500,40,"MM",3,2,0,0},
+      {"SIDE ST BIG FACT  ",0,500,40,"MM",3,2,0,0},
+	}
 };
 //! \Global Service flag
 uint8_t gServiceMenu;
 //! \Global User parameter max flag
 uint8_t gParameterMaxUser;
 //! \Global Service parameter max flag
-uint16_t gParameterMaxService = 15; //9 is last index
-//! \Global virtual tab for eeprom simulation
+uint16_t gParameterMaxService = 14; //14 is last parameter
+//! \Global virtual tab for eeprom simulation 0-99 for machine0, 100-199 for machine1, etc
 uint16_t VirtAddVarTab[NB_OF_VAR] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119};
 
 uint16_t ParameterTemp[20];
@@ -104,10 +121,11 @@ float BatteryVoltage;
 //! \param      None
 void WRK_ResetFactory(void)
 {
-  if (gMachine == 0)
-    memcpy( &gMachineType[0].Parameters, &DefaultsMachine0, sizeof DefaultsMachine0);
-  else
-    memcpy( &gMachineType[1].Parameters, &DefaultsMachine1, sizeof DefaultsMachine1);
+  //if (gMachine == 0)
+    memcpy( &gMachineType[gMachine/100].Parameters, &DefaultsMachine[gMachine/100], sizeof DefaultsMachine[gMachine/100]);
+  //else if (gMachine == 1)
+    //memcpy( &gMachineType[1].Parameters, &DefaultsMachine1, sizeof DefaultsMachine1);
+     
   
   for (uint8_t i=0; i<gParameterMaxService ;i++) //Check eeprom memory
   {
@@ -121,36 +139,41 @@ void WRK_ResetFactory(void)
 //! \param      None
 void WRK_Init(void)
 {
-  memcpy( &gMachineType[0].Parameters, &DefaultsMachine0, sizeof DefaultsMachine0);
-  memcpy( &gMachineType[1].Parameters, &DefaultsMachine1, sizeof DefaultsMachine1);
-  strcpy(gMachineType[0].Name, "    OBOE");
-  strcpy(gMachineType[1].Name, " BASSOON");
+  for (uint8_t i = 0; i < NROFMACHINETYPES; i++)
+  {
+    memcpy( &gMachineType[i].Parameters, &DefaultsMachine[i], sizeof DefaultsMachine[i]);
+  }
+  strcpy(gMachineType[0].Name, "OBOE");
+  strcpy(gMachineType[1].Name, "BASSOON");
+  strcpy(gMachineType[2].Name, "KLARINET");
     
-  EE_ReadVariable(5, &gMachine);
+  EE_ReadVariable(6, &gMachine);
   
   uint8_t NotEmpty = 0;
 
   //uint16_t ParameterTemp[gParameterMaxService];
-  
-  for (uint8_t i=0; i<gParameterMaxService ;i++) //Check eeprom memory
-  {
-    EE_ReadVariable(i + gMachine, &ParameterTemp[i]);
-    if (ParameterTemp[i]>0) NotEmpty = 1;
-  }
-  if (NotEmpty == 1) //Copy new values over gParameter
-  {
-    for (uint8_t i=0; i<gParameterMaxService ;i++) //Check eeprom memory
-    {
-      gMachineType[gMachine/100].Parameters[i].Value = ParameterTemp[i];
-    }
-  }
-  else //Store default values from gParameter
-  {
-    for (uint8_t i=0; i<gParameterMaxService ;i++) //Check eeprom memory
-    {
-      EE_WriteVariable(i+gMachine, gMachineType[gMachine/100].Parameters[i].Value);
-    }
-  }
+  for (uint8_t j=0; j<NROFMACHINETYPES; j++)
+	{
+		for (uint8_t i=0; i<gParameterMaxService ;i++) //Check eeprom memory
+		{
+			EE_ReadVariable(i + j * 100, &ParameterTemp[i]);
+			if ((ParameterTemp[i]>0) && (i != 6)) NotEmpty = 1;
+		}
+		if (NotEmpty == 1) //Copy new values over gParameter
+		{
+			for (uint8_t i=0; i<gParameterMaxService ;i++) //Check eeprom memory
+			{
+				gMachineType[j].Parameters[i].Value = ParameterTemp[i];
+			}
+		}
+		else //Store default values from gParameter
+		{
+			for (uint8_t i=0; i<gParameterMaxService ;i++) //Check eeprom memory
+			{
+				EE_WriteVariable(i+ j * 100, gMachineType[j].Parameters[i].Value);
+			}
+		}
+	}
   for (uint8_t i=1; i<gParameterMaxService ;i++) //Always assume at least 1 User parameter
   {
     if (gMachineType[gMachine/100].Parameters[i].UserAccess == 1)
@@ -178,15 +201,15 @@ void WRK_SetStatus (enuType newType, enuStatus newStatus)
 {
     if (newType == MainStatus)
     {
-        gStatus.MainStatusOld = gStatus.MainStatus;
-        gStatus.MainStatus = newStatus;
-        gStatus.SubStatusOld = gStatus.SubStatus;
-        gStatus.SubStatus = UNDEFINED;
+        gWRK_Status.MainStatusOld = gWRK_Status.MainStatus;
+        gWRK_Status.MainStatus = newStatus;
+        gWRK_Status.SubStatusOld = gWRK_Status.SubStatus;
+        gWRK_Status.SubStatus = UNDEFINED;
     }
     else
     {
-        gStatus.SubStatusOld = gStatus.SubStatus;
-        gStatus.SubStatus = newStatus;
+        gWRK_Status.SubStatusOld = gWRK_Status.SubStatus;
+        gWRK_Status.SubStatus = newStatus;
     }
 }
 
@@ -201,7 +224,7 @@ void WRK_HandleBatteryStatus (void)
     if (TickTime++ < 499) return; //4997ms 
     TickTime = 0;
 
-    //if (gStatus.SubStatus == WAITFORUSER) 
+    //if (gWRK_Status.SubStatus == WAITFORUSER) 
     //{ 
       if (ConvertedValueOld != ADC_Converted_Values[0])
       {
@@ -243,31 +266,55 @@ void WRK_HandleCommand(uint8_t newCommand, uint16_t LastScreen)
 {
   switch (newCommand)
   {
-    case 3: //Stroke motor on
-    {
-      break;
-    }
-    case 4: //Stroke motor off
-    {
-      break;
-    }
-    case 5: //Stroke motor faster
-    {
-      break;
-    }
-    case 6: //Stroke motor slower
-    {
-      break;
-    }
-    case 2: //Reset factory
-    {
-      WRK_ResetFactory();
-    }  //no break. Needs to go to case 1 too
-    case 1: //Cancel, go back
+    case 0: //Cancel, go back
     {
       USR_ShowScreen (LastScreen); 
       WRK_SetStatus(MainStatus,ACTIVE);
       WRK_SetStatus(SubStatus,WAITFORUSER);
+      break;
+    }
+    case 11: //Reset factory
+    {
+      WRK_ResetFactory();
+      USR_ShowScreen (LastScreen); 
+      WRK_SetStatus(MainStatus,ACTIVE);
+      WRK_SetStatus(SubStatus,WAITFORUSER);
+      break;
+    } 
+    case 21: //Set stroke length: OK -> INDEX HOME Position -> STROKE HOME position, Second time OK -> Goto START and menu up
+    {
+      if (gCurrentMessage == 20201) //First time OK
+      {
+        WRK_SetStatus(MainStatus, ACTIVE);
+        WRK_SetStatus(SubStatus, WAITFORINDEXHOME);
+      }
+      else
+      {
+        WRK_SetStatus(MainStatus, ACTIVE);
+        WRK_SetStatus(SubStatus, WAITFORSTROKEMOTORSTART);
+      }
+      break;
+    }
+    case 22: //Set stroke length: 1. goto START Position after setting stroke length
+    {
+      WRK_SetStatus(MainStatus, ACTIVE);
+      WRK_SetStatus(SubStatus, WAITFORSTROKEMOTORSTART);
+      break;
+    }
+    case 32: //Stroke motor on
+    {
+      break;
+    }
+    case 33: //Stroke motor off
+    {
+      break;
+    }
+    case 34: //Stroke motor faster
+    {
+      break;
+    }
+    case 35: //Stroke motor slower
+    {
       break;
     }
     default:
@@ -308,7 +355,7 @@ void WRK_HandleSequence(void)
   }
   
     
-  switch (gStatus.MainStatus)
+  switch (gWRK_Status.MainStatus)
   {
     case UNDEFINED:
     {
@@ -324,11 +371,11 @@ void WRK_HandleSequence(void)
     }
     case EXECUTECOMMAND:
     {
-      switch (gStatus.SubStatus)
+      switch (gWRK_Status.SubStatus)
       {
         case UNDEFINED:
         {      
-          USR_ShowMessage(gCurrentScreen);
+          USR_ShowMessage((gCurrentScreen - 10000) * 100 + 1);
           WRK_SetStatus(SubStatus,WAITFORUSER);
           break;
         }
@@ -355,7 +402,7 @@ void WRK_HandleSequence(void)
     }
     case ENTERVALUE:
     {
-      switch (gStatus.SubStatus)
+      switch (gWRK_Status.SubStatus)
       {
         case UNDEFINED:
         {      
@@ -403,7 +450,7 @@ void WRK_HandleSequence(void)
     }
     case ACTIVE:
     {
-      switch (gStatus.SubStatus)
+      switch (gWRK_Status.SubStatus)
       {
         case ENCODERTEST:
         {
@@ -466,7 +513,7 @@ void WRK_HandleSequence(void)
           if (IDX_Set(HOME)== READY)
           {
             IDX_Set(UNDEFINED);
-            if (gStatus.SubStatus == WAITFORINDEXSTART)
+            if (gWRK_Status.SubStatus == WAITFORINDEXSTART)
             {
               WRK_SetStatus(SubStatus,WAITFORUSER);
             }
@@ -482,6 +529,11 @@ void WRK_HandleSequence(void)
           if (STR_Set(HOME)== READY)
           {
             STR_Set(UNDEFINED);
+            if (gCurrentScreen > 10200)
+            {
+              WRK_SetStatus(MainStatus,EXECUTECOMMAND);  
+              USR_ShowMessage(gCurrentMessage + 1);
+            }
             WRK_SetStatus(SubStatus,WAITFORUSER);
           }
           break;
@@ -491,7 +543,14 @@ void WRK_HandleSequence(void)
           if (STR_Set(GOTOSTARTPOSITION)== READY)
           {
             STR_Set(UNDEFINED);
-            WRK_SetStatus(SubStatus,WAITFORINDEXSTART);
+            if (gCurrentScreen > 10200)
+            {
+              USR_ShowScreen (gCurrentScreen); 
+              WRK_SetStatus(MainStatus,ACTIVE);
+              WRK_SetStatus(SubStatus,WAITFORUSER);
+            }
+            else
+              WRK_SetStatus(SubStatus,WAITFORINDEXSTART);
           }
           break;
         }
