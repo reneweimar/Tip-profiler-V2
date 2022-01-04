@@ -52,9 +52,6 @@ typedef  struct
 //---------------------- SYSTEM ------------------------
 extern stcDCMotor gIDX_Motor;
 extern uint8_t gIDX_ResetPosition;
-extern void IDX_HandleEncoder (void);
-extern void IDX_DecEncoder (void);
-extern void IDX_IncEncoder (void);
 extern void IDX_Init(void);
 extern void IDX_Tick(void);
 extern void IDX_HandleMotor (void);

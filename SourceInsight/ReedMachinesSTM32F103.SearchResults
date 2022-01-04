@@ -1,8 +1,23 @@
----- gCommandMaxService Matches (7 in 3 files) ----
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      if ((gCurrentScreen >= (10201 + gCommandMaxService + 1))&&(gCurrentScreen <10300)) gCurrentScreen = 10201;
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      if (gCurrentScreen == 10200) gCurrentScreen = 10201 + gCommandMaxService;
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          if (i + TopPage - 10201 < gCommandMaxService)
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          sprintf(strValue, "    %u-%01u", ((TopPage-10201)/3)+1,(gCommandMaxService+3)/3);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):uint16_t gCommandMaxService = sizeof(gCommands)/sizeof(gCommands[0]);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  for (uint8_t i=1; i<gCommandMaxService ;i++) //Always assume at least 1 User parameter
-Work.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):extern uint16_t gCommandMaxService;
+---- abs Matches (41 in 4 files) ----
+Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    if (abs(gIDX_Motor.PosErrorP) < 5)) gIDX_Motor.PosErrorP = 0; //Avoid jittering
+Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    if (((int32_t) gIDX_Motor.PosPID < 5) && (abs(gIDX_Motor.GetPosition - gIDX_Motor.SetPosition) < 3))
+Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          if (abs(gIDX_Motor.GetPosition - newPosition) < 3)
+Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          else if ((abs(gIDX_Motor.GetPosition) < 3)&&(newPosition == 10000))
+Ssd1306.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  int16_t steep = abs(y1 - y0) > abs(x1 - x0);
+Ssd1306.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  dy = abs(y1 - y0);
+Ssd1306.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  deltax = abs(x2 - x1);
+Ssd1306.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  deltay = abs(y2 - y1);
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              sprintf(strValue, "-  %u    %s", abs(Dig2),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              sprintf(strValue, "- %u%u    %s", abs(Dig3), abs(Dig2),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              sprintf(strValue, "-  %u.%u  %s", abs(Dig2), abs(Dig1),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              sprintf(strValue, "- %u%u.%u  %s", abs(Dig3), abs(Dig2), abs(Dig1),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              sprintf(strValue, "-  %u.%u%u %s", abs(Dig2), abs(Dig1), abs(Dig0),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              sprintf(strValue, "- %u%u.%u%u %s", abs(Dig3), abs(Dig2), abs(Dig1), abs(Dig0),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              sprintf(strValue, "   %u    %s", abs(Dig2),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);  
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              sprintf(strValue, "  %u%u    %s", abs(Dig3), abs(Dig2),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              sprintf(strValue, "   %u.%u  %s", abs(Dig2), abs(Dig1),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              sprintf(strValue, "  %u%u.%u  %s", abs(Dig3), abs(Dig2), abs(Dig1),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              sprintf(strValue, "   %u.%u%u %s", abs(Dig2), abs(Dig1), abs(Dig0),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              sprintf(strValue, "  %u%u.%u%u %s", abs(Dig3), abs(Dig2), abs(Dig1), abs(Dig0),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              if (abs(gIDX_Motor.GetPosition - 5000) < 3)
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              if (abs(gIDX_Motor.GetPosition) < 3)
