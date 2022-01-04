@@ -213,7 +213,7 @@ void SysTick_Handler(void)
 void EXTI0_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI0_IRQn 0 */
-  if (gIDX_ResetPosition) TIM8->CNT = 32767;
+  if (gIDX_ResetPosition) TIM8->CNT = 32767 - (gMachineType[gMachine/100].Parameters[7].Value * 560 / 100); //Positive offset, so home point to left (minus)
   /* USER CODE END EXTI0_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
   /* USER CODE BEGIN EXTI0_IRQn 1 */
@@ -224,15 +224,6 @@ void EXTI0_IRQHandler(void)
 void EXTI1_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI1_IRQn 0 */
-  //static uint8_t CntInterrupt;
-  //CntInterrupt ++;
-  //if (CntInterrupt >= 12) //12 pulses per revolution, so average 12 pulses to get whole revolution
-  //{
-  //  CntInterrupt = 0;
-  //  gSTR_Motor.TimerValueOld = gSTR_Motor.TimerValue; 
-  //  gSTR_Motor.TimerValue = TIM6->CNT;
-  //  gSTR_Motor.TimePerRev = gSTR_Motor.TimerValue - gSTR_Motor.TimerValueOld;
-  //}        
   gSTR_Motor.Encoder++;
   /* USER CODE END EXTI1_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);

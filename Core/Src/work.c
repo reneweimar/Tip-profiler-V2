@@ -66,39 +66,56 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
     {"SIDE ST BIG FACT  ",0,500,30,"MM",3,2,0,0},
 	},
 	{ //BASSOON
-      {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0},
-      {"SCRAPE WIDTH INNER",0,200,830,"MM",3,1,1,0},
-      {"SCRAPE SPEED      ",200,0,200,"RPS",1,1,1,0},
-      {"SIDE STEP SMALL   ",5,60,40,"MM",3,2,1,0},
-      {"SIDE STEP BIG     ",40,100,60,"MM",3,2,1,0},
-      {"SCREEN SAVER      ",0,0,100,"-",1,0,0,1},
-      {"MACHINE TYPE      ",0,0,100,"-",1,0,0,1},
-      {"SIDE STEP OFFSET  ",0,-100,100,"MM",3,2,0,0},
-      {"SCRAPE SPEED MIN  ",10,10,100,"RPS",2,1,0,0},
-      {"SCRAPE SPEED MAX  ",200,10,200,"RPS",2,1,0,0},
-      {"SCRAPE WIDTH MAX  ",0,2500,2400,"MM",3,1,0,0},
-      {"SCRAPE WIDTH FACT ",0,2500,1160,"MM",3,1,0,0},
-      {"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0},
-      {"SIDE ST SMALL FACT",0,500,40,"MM",3,2,0,0},
-      {"SIDE ST BIG FACT  ",0,500,40,"MM",3,2,0,0},
+    {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0},
+    {"SCRAPE WIDTH INNER",0,200,830,"MM",3,1,1,0},
+    {"SCRAPE SPEED      ",0,200,200,"RPS",1,1,1,0},
+    {"SIDE STEP SMALL   ",5,60,40,"MM",3,2,1,0},
+    {"SIDE STEP BIG     ",40,100,60,"MM",3,2,1,0},
+    {"SCREEN SAVER      ",0,100,0,"-",1,0,0,1},
+    {"MACHINE TYPE      ",0,100,0,"-",1,0,0,1},
+    {"SIDE STEP OFFSET  ",-100,100,0,"MM",3,2,0,0},
+    {"SCRAPE SPEED MIN  ",10,100,10,"RPS",2,1,0,0},
+    {"SCRAPE SPEED MAX  ",10,200,200,"RPS",2,1,0,0},
+    {"SCRAPE WIDTH MAX  ",0,2500,2400,"MM",3,1,0,0},
+    {"SCRAPE WIDTH FACT ",0,2500,1160,"MM",3,1,0,0},
+    {"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0},
+    {"SIDE ST SMALL FACT",0,500,40,"MM",3,2,0,0},
+    {"SIDE ST BIG FACT  ",0,500,40,"MM",3,2,0,0},
 	},
 	{ //KLARINET
-      {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0},
-      {"SCRAPE WIDTH INNER",0,200,830,"MM",3,1,1,0},
-      {"SCRAPE SPEED      ",200,0,200,"RPS",1,1,1,0},
-      {"SIDE STEP SMALL   ",5,60,40,"MM",3,2,1,0},
-      {"SIDE STEP BIG     ",40,100,60,"MM",3,2,1,0},
-      {"SCREEN SAVER      ",0,0,100,"-",1,0,0,1},
-      {"MACHINE TYPE      ",0,0,100,"-",1,0,0,1},
-      {"SIDE STEP OFFSET  ",0,-100,100,"MM",3,2,0,0},
-      {"SCRAPE SPEED MIN  ",10,10,100,"RPS",2,1,0,0},
-      {"SCRAPE SPEED MAX  ",200,10,200,"RPS",2,1,0,0},
-      {"SCRAPE WIDTH MAX  ",0,2500,2400,"MM",3,1,0,0},
-      {"SCRAPE WIDTH FACT ",0,2500,1160,"MM",3,1,0,0},
-      {"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0},
-      {"SIDE ST SMALL FACT",0,500,40,"MM",3,2,0,0},
-      {"SIDE ST BIG FACT  ",0,500,40,"MM",3,2,0,0},
-	}
+    {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0},
+    {"SCRAPE WIDTH INNER",0,200,830,"MM",3,1,1,0},
+    {"SCRAPE SPEED      ",0,200,200,"RPS",1,1,1,0},
+    {"SIDE STEP SMALL   ",5,60,40,"MM",3,2,1,0},
+    {"SIDE STEP BIG     ",40,100,60,"MM",3,2,1,0},
+    {"SCREEN SAVER      ",0,100,0,"-",1,0,0,1},
+    {"MACHINE TYPE      ",0,100,0,"-",1,0,0,1},
+    {"SIDE STEP OFFSET  ",-100,100,0,"MM",3,2,0,0},
+    {"SCRAPE SPEED MIN  ",10,100,10,"RPS",2,1,0,0},
+    {"SCRAPE SPEED MAX  ",10,200,200,"RPS",2,1,0,0},
+    {"SCRAPE WIDTH MAX  ",0,2500,2400,"MM",3,1,0,0},
+    {"SCRAPE WIDTH FACT ",0,2500,1160,"MM",3,1,0,0},
+    {"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0},
+    {"SIDE ST SMALL FACT",0,500,40,"MM",3,2,0,0},
+    {"SIDE ST BIG FACT  ",0,500,40,"MM",3,2,0,0},
+	},
+  { //BAGPIPE
+    {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0},
+    {"SCRAPE WIDTH INNER",0,200,830,"MM",3,1,1,0},
+    {"SCRAPE SPEED      ",0,200,200,"RPS",1,1,1,0},
+    {"SIDE STEP SMALL   ",5,60,40,"MM",3,2,1,0},
+    {"SIDE STEP BIG     ",40,100,60,"MM",3,2,1,0},
+    {"SCREEN SAVER      ",0,100,0,"-",1,0,0,1},
+    {"MACHINE TYPE      ",0,100,0,"-",1,0,0,1},
+    {"SIDE STEP OFFSET  ",-100,100,0,"MM",3,2,0,0},
+    {"SCRAPE SPEED MIN  ",10,100,10,"RPS",2,1,0,0},
+    {"SCRAPE SPEED MAX  ",10,200,200,"RPS",2,1,0,0},
+    {"SCRAPE WIDTH MAX  ",0,2500,2400,"MM",3,1,0,0},
+    {"SCRAPE WIDTH FACT ",0,2500,1160,"MM",3,1,0,0},
+    {"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0},
+    {"SIDE ST SMALL FACT",0,500,40,"MM",3,2,0,0},
+    {"SIDE ST BIG FACT  ",0,500,40,"MM",3,2,0,0},
+  },
 };
 //! \Global Service flag
 uint8_t gServiceMenu;
@@ -121,15 +138,13 @@ float BatteryVoltage;
 //! \param      None
 void WRK_ResetFactory(void)
 {
-  //if (gMachine == 0)
-    memcpy( &gMachineType[gMachine/100].Parameters, &DefaultsMachine[gMachine/100], sizeof DefaultsMachine[gMachine/100]);
-  //else if (gMachine == 1)
-    //memcpy( &gMachineType[1].Parameters, &DefaultsMachine1, sizeof DefaultsMachine1);
-     
-  
-  for (uint8_t i=0; i<gParameterMaxService ;i++) //Check eeprom memory
+  for (uint8_t i = 0; i < NROFMACHINETYPES; i++)
   {
-    EE_WriteVariable(i+gMachine, gMachineType[gMachine/100].Parameters[i].Value);
+    memcpy( &gMachineType[i].Parameters, &DefaultsMachine[i], sizeof DefaultsMachine[i]);
+    for (uint8_t j=0; j<gParameterMaxService ;j++) //Check eeprom memory
+    {
+      EE_WriteVariable(i+j, gMachineType[i].Parameters[j].Value);
+    }
   }
 }
 
@@ -254,7 +269,6 @@ void WRK_HandleTickTime (void)
       WRK_HandleBatteryStatus();
       USR_HandleButtons();
       IDX_HandleMotor();
-      //STR_HandleEncoder();
       STR_HandleMotor();
     }
 }
