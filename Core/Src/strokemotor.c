@@ -12,7 +12,8 @@
 //-----------------------------------------------------------------------------
 stcDCMotor gSTR_Motor;
 enuSTR_Unit gSTR_Status;
-
+uint16_t gSTR_PulseTime;
+int32_t STR_Speed;
 //-----------------------------------------------------------------------------
 //! \brief      Calculates the motor speed
 //! \details    Counts the pulses per 100 us and converts to RPM
@@ -29,7 +30,6 @@ void STR_HandleEncoder (void)
   int EncoderValue = Encoder - EncoderOld;
   EncoderOld = Encoder;
   gSTR_Motor.GetSpeed = (int16_t) ((float) EncoderValue / (float) gSTR_Motor.PulsesPerRevolution * 600);
-  //gSTR_Motor.SetSpeed = (int16_t) (720000 / ((float) gSTR_Motor.TimePerRev * (float) gSTR_Motor.PulsesPerRevolution));
 }
 //-----------------------------------------------------------------------------
  //! \brief      Initiates the stroke motor unit
@@ -69,16 +69,15 @@ void STR_Init(void)
   HAL_NVIC_SetPriority(EXTI2_IRQn, 2, 0);
   HAL_NVIC_EnableIRQ(EXTI2_IRQn);
 
-  gSTR_Motor.PulsesPerRevolution = 12;
-
   HAL_TIM_Base_Start(&htim3);
   
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
 
-  gSTR_Motor.P = 1.0;
-  gSTR_Motor.I = 0.005;
-  gSTR_Motor.D = 0.5;
+  gSTR_Motor.P = 0.6;
+  gSTR_Motor.I = 0.0001;
+  gSTR_Motor.D = 3;
+  gSTR_Motor.PulsesPerRevolution = 12;
   gSTR_Motor.SpeedControl = 1;
 }
 
@@ -94,10 +93,23 @@ static void STR_HandleSpeedPID (void)
     gSTR_Motor.ErrorD = gSTR_Motor.ErrorP - gSTR_Motor.ErrorPOld;
     gSTR_Motor.ErrorPOld = gSTR_Motor.ErrorP;
     gSTR_Motor.PID = gSTR_Motor.ErrorP * gSTR_Motor.P + gSTR_Motor.ErrorI * gSTR_Motor.I + gSTR_Motor.ErrorD * gSTR_Motor.D;
-    gSTR_Motor.Control = gSTR_Motor.Control + (int16_t) gSTR_Motor.PID;
-    if (gSTR_Motor.Control < -10000)
+    /*if (gSTR_Motor.Control > 0)
     {
-        gSTR_Motor.Control = -10000;
+      if (gSTR_Motor.PID > 1000)
+      {
+        gSTR_Motor.PID = 1000;
+      }
+      if (gSTR_Motor.PID < -1000)
+      {
+        gSTR_Motor.PID = -1000;
+      }
+      
+    }
+    */
+    gSTR_Motor.Control = gSTR_Motor.Control + (int16_t) gSTR_Motor.PID;
+    if (gSTR_Motor.Control < 0)
+    {
+        gSTR_Motor.Control = 0;
     }
     if (gSTR_Motor.Control > 10000)
     {
@@ -112,15 +124,27 @@ static void STR_HandleSpeedPID (void)
 void STR_HandleMotor (void)
 {
   static uint8_t TickTime = 8; 
+  static uint32_t PulseTime;
+  static uint32_t PulseTimeOld;
   
-  if (TickTime++ < 99) return; //100ms 
+  PulseTime += gSTR_PulseTime;
+
+  if (TickTime++ < 9) return; //100ms 
   TickTime = 0;
 
-  int Encoder = gSTR_Motor.Encoder;
-  int EncoderValue = Encoder - gSTR_Motor.EncoderOld;
-  gSTR_Motor.EncoderOld = Encoder;
-  gSTR_Motor.GetSpeed = (int16_t) ((float) EncoderValue / (float) gSTR_Motor.PulsesPerRevolution * 600);
-
+  if (PulseTime == PulseTimeOld) //No change anymore. Motor is not rotating
+  {
+    PulseTime = 0;
+    gSTR_PulseTime = 0;
+  }
+  gSTR_Motor.GetSpeed = (int16_t) (60000000 /((float) PulseTime / 10 * (float) gSTR_Motor.PulsesPerRevolution));
+  PulseTimeOld = PulseTime;
+  //int Encoder = gSTR_Motor.Encoder;
+  //int EncoderValue = Encoder - gSTR_Motor.EncoderOld;
+  //gSTR_Motor.EncoderOld = Encoder;
+  //gSTR_Motor.GetSpeed = (int16_t) ((float) EncoderValue / (float) gSTR_Motor.PulsesPerRevolution * 600);
+  PulseTime = 0;
+  
   if (gSTR_Motor.MainStatus==INACTIVE)
   {
     STR_Disable();
@@ -142,7 +166,7 @@ void STR_HandleMotor (void)
   }
   if (gSTR_Motor.MainStatus==ACTIVE)
   {
-      STR_SetPWM(CW, gSTR_Motor.Control/100);
+      STR_SetPWM(CW, gSTR_Motor.Control/100,0);
   }
   else
   {
@@ -178,7 +202,7 @@ void STR_SetStatus (enuType newType, enuStatus newStatus)
 //! \param       None
 void STR_Stop(void)
 {
-  STR_SetPWM(CW,0);
+  STR_SetPWM(CW,0,1);
   gSTR_Motor.MainStatus = INACTIVE;
   gSTR_Motor.ErrorI = 0;
   gSTR_Motor.PosErrorD = 0;
@@ -191,10 +215,11 @@ void STR_Stop(void)
 
 //-----------------------------------------------------------------------------
 //! \brief       Sets the stroke motor status
-//! \details     Sets the PWM with the calculated speed
+//! \details     Sets the status and the speed
 //! \param [in]  enuStatus newStatus
+//! \param [in]  int32_t newSpeed
 //! \param [out] enuStatus STR_Motor.SubStatus or READY
-enuStatus STR_Set(enuStatus newStatus)
+enuStatus gSTR_Set(enuStatus newStatus, int32_t newSpeed)
 {
   if (gSTR_Status.MainStatus == newStatus) //Task already running
   {
@@ -212,6 +237,7 @@ enuStatus STR_Set(enuStatus newStatus)
   }
   else
   {
+    STR_Speed = newSpeed;
     STR_SetStatus(MainStatus,newStatus);
   }
   return gSTR_Status.SubStatus;
@@ -222,26 +248,52 @@ enuStatus STR_Set(enuStatus newStatus)
 //! \details    Sets the PWM with the calculated speed
 //! \param      None
 
-void STR_SetPWM (enuStatus newStatus, uint8_t newSpeed)
+void STR_SetPWM (enuStatus newStatus, uint8_t newSpeed, uint8_t FastDecay)
 {
+  FastDecay = 1;
+
   switch (newStatus)
   {
     case CCW:
     {
-      STR_CW() = 100 - newSpeed;
-      STR_CCW()=100;
+      if (FastDecay)
+      {
+        STR_CW() = 100 - newSpeed;
+        STR_CCW()=100;
+      }
+      else
+      {
+        STR_CW() = newSpeed;
+        STR_CCW()=0;
+      }  
       break;
     }
     case CW:
     {
-      STR_CW() = 100;
-      STR_CCW() = 100 - newSpeed;
+      if (FastDecay)
+      {
+        STR_CW() = 100;
+        STR_CCW() = 100 - newSpeed;
+      }
+      else
+      {
+        STR_CW() = 0;
+        STR_CCW() = newSpeed;
+      }  
       break;
     }
     default:
     {
-      STR_CCW() = 100;
-      STR_CW()=100;
+      if (FastDecay)
+      {
+        STR_CCW() = 100;
+        STR_CW()=100;
+      }
+      else
+      {
+        STR_CCW() = 0;
+        STR_CW()= 0;
+      }  
       break;
     }
   }
@@ -261,6 +313,20 @@ void gSTR_HandleTasks(void)
     {
       break;
     }
+    case START:
+    {
+      gSTR_Motor.MainStatus = ACTIVE;
+      gSTR_Motor.SetSpeed = STR_Speed;
+      STR_SetStatus(SubStatus, START);
+      break;
+    }
+    case STOP:
+    {
+      gSTR_Motor.MainStatus = INACTIVE;
+      gSTR_Motor.SetSpeed = 0;
+      STR_SetStatus(SubStatus, STOP);
+      break;
+    }
     case HOME:
     {
       switch (gSTR_Status.SubStatus)
@@ -274,7 +340,7 @@ void gSTR_HandleTasks(void)
           else
           {
             gSTR_Motor.MainStatus = ACTIVE;
-            gSTR_Motor.SetSpeed = STR_HOMESPEED;//STR_SetPWM(CW,50);
+            gSTR_Motor.SetSpeed = STR_HOMESPEED;
             STR_SetStatus(SubStatus,WAITFORHOMESENSOR);
           }  
           break;
@@ -286,6 +352,7 @@ void gSTR_HandleTasks(void)
           {
   					gSTR_Motor.Encoder = 0;
             gSTR_Motor.EncoderOld = 0;
+            gSTR_Motor.IsHomed = 1;
             STR_SetStatus(SubStatus, HOME);
           }
           else 
@@ -310,12 +377,12 @@ void gSTR_HandleTasks(void)
           {
             gSTR_Motor.Encoder = 0;
             gSTR_Motor.EncoderOld = 0;
-            gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;//STR_SetPWM(CW,50);
+            gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
             STR_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
           }
           else //Goto home position first
           {
-            gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;//STR_SetPWM(CW,50);
+            gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
             STR_SetStatus(SubStatus,WAITFORHOMESENSOR);
           }  
           break;
@@ -328,7 +395,7 @@ void gSTR_HandleTasks(void)
             gSTR_Motor.Encoder = 0;
             gSTR_Motor.EncoderOld = 0;
 						gSTR_Motor.MainStatus = ACTIVE;
-            gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;//STR_SetPWM(CW,50);
+            gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
             STR_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
           }
           else 
@@ -340,7 +407,7 @@ void gSTR_HandleTasks(void)
         case WAITFORSTROKEMOTORSTART:
         {
 					//TODO timeout
-          if ((gSTR_Motor.Encoder == Encoder)&& (gSTR_Motor.Encoder >= STARTPOSITION - 50)) //Motor has stopped and encoder position is aroung start position
+          if ((gSTR_Motor.Encoder == Encoder)&& (gSTR_Motor.Encoder >= STARTPOSITION - 50)) //Motor has stopped and encoder position is around start position
           {
             STR_SetStatus(SubStatus, GOTOSTARTPOSITION);
           }

@@ -224,6 +224,8 @@ void EXTI0_IRQHandler(void)
 void EXTI1_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI1_IRQn 0 */
+  gSTR_PulseTime = TIM6->CNT;
+  TIM6->CNT = 0;
   gSTR_Motor.Encoder++;
   /* USER CODE END EXTI1_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
@@ -240,10 +242,23 @@ void EXTI2_IRQHandler(void)
   /* USER CODE BEGIN EXTI2_IRQn 0 */
   //If homing is active only switch off stroke motor as soon as the home switch transistion is detected
 	
-  if (((gSTR_Status.MainStatus == GOTOSTARTPOSITION) && (gSTR_Status.SubStatus == WAITFORHOMESENSOR)) || (gSTR_Status.MainStatus == HOME))
+  if (gSTR_Status.MainStatus == HOME)
   {
     STR_Stop();
   }
+  if ((gSTR_Status.MainStatus == GOTOSTARTPOSITION) && (gSTR_Status.SubStatus == WAITFORHOMESENSOR))
+  {
+    gSTR_Motor.Encoder = 0;
+    gSTR_Motor.EncoderOld = 0;
+    gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
+    STR_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
+  }
+  /*else
+  {
+    gSTR_Motor.IsHomed = 1;
+    gSTR_Motor.Encoder = 0;
+    gSTR_Motor.EncoderOld = 0;
+  }*/
 
   /* USER CODE END EXTI2_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_2);
@@ -358,7 +373,6 @@ void EXTI15_10_IRQHandler(void)
   /* USER CODE BEGIN EXTI15_10_IRQn 0 */
   /* USER CODE END EXTI15_10_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_10);
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_12);
   /* USER CODE BEGIN EXTI15_10_IRQn 1 */
 
   /* USER CODE END EXTI15_10_IRQn 1 */

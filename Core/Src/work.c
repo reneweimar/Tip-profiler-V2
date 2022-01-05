@@ -18,6 +18,8 @@
 #include "ssd1306.h"
 #include <stdlib.h>
 //-----------------------------------------------------------------------------
+//! \Side step size
+uint16_t WRK_SideStep;
 //! \Global ADC result
 uint16_t ADC_Converted_Values[1];
 //! \Global main and sub, current and previous status of the device
@@ -51,7 +53,7 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
 	{ 
     {"SCRAPE WIDTH      ",0,1160,780,"MM",3,1,1,0},
     {"SCRAPE WIDTH INNER",0,200,390,"MM",3,1,1,0},
-    {"SCRAPE SPEED      ",0,200,200,"RPS",1,1,1,0},
+    {"SCRAPE SPEED      ",50,200,50,"RPS",2,1,1,0},
     {"SIDE STEP SMALL   ",5,50,30,"MM",3,2,1,0},
     {"SIDE STEP BIG     ",30,100,50,"MM",3,2,1,0},
     {"SCREEN SAVER      ",0,100,0,"-",1,0,0,1},
@@ -68,7 +70,7 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
 	{ //BASSOON
     {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0},
     {"SCRAPE WIDTH INNER",0,200,830,"MM",3,1,1,0},
-    {"SCRAPE SPEED      ",0,200,200,"RPS",1,1,1,0},
+    {"SCRAPE SPEED      ",50,200,50,"RPS",2,1,1,0},
     {"SIDE STEP SMALL   ",5,60,40,"MM",3,2,1,0},
     {"SIDE STEP BIG     ",40,100,60,"MM",3,2,1,0},
     {"SCREEN SAVER      ",0,100,0,"-",1,0,0,1},
@@ -85,7 +87,7 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
 	{ //KLARINET
     {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0},
     {"SCRAPE WIDTH INNER",0,200,830,"MM",3,1,1,0},
-    {"SCRAPE SPEED      ",0,200,200,"RPS",1,1,1,0},
+    {"SCRAPE SPEED      ",50,200,50,"RPS",2,1,1,0},
     {"SIDE STEP SMALL   ",5,60,40,"MM",3,2,1,0},
     {"SIDE STEP BIG     ",40,100,60,"MM",3,2,1,0},
     {"SCREEN SAVER      ",0,100,0,"-",1,0,0,1},
@@ -102,7 +104,7 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
   { //BAGPIPE
     {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0},
     {"SCRAPE WIDTH INNER",0,200,830,"MM",3,1,1,0},
-    {"SCRAPE SPEED      ",0,200,200,"RPS",1,1,1,0},
+    {"SCRAPE SPEED      ",50,200,50,"RPS",2,1,1,0},
     {"SIDE STEP SMALL   ",5,60,40,"MM",3,2,1,0},
     {"SIDE STEP BIG     ",40,100,60,"MM",3,2,1,0},
     {"SCREEN SAVER      ",0,100,0,"-",1,0,0,1},
@@ -461,6 +463,98 @@ void WRK_HandleSequence(void)
       }
       break;
     }
+    case SCRAPENOSIDESTEPS:
+    {
+      switch (gWRK_Status.SubStatus)
+      {
+        case UNDEFINED:
+        {
+          WRK_SetStatus(SubStatus, WAITFORSTROKEMOTORSTART);
+          break;
+        }
+        case WAITFORSTROKEMOTORSTART:
+        {
+          if (gSTR_Set(START,gMachineType[gMachine].Parameters[2].Value*30) == READY)
+          {
+            gSTR_Set(UNDEFINED,0);
+            gUSR_SetMessage("SCRAPING THE REED.",0);
+            gUSR_SetMessage("PRESS OK TO STOP. ",1);
+            gUSR_SetMessage("                  ",2);
+            gUSR_SetMessage("OK",3);
+            USR_ShowScreen(4);
+            WRK_SetStatus(SubStatus, WAITFORUSER);
+          }
+          break;
+        }
+        case WAITFORUSER:
+        {
+          if (USR_ButtonPressed(BtnOk,1,1)==1)
+          {
+            gUSR_SetMessage("STOP SCRAPING     ",0);
+            gUSR_SetMessage("GOING TO START    ",1);
+            gUSR_SetMessage("POSITION          ",2);
+            gUSR_SetMessage("",3);
+            USR_ShowScreen(4);
+            WRK_SetStatus(SubStatus, WAITFORSTROKEMOTORSTOP);
+          }
+          break;
+        }
+        case WAITFORSTROKEMOTORSTOP:
+        {
+          if (gSTR_Set(GOTOSTARTPOSITION,0) == READY)
+          {
+            gSTR_Set(UNDEFINED,0);
+            WRK_SetStatus(MainStatus, ACTIVE);
+            WRK_SetStatus(SubStatus, WAITFORUSER);
+            USR_ShowScreen(gReturnScreen);
+          }  
+          break;
+        }
+        default:
+          break;
+			}
+      break;
+    }
+    case SCRAPEFULLREED:
+    {
+      switch (gWRK_Status.SubStatus)
+      {
+        case UNDEFINED:
+        {
+          if (gIDX_Motor.IsHomed == 0)
+          {
+            gUSR_SetMessage("      NOT HOMED",1);
+            gUSR_SetMessage("OK",3);
+            gReturnScreen = gCurrentScreen;
+            USR_ShowScreen(3);
+            WRK_SetStatus(MainStatus, ACTIVE);
+            WRK_SetStatus(SubStatus, WAITFORUSER);
+          }
+          else
+          {
+            gUSR_SetMessage("SCRAPING THE REED.",0);
+            gUSR_SetMessage("PRESS ANY KEY TO",1);
+            gUSR_SetMessage("PAUSE THE PROCESS",2);
+            gUSR_SetMessage("#,$&*OK",3);
+            gReturnScreen = gCurrentScreen;
+            USR_ShowScreen(4);
+            WRK_SetStatus(SubStatus, WAITFORPOSITION);
+          }
+          break;
+        }
+        case WAITFORPOSITION:
+        {
+          if (IDX_Set(GOTOPOSITION, 1000)==READY)
+          {
+            WRK_SetStatus(MainStatus, ACTIVE);
+          }
+          break;
+        }
+        default:
+          break;
+      }
+      break;
+    }
     case ACTIVE:
     {
       switch (gWRK_Status.SubStatus)
@@ -523,9 +617,9 @@ void WRK_HandleSequence(void)
         case WAITFORINDEXHOME:
         case WAITFORINDEXSTART:
         {
-          if (IDX_Set(HOME)== READY)
+          if (IDX_Set(HOME,0)== READY)
           {
-            IDX_Set(UNDEFINED);
+            IDX_Set(UNDEFINED,0);
             if (gWRK_Status.SubStatus == WAITFORINDEXSTART)
             {
               WRK_SetStatus(SubStatus,WAITFORUSER);
@@ -539,9 +633,9 @@ void WRK_HandleSequence(void)
         }
         case WAITFORSTROKEMOTORHOME:
         {
-          if (STR_Set(HOME)== READY)
+          if (gSTR_Set(HOME,0)== READY)
           {
-            STR_Set(UNDEFINED);
+            gSTR_Set(UNDEFINED,0);
             if (gCurrentScreen > 10200)
             {
               WRK_SetStatus(MainStatus,EXECUTECOMMAND);  
@@ -553,9 +647,9 @@ void WRK_HandleSequence(void)
         }
         case WAITFORSTROKEMOTORSTART:
         {
-          if (STR_Set(GOTOSTARTPOSITION)== READY)
+          if (gSTR_Set(GOTOSTARTPOSITION,0)== READY)
           {
-            STR_Set(UNDEFINED);
+            gSTR_Set(UNDEFINED,0);
             if (gCurrentScreen > 10200)
             {
               USR_ShowScreen (gCurrentScreen/100); 
@@ -569,9 +663,7 @@ void WRK_HandleSequence(void)
         }
         case WAITFORUSER:
         {
-          USR_ButtonPressed(BtnOk,1,1); //Get the waitforreleased flag
-            
-          if (USR_ButtonWaitForRelease(BtnOk)==1)
+					if (USR_ButtonPressed(BtnOk,1,1)==1)
           {
             if ((gCurrentScreen >= 100)&&(gCurrentScreen < 10200))
             {
@@ -584,6 +676,10 @@ void WRK_HandleSequence(void)
                   USR_ShowScreen (10101);
               }
             }
+            else if (gCurrentScreen == 3) //Find HOME screen
+            {
+              USR_ShowScreen (gReturnScreen);
+            }
             else if (gCurrentScreen == 10) //Find HOME screen
             {
               WRK_SetStatus(SubStatus,WAITFORINDEXHOME);  
@@ -591,6 +687,32 @@ void WRK_HandleSequence(void)
             else if (gCurrentScreen == 20) //Goto START screen
             {
               WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);  
+            }
+            else if (gCurrentScreen == 30) //Start Scrape process with big side step
+            {
+              WRK_SideStep = gMachineType[gMachine].Parameters[4].Value;
+              WRK_SetStatus(MainStatus, SCRAPEFULLREED);
+            }
+            else if (gCurrentScreen == 31) //Start Scrape process with small side step
+            {
+              WRK_SideStep = gMachineType[gMachine].Parameters[3].Value;
+              WRK_SetStatus(MainStatus, SCRAPEFULLREED);
+            }
+            else if (gCurrentScreen == 32) //Start Scrape process only outer sections
+            {
+              WRK_SideStep = gMachineType[gMachine].Parameters[3].Value;
+              WRK_SetStatus(MainStatus, SCRAPEOUTERSECTIONS);
+            }
+            else if (gCurrentScreen == 33) //Start Scrape process only inner sections
+            {
+              WRK_SideStep = gMachineType[gMachine].Parameters[3].Value;
+              WRK_SetStatus(MainStatus, SCRAPEINNERSECTIONS);
+            }
+            else if (gCurrentScreen == 34) //Start Scrape process without side steps
+            {
+              WRK_SideStep = 0;
+              gReturnScreen = gCurrentScreen;
+              WRK_SetStatus(MainStatus, SCRAPENOSIDESTEPS);
             }
           }
           else if (USR_ButtonPressed(BtnRight,1,1) == 1)

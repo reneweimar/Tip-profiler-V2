@@ -8,8 +8,8 @@
 #ifndef _STR_FUNCTIONS_H
 #define _STR_FUNCTIONS_H
 //-----------------------------------------------------------------------------
-#define STR_GOTOSTARTSPEED 750
-#define STR_HOMESPEED 750
+#define STR_GOTOSTARTSPEED 1500
+#define STR_HOMESPEED 1500
 #define STARTPOSITION 300
 #define IntEncoder_Pin GPIO_PIN_1
 #define IntEncoder_GPIO_Port GPIOA
@@ -41,16 +41,17 @@ typedef  struct
 //-----------------------------------------------------------------------------
 extern stcDCMotor gSTR_Motor;
 extern enuSTR_Unit gSTR_Status;
+extern uint16_t gSTR_PulseTime;
 //-----------------------------------------------------------------------------
 //STR_functions
 //---------------------- SYSTEM ------------------------
 void gSTR_HandleTasks(void);
 
-extern enuStatus STR_Set(enuStatus newStatus);
+extern enuStatus gSTR_Set(enuStatus newStatus, int32_t newSpeed);
 extern void STR_Init(void);
 extern void STR_HandleMotor (void);
 extern void STR_HandleEncoder (void);
-extern void STR_SetPWM (enuStatus newStatus, uint8_t newSpeed);
+extern void STR_SetPWM (enuStatus newStatus, uint8_t newSpeed, uint8_t FastDecay);
 extern void STR_SetStatus (enuType newType, enuStatus newStatus);
 extern void STR_Stop(void);
 

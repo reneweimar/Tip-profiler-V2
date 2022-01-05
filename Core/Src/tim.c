@@ -166,7 +166,7 @@ void MX_TIM6_Init(void)
   TIM_MasterConfigTypeDef sMasterConfig = {0};
 
   htim6.Instance = TIM6;
-  htim6.Init.Prescaler = 8000; // 1 tick is 1 us 8MHZ / 800
+  htim6.Init.Prescaler = 64; // 1 tick is 1 us 64MHZ / 64
   htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim6.Init.Period = 65535;  //65535 = 655350us = 0.65535 s
   htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;

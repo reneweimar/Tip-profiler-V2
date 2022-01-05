@@ -78,7 +78,8 @@ int main(void)
   
   /* USER CODE END 1 */
 
-  /* MCU Configuration--------------------------------------------------------*/
+  /* MCU Configuration------------------------------------------------------
+	--*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
 
@@ -106,7 +107,7 @@ int main(void)
   //TIM8
   MX_TIM8_Init();
   //TIM8
-  //MX_TIM6_Init();
+  MX_TIM6_Init();
   //MX_USART1_UART_Init();
 
   /* USER CODE BEGIN 2 */
@@ -122,6 +123,7 @@ int main(void)
   TIM8->CNT = 32767;
   //TIM8
   HAL_ADC_Start_DMA(&hadc1,(uint32_t*) &ADC_Converted_Values,1);
+  HAL_TIM_Base_Start (&htim6);
   gInitialized = 1;
   /* USER CODE END 2 */
 

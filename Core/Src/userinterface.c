@@ -19,13 +19,23 @@
 //-----------------------------------------------------------------------------
 stcButtonStatus Button[NROFBUTTONS];
 uint32_t gCurrentScreen = 0xffffffff; //Undefined
-uint16_t gCurrentMessage = 0;
+uint32_t gReturnScreen;
+char USR_Message[4][50];
 uint8_t gParameterNumber;
 int16_t gParameterValue;
 uint8_t CursorPosition;
 uint8_t gParameterDigits;
 uint8_t gParameterDecimals;
 
+//-----------------------------------------------------------------------------
+//! \brief      Fills error message line 0 to 2
+//! \details    Fills gUSR_Errormessage
+//! \param[in]  char* Message
+//! \param[in]  int LineNumber
+void gUSR_SetMessage (char* newMessage, uint8_t newLine)
+{
+   strcpy (USR_Message[newLine], newMessage);
+}
 
 //-----------------------------------------------------------------------------
 //! \brief      Fills the values for entering values and starts the screen
@@ -181,10 +191,31 @@ void USR_Init(void)
     ssd1306_UpdateScreen();
     HAL_Delay(100);
 }
+//-----------------------------------------------------------------------------
+//! \brief      Displays the instrument
+//! \details    Displays instrument name at right bottom
+//! \params     None
+void USR_WriteInstrumentName (void)
+{
+  ssd1306_SetCursor(127 - strlen(gMachineType[gMachine/100].Name)*Font_6x7.FontWidth, 57) ;
+  ssd1306_WriteStringEightBitFont(gMachineType[gMachine/100].Name, Font_6x7, White);
+}
+
+//-----------------------------------------------------------------------------
+//! \brief      Displays possible keys left bottom
+//! \details    Displays keys that can be used by the user
+//! \param[in]  char* newKeys
+void USR_WriteKeys (char* newKeys)
+{
+  ssd1306_SetCursor(0, 57);
+  ssd1306_WriteStringEightBitFont("          ", Font_6x7, White);
+  ssd1306_SetCursor(0, 57);
+  ssd1306_WriteStringEightBitFont(newKeys, Font_6x7, White);
+}
 
 //-----------------------------------------------------------------------------
 //! \brief      Displays screens
-//! \details    Displays the corrsponding screen on the OLED display
+//! \details    Displays the corresponding screen on the OLED display
 //! \param[in]  uint16_t NewScreen
 void USR_ShowScreen(uint32_t NewScreen)
 {
@@ -192,10 +223,11 @@ void USR_ShowScreen(uint32_t NewScreen)
     int16_t Dig3, Dig2, Dig1, Dig0;  
     uint16_t TopPage;
     gCurrentScreen = NewScreen;
+    USR_ClearScreen(2);
     if ((gCurrentScreen == 9)||(gCurrentScreen == 11)||(gCurrentScreen == 40)) gCurrentScreen = 10;
     if ((gCurrentScreen == 19)||(gCurrentScreen == 21)) gCurrentScreen = 20;
-    if ((gCurrentScreen == 0)||(gCurrentScreen == 34)) gCurrentScreen = 30;
-    if (gCurrentScreen == 29) gCurrentScreen = 33;
+    if ((gCurrentScreen == 0)||(gCurrentScreen == 35)) gCurrentScreen = 30;
+    if (gCurrentScreen == 29) gCurrentScreen = 34;
     if (gCurrentScreen == 100) gCurrentScreen = 102;
     if (gServiceMenu)
     {
@@ -298,121 +330,128 @@ void USR_ShowScreen(uint32_t NewScreen)
         ssd1306_WriteStringEightBitFont("#,$&*OK", Font_6x7, White);
         break;
       }
+      case 3: //Error screen
+      case 4: //Message screen
+      {
+        ssd1306_SetCursor(0, 0);
+        if (gCurrentScreen == 3)
+          ssd1306_WriteStringEightBitFont("ERROR      ", Font_6x7, White);
+        else
+          ssd1306_WriteStringEightBitFont("MESSAGE    ", Font_6x7, White);
+        ssd1306_SetCursor(0, 16);
+        ssd1306_WriteStringEightBitFont(USR_Message[0], Font_6x7, White);
+        ssd1306_SetCursor(0, 28);
+        ssd1306_WriteStringEightBitFont(USR_Message[1], Font_6x7, White);
+        ssd1306_SetCursor(0, 40);
+        ssd1306_WriteStringEightBitFont(USR_Message[2], Font_6x7, White);
+        USR_WriteKeys(USR_Message[3]);
+        USR_WriteInstrumentName();
+        break;
+      }
       case 10: //Home
       {
+        ssd1306_SetCursor(0, 0);
+        ssd1306_WriteStringEightBitFont("           ", Font_6x7, White);
         ssd1306_DrawRectangle(White,0,15,55,35,2);
-        ssd1306_SetCursor(65, 28);
-        ssd1306_WriteStringEightBitFont("          ", Font_6x7, White);
-        ssd1306_SetCursor(65, 22);
+        ssd1306_SetCursor(60, 22);
         ssd1306_WriteStringEightBitFont("FIND HOME ", Font_6x7, White);
-        ssd1306_SetCursor(65, 34);
+        ssd1306_SetCursor(60,  34);
         ssd1306_WriteStringEightBitFont("POSITION  ", Font_6x7, White);
         ssd1306_SetCursor(9, 24);
         ssd1306_WriteString("HOME", Font_11x18, Black);
-        ssd1306_SetCursor(0, 57);
-        ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
-        ssd1306_SetCursor(0, 57);
-        ssd1306_WriteStringEightBitFont("#,*OK  ", Font_6x7, White);
-        ssd1306_SetCursor(127 - strlen(gMachineType[gMachine/100].Name)*Font_6x7.FontWidth, 57) ;
-        ssd1306_WriteStringEightBitFont(gMachineType[gMachine/100].Name, Font_6x7, White);
+        USR_WriteKeys("#,*OK");
+        USR_WriteInstrumentName();
         break;
       }
       case 20: //Start
       {
+        ssd1306_SetCursor(0, 0);
+        ssd1306_WriteStringEightBitFont("           ", Font_6x7, White);
         ssd1306_DrawRectangle(White,0,15,55,35,2);
-        ssd1306_SetCursor(65, 28);
-        ssd1306_WriteStringEightBitFont("          ", Font_6x7, White);
-        ssd1306_SetCursor(65, 22);
+        ssd1306_SetCursor(60,  22);
         ssd1306_WriteStringEightBitFont("GOTO START", Font_6x7, White);
-        ssd1306_SetCursor(65, 34);
+        ssd1306_SetCursor(60,  34);
         ssd1306_WriteStringEightBitFont("POSITION  ", Font_6x7, White);
         ssd1306_SetCursor(5, 24);
         ssd1306_WriteString("START", Font_11x18, Black);
-        ssd1306_SetCursor(0, 57);
-        ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
-        ssd1306_SetCursor(0, 57);
-        ssd1306_WriteStringEightBitFont("#,*OK  ", Font_6x7, White);
-        ssd1306_SetCursor(127 - strlen(gMachineType[gMachine/100].Name)*Font_6x7.FontWidth, 57) ;
-        ssd1306_WriteStringEightBitFont(gMachineType[gMachine/100].Name, Font_6x7, White);
+        USR_WriteKeys("#,*OK");
+        USR_WriteInstrumentName();
 
         break;
       }
-      case 30: //Scrape
+      case 30: //Scrape big steps
       {
+        ssd1306_SetCursor(0, 0);
+        ssd1306_WriteStringEightBitFont("           ", Font_6x7, White);
         ssd1306_DrawRectangle(White,0,15,55,35,2);
-        ssd1306_SetCursor(65, 22);
-        ssd1306_WriteStringEightBitFont("          ", Font_6x7, White);
-        ssd1306_SetCursor(65, 34);
-        ssd1306_WriteStringEightBitFont("          ", Font_6x7, White);
-        ssd1306_SetCursor(65, 28);
+        ssd1306_SetCursor(60,  22);
         ssd1306_WriteStringEightBitFont("WHOLE REED", Font_6x7, White);
+        ssd1306_SetCursor(60,  34);
+        ssd1306_WriteStringEightBitFont("BIG STEPS", Font_6x7, White);
         ssd1306_SetCursor(0, 24);
         ssd1306_WriteString("SCRAPE", Font_11x18, Black);
-        ssd1306_SetCursor(0, 57);
-        ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
-        ssd1306_SetCursor(0, 57);
-        ssd1306_WriteStringEightBitFont("#,$&*OK", Font_6x7, White);
-        ssd1306_SetCursor(127 - strlen(gMachineType[gMachine/100].Name)*Font_6x7.FontWidth, 57) ;
-        ssd1306_WriteStringEightBitFont(gMachineType[gMachine/100].Name, Font_6x7, White);
+        USR_WriteKeys("#,$&*OK");
+        USR_WriteInstrumentName();
         break;
       }
-      case 33: //ScrapeNoIndex
+      case 31: //Scrape small steps
       {
-
+        ssd1306_SetCursor(0, 0);
+        ssd1306_WriteStringEightBitFont("           ", Font_6x7, White);
         ssd1306_DrawRectangle(White,0,15,55,35,2);
-        ssd1306_SetCursor(65, 28);
-        ssd1306_WriteStringEightBitFont("          ", Font_6x7, White);
-        ssd1306_SetCursor(65, 22);
+        ssd1306_SetCursor(60,  22);
+        ssd1306_WriteStringEightBitFont("WHOLE REED", Font_6x7, White);
+        ssd1306_SetCursor(60,  34);
+        ssd1306_WriteStringEightBitFont("SMALL STEPS", Font_6x7, White);
+        ssd1306_SetCursor(0, 24);
+        ssd1306_WriteString("SCRAPE", Font_11x18, Black);
+        USR_WriteKeys("#,$&*OK");
+        USR_WriteInstrumentName();
+        break;
+      }
+      case 32: //ScrapeOuter
+      {
+        ssd1306_SetCursor(0, 0);
+        ssd1306_WriteStringEightBitFont("           ", Font_6x7, White);
+        ssd1306_DrawRectangle(White,0,15,55,35,2);
+        ssd1306_SetCursor(60,  22);
+        ssd1306_WriteStringEightBitFont("ONLY OUTER", Font_6x7, White);
+        ssd1306_SetCursor(60,  34);
+        ssd1306_WriteStringEightBitFont("SECTIONS  ", Font_6x7, White);
+        ssd1306_SetCursor(0, 24);
+        ssd1306_WriteString("SCRAPE", Font_11x18, Black);
+        USR_WriteKeys("#,$&*OK");
+        USR_WriteInstrumentName();
+        break;
+      }
+      case 33: //ScrapeInner
+      {
+        ssd1306_SetCursor(0, 0);
+        ssd1306_WriteStringEightBitFont("           ", Font_6x7, White);
+        ssd1306_DrawRectangle(White,0,15,55,35,2);
+        ssd1306_SetCursor(60,  22);
+        ssd1306_WriteStringEightBitFont("ONLY INNER", Font_6x7, White);
+        ssd1306_SetCursor(60,  34);
+        ssd1306_WriteStringEightBitFont("SECTIONS  ", Font_6x7, White);
+        ssd1306_SetCursor(0, 24);
+        ssd1306_WriteString("SCRAPE", Font_11x18, Black);
+        USR_WriteKeys("#,$&*OK");
+        USR_WriteInstrumentName();
+        break;
+      }
+      case 34: //ScrapeNoIndex
+      {
+        ssd1306_SetCursor(0, 0);
+        ssd1306_WriteStringEightBitFont("           ", Font_6x7, White);
+        ssd1306_DrawRectangle(White,0,15,55,35,2);
+        ssd1306_SetCursor(60,  22);
         ssd1306_WriteStringEightBitFont("NO SIDE   ", Font_6x7, White);
-        ssd1306_SetCursor(65, 34);
+        ssd1306_SetCursor(60,  34);
         ssd1306_WriteStringEightBitFont("STEPS     ", Font_6x7, White);
         ssd1306_SetCursor(0, 24);
         ssd1306_WriteString("SCRAPE", Font_11x18, Black);
-        ssd1306_SetCursor(0, 57);
-        ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
-        ssd1306_SetCursor(0, 57);
-        ssd1306_WriteStringEightBitFont("#,$&*OK", Font_6x7, White);
-        ssd1306_SetCursor(127 - strlen(gMachineType[gMachine/100].Name)*Font_6x7.FontWidth, 57) ;
-        ssd1306_WriteStringEightBitFont(gMachineType[gMachine/100].Name, Font_6x7, White);        
-        break;
-      }
-      case 32: //ScrapeInner
-      {
-        ssd1306_DrawRectangle(White,0,15,55,35,2);
-        ssd1306_SetCursor(65, 28);
-        ssd1306_WriteStringEightBitFont("          ", Font_6x7, White);
-        ssd1306_SetCursor(65, 22);
-        ssd1306_WriteStringEightBitFont("INNER     ", Font_6x7, White);
-        ssd1306_SetCursor(65, 34);
-        ssd1306_WriteStringEightBitFont("SECTIONS  ", Font_6x7, White);
-        ssd1306_SetCursor(0, 24);
-        ssd1306_WriteString("SCRAPE", Font_11x18, Black);
-        ssd1306_SetCursor(0, 57);
-        ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
-        ssd1306_SetCursor(0, 57);
-        ssd1306_WriteStringEightBitFont("#,$&*OK", Font_6x7, White);
-        ssd1306_SetCursor(127 - strlen(gMachineType[gMachine/100].Name)*Font_6x7.FontWidth, 57) ;
-        ssd1306_WriteStringEightBitFont(gMachineType[gMachine/100].Name, Font_6x7, White);
-        break;
-      }
-      
-      case 31: //ScrapeOuter
-      {
-        ssd1306_DrawRectangle(White,0,15,55,35,2);
-        ssd1306_SetCursor(65, 28);
-        ssd1306_WriteStringEightBitFont("          ", Font_6x7, White);
-        ssd1306_SetCursor(65, 22);
-        ssd1306_WriteStringEightBitFont("OUTER     ", Font_6x7, White);
-        ssd1306_SetCursor(65, 34);
-        ssd1306_WriteStringEightBitFont("SECTIONS  ", Font_6x7, White);
-        ssd1306_SetCursor(0, 24);
-        ssd1306_WriteString("SCRAPE", Font_11x18, Black);
-        ssd1306_SetCursor(0, 57);
-        ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
-        ssd1306_SetCursor(0, 57);
-        ssd1306_WriteStringEightBitFont("#,$&*OK", Font_6x7, White);
-        ssd1306_SetCursor(127 - strlen(gMachineType[gMachine/100].Name)*Font_6x7.FontWidth, 57) ;
-        ssd1306_WriteStringEightBitFont(gMachineType[gMachine/100].Name, Font_6x7, White);  
+        USR_WriteKeys("#,$&*OK");
+        USR_WriteInstrumentName();
         break;
       }
       //User main menu
@@ -434,10 +473,7 @@ void USR_ShowScreen(uint32_t NewScreen)
           ssd1306_WriteStringEightBitFont("  DATA              ", Font_6x7, White);
         else
           ssd1306_WriteStringEightBitFont("                    ", Font_6x7, White);
-        ssd1306_SetCursor(0, 57);
-        ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
-        ssd1306_SetCursor(0, 57);
-        ssd1306_WriteStringEightBitFont("&$,*   ", Font_6x7, White);
+        USR_WriteKeys("&$,*");
         ssd1306_SetCursor(80, 57);
         ssd1306_WriteStringEightBitFont("    1-1", Font_6x7, White);
         ssd1306_SetCursor(0, 16 + (gCurrentScreen - 101) * 12);
@@ -478,10 +514,7 @@ void USR_ShowScreen(uint32_t NewScreen)
           else
               ssd1306_WriteStringEightBitFont("                    ", Font_6x7, White);
         }
-        ssd1306_SetCursor(0, 57);
-        ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
-        ssd1306_SetCursor(0, 57);
-        ssd1306_WriteStringEightBitFont("&$*    ", Font_6x7, White);
+        USR_WriteKeys("&$*");
         ssd1306_SetCursor(80, 57);
         if (gServiceMenu)
         {
@@ -507,10 +540,7 @@ void USR_ShowScreen(uint32_t NewScreen)
         ssd1306_WriteStringEightBitFont("CHANGES! PRESS OK TO ", Font_6x7, White);
         ssd1306_SetCursor(0, 40);
         ssd1306_WriteStringEightBitFont("RESET OR * TO CANCEL ", Font_6x7, White);
-        ssd1306_SetCursor(0, 57);
-        ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
-        ssd1306_SetCursor(0, 57);
-        ssd1306_WriteStringEightBitFont("#OK", Font_6x7, White);
+        USR_WriteKeys("#OK");
         break;
       }
       case 1020201: //Set stroke length: Press OK for goto HOME position
@@ -523,10 +553,7 @@ void USR_ShowScreen(uint32_t NewScreen)
         ssd1306_WriteStringEightBitFont("STROKE LENGTH ADJUST ", Font_6x7, White);
         ssd1306_SetCursor(0, 40);
         ssd1306_WriteStringEightBitFont("POSITION.            ", Font_6x7, White);
-        ssd1306_SetCursor(0, 57);
-        ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
-        ssd1306_SetCursor(0, 57);
-        ssd1306_WriteStringEightBitFont("*OK    ", Font_6x7, White);
+        USR_WriteKeys("*OK");
         break;
       }
       case 1020202: //Set stroke length: PLEASE WAIT
@@ -538,8 +565,7 @@ void USR_ShowScreen(uint32_t NewScreen)
         ssd1306_WriteStringEightBitFont("     PLEASE WAIT     ", Font_6x7, White);
         ssd1306_SetCursor(0, 40);
         ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
-        ssd1306_SetCursor(0, 57);
-        ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
+        USR_WriteKeys("");
         break;
       }
       case 1020203: //Set stroke length
@@ -550,8 +576,7 @@ void USR_ShowScreen(uint32_t NewScreen)
         ssd1306_WriteStringEightBitFont("OK: START POSITION   ", Font_6x7, White);
         ssd1306_SetCursor(0, 40);
         ssd1306_WriteStringEightBitFont(" *: CANCEL           ", Font_6x7, White);
-        ssd1306_SetCursor(0, 57);
-        ssd1306_WriteStringEightBitFont("*OK    ", Font_6x7, White);
+        USR_WriteKeys("*OK");
         break;
       }
 
@@ -565,10 +590,7 @@ void USR_ShowScreen(uint32_t NewScreen)
         ssd1306_WriteStringEightBitFont("# ON            , OFF", Font_6x7, White);
         ssd1306_SetCursor(0, 40);
         ssd1306_WriteStringEightBitFont("      & SLOWER       ", Font_6x7, White);
-        ssd1306_SetCursor(0, 57);
-        ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
-        ssd1306_SetCursor(0, 57);
-        ssd1306_WriteStringEightBitFont("#,$&*  ", Font_6x7, White);
+        USR_WriteKeys("#,$&*");
         break;
       }
       case 10101:
@@ -610,13 +632,10 @@ void USR_ShowScreen(uint32_t NewScreen)
           else
               ssd1306_WriteStringEightBitFont("                    ", Font_6x7, White);
         }
-        ssd1306_SetCursor(0, 57);
-        ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
-        ssd1306_SetCursor(0, 57);
         if (gServiceMenu)
-          ssd1306_WriteStringEightBitFont("&$,*   ", Font_6x7, White);
+          USR_WriteKeys("&$,*");
         else
-          ssd1306_WriteStringEightBitFont("&$*    ", Font_6x7, White);
+          USR_WriteKeys("&$*");
         ssd1306_SetCursor(80, 57);
         if (gServiceMenu)
         {
@@ -640,8 +659,7 @@ void USR_ShowScreen(uint32_t NewScreen)
         ssd1306_WriteStringEightBitFont("SCREEN MISSING       ", Font_6x7, White);
         ssd1306_SetCursor(0, 40);
         ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
-        ssd1306_SetCursor(0, 57);
-        ssd1306_WriteStringEightBitFont("                     ", Font_6x7, White);
+        USR_WriteKeys("");
 			}
     }
     ssd1306_UpdateScreen();
@@ -824,6 +842,7 @@ uint8_t USR_ButtonPressed (enuButtons ReqButton, uint16_t ReqTime, uint8_t ReqWa
     Button[(uint8_t) ReqButton].WaitForRelease = ReqWaitForRelease;
     ReturnValue = 1;
   }
+	
   if ((ReqWaitForRelease==0)&&(ReturnValue == 1))
   {
     if (Button[(uint8_t) ReqButton].WaitForReleaseOld == 0) //User can hold the button (Delay 10)

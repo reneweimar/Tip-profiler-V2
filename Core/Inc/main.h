@@ -65,8 +65,8 @@ typedef struct
   enuStatus SubStatusOld;
   uint8_t PositionControl;
   uint8_t SpeedControl;
+  uint8_t IsHomed;
   uint16_t Ratio;
-  uint16_t UmPerRev;
   float P;
 	float I;
 	float D;
@@ -74,19 +74,15 @@ typedef struct
 	float PosI;
 	float PosD;
   uint8_t PulsesPerRevolution;   //12
-  int16_t GetSpeed;
-  int16_t GetSpeedOld;
   int16_t SetSpeed;
+  int16_t GetSpeed;
   int32_t SetPosition;
   int32_t GetPosition;
-  float GetUm;
+  int32_t SetUm;
+  int32_t GetUm;
   int16_t MaxSpeed;
   int32_t Encoder;
   int32_t EncoderOld;
-  int32_t EncoderMax;
-  uint16_t TimerValue;
-  uint16_t TimerValueOld;
-  uint16_t TimePerRev;
   int32_t Control;
   int32_t PosControl;
   float ErrorPOld;
@@ -99,6 +95,8 @@ typedef struct
 	float PosErrorD;
 	float PID;
 	float PosPID;
+  float UmPerPulse;
+  int16_t GetSpeedOld;
 } stcDCMotor;
 
 /* USER CODE END ET */
