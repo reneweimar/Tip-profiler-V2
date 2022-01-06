@@ -66,6 +66,7 @@ typedef struct
   uint8_t PositionControl;
   uint8_t SpeedControl;
   uint8_t IsHomed;
+  uint8_t IsInStartPosition;
   uint16_t Ratio;
   float P;
 	float I;

@@ -63,10 +63,10 @@ void STR_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(SleepStr_GPIO_Port, &GPIO_InitStruct);
 
-  HAL_NVIC_SetPriority(EXTI1_IRQn, 2, 0);
+  HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI1_IRQn);
 
-  HAL_NVIC_SetPriority(EXTI2_IRQn, 2, 0);
+  HAL_NVIC_SetPriority(EXTI2_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI2_IRQn);
 
   HAL_TIM_Base_Start(&htim3);
@@ -139,10 +139,6 @@ void STR_HandleMotor (void)
   }
   gSTR_Motor.GetSpeed = (int16_t) (60000000 /((float) PulseTime / 10 * (float) gSTR_Motor.PulsesPerRevolution));
   PulseTimeOld = PulseTime;
-  //int Encoder = gSTR_Motor.Encoder;
-  //int EncoderValue = Encoder - gSTR_Motor.EncoderOld;
-  //gSTR_Motor.EncoderOld = Encoder;
-  //gSTR_Motor.GetSpeed = (int16_t) ((float) EncoderValue / (float) gSTR_Motor.PulsesPerRevolution * 600);
   PulseTime = 0;
   
   if (gSTR_Motor.MainStatus==INACTIVE)
@@ -353,6 +349,7 @@ void gSTR_HandleTasks(void)
   					gSTR_Motor.Encoder = 0;
             gSTR_Motor.EncoderOld = 0;
             gSTR_Motor.IsHomed = 1;
+            gSTR_Motor.IsInStartPosition = 0;
             STR_SetStatus(SubStatus, HOME);
           }
           else 
@@ -373,18 +370,26 @@ void gSTR_HandleTasks(void)
         case UNDEFINED:
         {
           gSTR_Motor.MainStatus = ACTIVE;
-          if (STR_HomeOff()) //Homesensor is on, so stroke motor is home
+/*          if (STR_HomeOff()) //Homesensor is on, so stroke motor is home
           {
+            gSTR_Motor.IsInStartPosition = 0;
             gSTR_Motor.Encoder = 0;
             gSTR_Motor.EncoderOld = 0;
             gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
             STR_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
           }
-          else //Goto home position first
+          else 
+          */
+          if ((gSTR_Motor.IsHomed == 0)||(gSTR_Motor.Encoder > 300)) //Goto home position first
           {
             gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
             STR_SetStatus(SubStatus,WAITFORHOMESENSOR);
           }  
+          else
+          {
+            gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
+            STR_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
+          }
           break;
         }
         case WAITFORHOMESENSOR:
@@ -409,6 +414,7 @@ void gSTR_HandleTasks(void)
 					//TODO timeout
           if ((gSTR_Motor.Encoder == Encoder)&& (gSTR_Motor.Encoder >= STARTPOSITION - 50)) //Motor has stopped and encoder position is around start position
           {
+            gSTR_Motor.IsInStartPosition = 1;
             STR_SetStatus(SubStatus, GOTOSTARTPOSITION);
           }
           else 

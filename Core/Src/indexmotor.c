@@ -26,24 +26,14 @@ void IDX_Init(void)
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   HAL_GPIO_WritePin(SleepIdx_GPIO_Port, SleepIdx_Pin, GPIO_PIN_RESET);
-  //HAL_GPIO_WritePin(A1_GPIO_Port, A1_Pin, GPIO_PIN_RESET);
-  //HAL_GPIO_WritePin(A2_GPIO_Port, A2_Pin, GPIO_PIN_RESET);
   GPIO_InitStruct.Pin = IntIndex_Pin;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(IntIndex_GPIO_Port, &GPIO_InitStruct);
-  /*GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
-  GPIO_InitStruct.Pin = A_Pin;
-  HAL_GPIO_Init(A_GPIO_Port, &GPIO_InitStruct);
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Pin = B_Pin;
-  HAL_GPIO_Init(B_GPIO_Port, &GPIO_InitStruct);
-  */
   GPIO_InitStruct.Pin = SleepIdx_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -53,7 +43,7 @@ void IDX_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(FaultIdx_GPIO_Port, &GPIO_InitStruct);
-  HAL_NVIC_SetPriority(EXTI0_IRQn, 5, 0);
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI0_IRQn);
   HAL_TIM_Base_Start(&htim1);
   HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_1);
@@ -98,7 +88,7 @@ void IDX_SetStatus (enuType newType, enuStatus newStatus)
 //! \brief       Sets the index motor status
 //! \details     Sets status and the position
 //! \param [in]  enuStatus newStatus
-//! \param [in]  int32_t newPosition
+//! \param [in]  int32_t newPosition in pulses
 //! \param [out] enuStatus IDX_Motor.SubStatus or READY
 enuStatus IDX_Set(enuStatus newStatus, int32_t newPosition)
 {
@@ -235,11 +225,17 @@ void IDX_HandleMotor (void)
   static float PositionOld;
   static float Position;
 
-  
-  
-  //gIDX_Motor.GetPosition = (int32_t) (((float) TIM8->CNT - 32767) / gIDX_Motor.UmPerPulse);
   gIDX_Motor.GetPosition = TIM8->CNT - 32767;
-  //gIDX_Motor.GetUm = (int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse);
+  if ((abs(gIDX_Motor.GetPosition - gIDX_Motor.SetPosition) < 3) && (gIDX_Motor.IsHomed == 1))
+  {
+    gIDX_Motor.IsInStartPosition = 1;
+  }
+  else
+  {
+    gIDX_Motor.IsInStartPosition = 0;
+  }
+    
+  gIDX_Motor.GetUm = (int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse);
   //gIDX_Motor.SetUm = (int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse);
 
   Position = gIDX_Motor.GetPosition;
@@ -299,6 +295,11 @@ void IDX_HandleMotor (void)
     gIDX_Motor.SetSpeed = 0;
   }
 }
+void gIDX_SetPosition (int32_t newPosition)
+{
+  gIDX_Motor.MainStatus = ACTIVE;
+  gIDX_Motor.SetPosition = newPosition;
+}
 
 //-----------------------------------------------------------------------------
 //! \brief       Handles the tasks of the index motor
@@ -310,6 +311,16 @@ void gIDX_HandleTasks(void)
   {
     case UNDEFINED:
     {
+      gIDX_Motor.MainStatus = INACTIVE;
+      break;
+    }
+    case SETPOSITION:
+    {
+      gIDX_Motor.PosI = 0.001;
+      gIDX_Motor.PosD = 500;
+      gIDX_Motor.MainStatus = ACTIVE;
+      gIDX_Motor.SetPosition = IDX_Position;
+      IDX_SetStatus(MainStatus,UNDEFINED);
       break;
     }
     case GOTOPOSITION:

@@ -1,4 +1,6 @@
----- HAL_NVIC_EnableIRQ(EXT Matches (3 in 2 files) ----
-Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
-Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
-Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  HAL_NVIC_EnableIRQ(EXTI2_IRQn);
+---- gSTR_NextSideStep Matches (5 in 4 files) ----
+Main.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    if (gSTR_NextSideStep)
+Main.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      gSTR_NextSideStep = 0;
+Stm32f1xx_it.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  gSTR_NextSideStep = 1;
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):uint8_t gSTR_NextSideStep;
+Work.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):extern uint8_t gSTR_NextSideStep;

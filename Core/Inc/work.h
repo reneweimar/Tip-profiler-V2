@@ -41,6 +41,7 @@ typedef enum
     SCRAPEINNERSECTIONS,
     SCRAPENOSIDESTEPS,
     SCRAPEOUTERSECTIONS,
+    SETPOSITION,
     START,
     STOP,
     WAITFORCOMMANDFINISHED,
@@ -133,6 +134,11 @@ extern uint16_t VirtAddVarTab[NB_OF_VAR];
 extern uint16_t ADC_Converted_Values[1];
 extern uint32_t HomeCnt;
 extern uint32_t HomeCntDelay;
+extern int32_t gIDX_HalfScrapeWidth;
+extern int32_t gIDX_SideStepBig;
+extern int32_t gIDX_SideStepSmall;
+extern uint8_t gIDX_StatusFlag;
+extern uint8_t gSTR_NextSideStep;
 extern stcStatus gWRK_Status;
 extern StcMachine gMachineType[NROFMACHINETYPES];
 extern StcCommands gCommands[];

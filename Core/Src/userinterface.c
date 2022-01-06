@@ -30,11 +30,13 @@ uint8_t gParameterDecimals;
 //-----------------------------------------------------------------------------
 //! \brief      Fills error message line 0 to 2
 //! \details    Fills gUSR_Errormessage
-//! \param[in]  char* Message
-//! \param[in]  int LineNumber
-void gUSR_SetMessage (char* newMessage, uint8_t newLine)
+//! \param[in]  char* newMessage0, newMessage1, newMessage2, newMessage3
+void gUSR_SetMessage (char* newMessage0, char* newMessage1, char* newMessage2, char* newMessage3)
 {
-   strcpy (USR_Message[newLine], newMessage);
+  strcpy (USR_Message[0], newMessage0);
+  strcpy (USR_Message[1], newMessage1);
+  strcpy (USR_Message[2], newMessage2);
+  strcpy (USR_Message[3], newMessage3);
 }
 
 //-----------------------------------------------------------------------------

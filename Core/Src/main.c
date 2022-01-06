@@ -131,13 +131,33 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-  if ((gSTR_Status.MainStatus == GOTOSTARTPOSITION) && (gSTR_Status.SubStatus == WAITFORSTROKEMOTORSTART))
-	{
-		if (gSTR_Motor.Encoder == 300)
+  if ((gSTR_Status.MainStatus == GOTOSTARTPOSITION) && (gSTR_Status.SubStatus == WAITFORSTROKEMOTORSTART) && (gSTR_Motor.Encoder == 300))
+  {
+    STR_Stop();
+  }
+  if ((gWRK_Status.MainStatus == SCRAPEFULLREED) && (gWRK_Status.SubStatus == WAITFORSTROKEMOTORSTOP) && (gSTR_Motor.Encoder == 300))
+  {
+    if (gSTR_NextSideStep)
     {
-      STR_Stop();
+      gSTR_NextSideStep = 0;
+      if (gIDX_StatusFlag == 1)
+      {
+        gIDX_StatusFlag = 2;
+        STR_Stop();
+      }
+
+      if (gIDX_Motor.SetPosition > gIDX_SideStepBig) 
+      {
+        gIDX_SetPosition(gIDX_Motor.SetPosition - gIDX_SideStepBig);
+      }
+      else 
+      {
+        gIDX_SetPosition(0);
+        gIDX_StatusFlag = 1;
+      }
     }
-	}
+  }
+  
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

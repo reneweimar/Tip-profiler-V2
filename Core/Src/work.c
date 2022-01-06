@@ -34,6 +34,15 @@ uint8_t BattPercentage = 50;
 uint16_t gMachine;
 //! \Global Command to repeat
 uint8_t gRepeatCommand;
+//! \Global Scrapewidth / 2
+int32_t gIDX_HalfScrapeWidth;
+int32_t gIDX_SideStepBig;
+int32_t gIDX_SideStepSmall;
+uint8_t gIDX_StatusFlag;
+uint8_t gSTR_NextSideStep;
+
+
+
 //! \Global parameters container defaults for machine type 0 (oboe)
 StcMachine gMachineType[NROFMACHINETYPES];
 //! \Global commands container
@@ -384,6 +393,73 @@ void WRK_HandleSequence(void)
       WRK_SetStatus(MainStatus,ACTIVE);
       break;
     }
+    case SCRAPEFULLREED:
+    {
+      switch (gWRK_Status.SubStatus)
+      {
+        case UNDEFINED:
+        {
+          if (gIDX_Motor.IsHomed == 0)
+          {
+            gUSR_SetMessage("SIDE STEP SET IS  ","NOT HOMED","","OK");
+            gReturnScreen = gCurrentScreen;
+            USR_ShowScreen(3);
+            WRK_SetStatus(MainStatus, ACTIVE);
+            WRK_SetStatus(SubStatus, WAITFORUSER);
+          }
+          else if ((gIDX_Motor.IsInStartPosition == 0) || (gSTR_Motor.IsInStartPosition == 0))
+          {
+            gUSR_SetMessage("SIDE STEP SET OR","STROKE SET NOT AT","START POSITION","OK");
+            gReturnScreen = gCurrentScreen;
+            USR_ShowScreen(3);
+            WRK_SetStatus(MainStatus, ACTIVE);
+            WRK_SetStatus(SubStatus, WAITFORUSER);
+          }
+          else
+          {
+            gUSR_SetMessage("SCRAPING THE REED","PRESS ANY KEY TO","PAUSE SCRAPING","#,$&*OK");
+            gReturnScreen = gCurrentScreen;
+            USR_ShowScreen(4);
+            WRK_SetStatus(SubStatus, WAITFORPOSITION);
+          }
+          break;
+        }
+        case WAITFORPOSITION:
+        {
+          gIDX_HalfScrapeWidth = gMachineType[gMachine].Parameters[0].Value * 42 / 15; //Pulses -> Value * 10 / 2 (Half scrape width) * 840 / 1500 um -> Pulse
+          gIDX_SideStepBig = gMachineType[gMachine].Parameters[4].Value * 84 / 15; //Pulses -> Value * 10 * 840 / 1500
+          gIDX_StatusFlag = 0;
+          if (IDX_Set(GOTOPOSITION, gIDX_HalfScrapeWidth)==READY) // 
+          {
+            WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
+          }
+          break;
+        }
+        case WAITFORSTROKEMOTORSTART:
+        {
+          if (gSTR_Set(START,gMachineType[gMachine].Parameters[2].Value*30) == READY) // Value / 100 * 50 (ratio) * 60 (1 min = 60 s)
+          {
+            WRK_SetStatus(SubStatus, WAITFORSTROKEMOTORSTOP);
+          }
+          break;
+        }
+        case WAITFORSTROKEMOTORSTOP:
+        {
+          if (gIDX_StatusFlag == 2)
+          {
+            gIDX_Motor.MainStatus = (INACTIVE);
+            WRK_SetStatus(MainStatus, ACTIVE);
+            WRK_SetStatus(SubStatus, WAITFORUSER);
+            USR_ShowScreen(gReturnScreen);
+            
+          }
+          break;
+        }
+        default:
+          break;
+      }
+      break;
+    }
     case EXECUTECOMMAND:
     {
       switch (gWRK_Status.SubStatus)
@@ -477,10 +553,7 @@ void WRK_HandleSequence(void)
           if (gSTR_Set(START,gMachineType[gMachine].Parameters[2].Value*30) == READY)
           {
             gSTR_Set(UNDEFINED,0);
-            gUSR_SetMessage("SCRAPING THE REED.",0);
-            gUSR_SetMessage("PRESS OK TO STOP. ",1);
-            gUSR_SetMessage("                  ",2);
-            gUSR_SetMessage("OK",3);
+            gUSR_SetMessage("SCRAPING THE REED.","PRESS OK TO STOP. ","","OK");
             USR_ShowScreen(4);
             WRK_SetStatus(SubStatus, WAITFORUSER);
           }
@@ -490,10 +563,7 @@ void WRK_HandleSequence(void)
         {
           if (USR_ButtonPressed(BtnOk,1,1)==1)
           {
-            gUSR_SetMessage("STOP SCRAPING     ",0);
-            gUSR_SetMessage("GOING TO START    ",1);
-            gUSR_SetMessage("POSITION          ",2);
-            gUSR_SetMessage("",3);
+            gUSR_SetMessage("STOP SCRAPING","GOING TO START","POSITION","");
             USR_ShowScreen(4);
             WRK_SetStatus(SubStatus, WAITFORSTROKEMOTORSTOP);
           }
@@ -515,46 +585,7 @@ void WRK_HandleSequence(void)
 			}
       break;
     }
-    case SCRAPEFULLREED:
-    {
-      switch (gWRK_Status.SubStatus)
-      {
-        case UNDEFINED:
-        {
-          if (gIDX_Motor.IsHomed == 0)
-          {
-            gUSR_SetMessage("      NOT HOMED",1);
-            gUSR_SetMessage("OK",3);
-            gReturnScreen = gCurrentScreen;
-            USR_ShowScreen(3);
-            WRK_SetStatus(MainStatus, ACTIVE);
-            WRK_SetStatus(SubStatus, WAITFORUSER);
-          }
-          else
-          {
-            gUSR_SetMessage("SCRAPING THE REED.",0);
-            gUSR_SetMessage("PRESS ANY KEY TO",1);
-            gUSR_SetMessage("PAUSE THE PROCESS",2);
-            gUSR_SetMessage("#,$&*OK",3);
-            gReturnScreen = gCurrentScreen;
-            USR_ShowScreen(4);
-            WRK_SetStatus(SubStatus, WAITFORPOSITION);
-          }
-          break;
-        }
-        case WAITFORPOSITION:
-        {
-          if (IDX_Set(GOTOPOSITION, 1000)==READY)
-          {
-            WRK_SetStatus(MainStatus, ACTIVE);
-          }
-          break;
-        }
-        default:
-          break;
-      }
-      break;
-    }
+    
     case ACTIVE:
     {
       switch (gWRK_Status.SubStatus)
@@ -656,8 +687,14 @@ void WRK_HandleSequence(void)
               WRK_SetStatus(MainStatus,ACTIVE);
               WRK_SetStatus(SubStatus,WAITFORUSER);
             }
-            else
+            else if (gIDX_Motor.IsInStartPosition == 0) 
+            {  
               WRK_SetStatus(SubStatus,WAITFORINDEXSTART);
+            }
+            else
+            {
+              WRK_SetStatus(SubStatus,WAITFORUSER);
+            }
           }
           break;
         }
@@ -690,6 +727,7 @@ void WRK_HandleSequence(void)
             }
             else if (gCurrentScreen == 30) //Start Scrape process with big side step
             {
+              gReturnScreen = gCurrentScreen;
               WRK_SideStep = gMachineType[gMachine].Parameters[4].Value;
               WRK_SetStatus(MainStatus, SCRAPEFULLREED);
             }
