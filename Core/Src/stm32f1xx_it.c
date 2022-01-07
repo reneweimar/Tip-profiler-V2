@@ -366,7 +366,6 @@ void EXTI15_10_IRQHandler(void)
 void TIM6_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM6_IRQn 0 */
-  //IDX_Tick();
   /* USER CODE END TIM6_IRQn 0 */
   HAL_TIM_IRQHandler(&htim6);
   /* USER CODE BEGIN TIM6_IRQn 1 */

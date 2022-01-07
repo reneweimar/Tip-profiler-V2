@@ -217,6 +217,19 @@ void USR_WriteKeys (char* newKeys)
   ssd1306_SetCursor(0, 57);
   ssd1306_WriteStringEightBitFont(newKeys, Font_6x7, White);
 }
+void USR_ShowPosition (int32_t newPosition)
+{
+  char strValue[50];
+
+  sprintf(strValue,"%d UM    ",newPosition);
+  ssd1306_SetCursor(64, 22);
+  ssd1306_WriteStringEightBitFont(strValue,Font_6x7, White);
+}
+void USR_ClearPosition (void)
+{
+  ssd1306_SetCursor(64, 22);
+  ssd1306_WriteStringEightBitFont("              ",Font_6x7, White);
+}
 
 //-----------------------------------------------------------------------------
 //! \brief      Displays screens

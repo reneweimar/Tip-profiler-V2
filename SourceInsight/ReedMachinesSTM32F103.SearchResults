@@ -1,5 +1,7 @@
----- STR_SetPWM Matches (4 in 2 files) ----
-Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      STR_SetPWM(CW, gSTR_Motor.Control/100,0);
-Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  STR_SetPWM(CW,0,1);
-Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):void STR_SetPWM (enuStatus newStatus, uint8_t newSpeed, uint8_t FastDecay)
-Strokemotor.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):extern void STR_SetPWM (enuStatus newStatus, uint8_t newSpeed, uint8_t FastDecay);
+---- showposition Matches (6 in 4 files) ----
+Main.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse));
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):void USR_ShowPosition (int32_t newPosition)
+Userinterface.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):extern void USR_ShowPosition (int32_t newPosition);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse));
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse));
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse));

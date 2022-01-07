@@ -11,10 +11,13 @@
 #include "tim.h"
 #include <stdlib.h>
 //-----------------------------------------------------------------------------
-//! \Global step counter
+//! \Global Index motor container
 stcDCMotor gIDX_Motor;
+//! \Global Index motor status container
 enuIDX_Unit gIDX_Status;
+//! \Global Reset index motor position flag
 uint8_t gIDX_ResetPosition;
+//! \Global Index motor position setting for side step
 int32_t IDX_Position;
 
 //-----------------------------------------------------------------------------
@@ -83,7 +86,6 @@ void IDX_SetStatus (enuType newType, enuStatus newStatus)
         gIDX_Status.SubStatus = newStatus;
     }
 }
-
 //-----------------------------------------------------------------------------
 //! \brief       Sets the index motor status
 //! \details     Sets status and the position
@@ -113,7 +115,6 @@ enuStatus IDX_Set(enuStatus newStatus, int32_t newPosition)
   }
   return gIDX_Status.SubStatus;
 }
-
 //-----------------------------------------------------------------------------
 //! \brief      Controls the index motor position PID
 //! \details    Calculates the PID value for the position control
@@ -169,7 +170,6 @@ static void IDX_HandlePosPID (void)
 //! \brief      Controls the index motor direction and speed
 //! \details    Sets the PWM with the calculated speed
 //! \param      None
-
 void IDX_SetPWM (enuStatus newStatus, uint8_t newSpeed)
 {
   switch (newStatus)
@@ -194,7 +194,6 @@ void IDX_SetPWM (enuStatus newStatus, uint8_t newSpeed)
     }
   }
 }
-
 //-----------------------------------------------------------------------------
 //! \brief      Controls the index motor speed PID
 //! \details    Calculates the PID value for the speed control
@@ -218,8 +217,8 @@ static void IDX_HandleSpeedPID (void) //newname
 }
 //-----------------------------------------------------------------------------
 //! \brief      Handles the index motor position
-//! \details    Controls the motor
-//! \param      None
+//! \details    Controls the motor to the set position
+//! \params     None
 void IDX_HandleMotor (void)
 {
   static float PositionOld;
@@ -236,7 +235,6 @@ void IDX_HandleMotor (void)
   }
     
   gIDX_Motor.GetUm = (int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse);
-  //gIDX_Motor.SetUm = (int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse);
 
   Position = gIDX_Motor.GetPosition;
   if (abs (Position - PositionOld) < 3)
@@ -261,27 +259,27 @@ void IDX_HandleMotor (void)
   }
   if (gIDX_Motor.PositionControl)
   {
-      IDX_HandlePosPID();
+    IDX_HandlePosPID();
   }
   if (gIDX_Motor.SpeedControl)
   {
-      IDX_HandleSpeedPID();
+    IDX_HandleSpeedPID();
   }
   if ((gIDX_Motor.PositionControl == 0) && (gIDX_Motor.SpeedControl == 0))
   {
-      gIDX_Motor.Control = gIDX_Motor.SetSpeed;
+    gIDX_Motor.Control = gIDX_Motor.SetSpeed;
   }
   if ((gIDX_Motor.Control < 0)&&(gIDX_Motor.MainStatus==ACTIVE))
   {
-      IDX_SetPWM(CW, - gIDX_Motor.Control/100);
+    IDX_SetPWM(CW, - gIDX_Motor.Control/100);
   }
   else if ((gIDX_Motor.Control > 0)&&(gIDX_Motor.MainStatus==ACTIVE))
   {
-      IDX_SetPWM(CCW, gIDX_Motor.Control/100);
+    IDX_SetPWM(CCW, gIDX_Motor.Control/100);
   }
   else if (gIDX_Motor.MainStatus==ACTIVE)
   {
-      IDX_SetPWM(CW, 0);
+    IDX_SetPWM(CW, 0);
   }
   else
   {
@@ -311,7 +309,7 @@ void gIDX_SetPosition (int32_t newPosition)
 //-----------------------------------------------------------------------------
 //! \brief       Handles the tasks of the index motor
 //! \details     Evaluates the home sensor and encoder
-//! \param       None
+//! \params      None
 void gIDX_HandleTasks(void)
 { 
   static uint8_t CheckStoppedCounter;
@@ -340,7 +338,7 @@ void gIDX_HandleTasks(void)
         {
           if ((abs(gIDX_Motor.GetPosition - gIDX_Motor.SetPosition) < IDX_ACCURACY) && (gIDX_Motor.GetSpeed == 0))
           {
-            if (CheckStoppedCounter ++ > 10)
+            if (CheckStoppedCounter ++ > 10) //To avoid preliminary triggering in case of overshoot
             {
               gIDX_Motor.MainStatus = INACTIVE;  
               IDX_SetStatus(SubStatus,GOTOPOSITION);
@@ -385,7 +383,7 @@ void gIDX_HandleTasks(void)
         {
           if ((abs(gIDX_Motor.GetPosition - gIDX_Motor.SetPosition) < IDX_ACCURACY) && (gIDX_Motor.GetSpeed == 0))
           {
-            if (CheckStoppedCounter ++ > 10)
+            if (CheckStoppedCounter ++ > 10) //To avoid preliminary triggering in case of overshoot
             {
   						if (gIDX_Motor.SetPosition == 0)
               {
@@ -413,7 +411,5 @@ void gIDX_HandleTasks(void)
       break;
   }
 }
-
 //-----------------------------------------------------------------------------
-
 

@@ -12,7 +12,7 @@
 #include "stm32f1xx_hal.h"
 //-----------------------------------------------------------------------------
 #define IDX_ACCURACY 10 //10 pulses = 17 um
-#define IDX_SIDESTEPAFTERPAUSE 1
+#define IDX_SHOWREALPOSITION 1
 #define FaultIdx_Pin GPIO_PIN_15
 #define FaultIdx_GPIO_Port GPIOB
 #define SleepIdx_Pin GPIO_PIN_8
@@ -47,15 +47,15 @@ typedef  struct
   enuStatus SubStatus;
   enuStatus SubStatusOld;
 } enuIDX_Unit;
-
 //-----------------------------------------------------------------------------
+//IDX_exported variables
+//-----------------------------------------------------------------------------
+extern uint8_t gIDX_ResetPosition;
+extern stcDCMotor gIDX_Motor;
 //-----------------------------------------------------------------------------
 //IDX_functions
 //---------------------- SYSTEM ------------------------
-extern stcDCMotor gIDX_Motor;
-extern uint8_t gIDX_ResetPosition;
 extern void IDX_Init(void);
-extern void IDX_Tick(void);
 extern void IDX_HandleMotor (void);
 extern enuStatus IDX_Set(enuStatus newStatus, int32_t newPosition);
 extern void gIDX_HandleTasks(void);

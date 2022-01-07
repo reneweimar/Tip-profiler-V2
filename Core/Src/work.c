@@ -266,15 +266,15 @@ void WRK_HandleBatteryStatus (void)
 //! \param      None
 void WRK_HandleTickTime (void)
 {
-    if (gInitialized)
-    {
-      gCounter.Delay ++;
-      WRK_HandleSequence();
-      WRK_HandleBatteryStatus();
-      USR_HandleButtons();
-      IDX_HandleMotor();
-      STR_HandleMotor();
-    }
+  if (gInitialized)
+  {
+    gCounter.Delay ++;
+    WRK_HandleSequence();
+    WRK_HandleBatteryStatus();
+    USR_HandleButtons();
+    IDX_HandleMotor();
+    STR_HandleMotor();
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -420,8 +420,14 @@ void WRK_HandleSequence(void)
         case WAITFORPOSITION:
         {
           gScrape.Speed = gMachineType[gMachine].Parameters[2].Value*30; // Value / 100 * 50 (ratio) * 60 (1 min = 60 s)
+          USR_ClearPosition();
           if (IDX_Set(GOTOPOSITION, gScrape.StartPosition )==READY)
           {
+#ifdef IDX_SHOWREALPOSITION
+              USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse));
+#else
+              USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse));
+#endif
             IDX_Set(UNDEFINED,0);
             WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
           }
@@ -477,6 +483,7 @@ void WRK_HandleSequence(void)
             }
             else
             {
+              USR_ClearPosition();
               WRK_SetStatus(SubStatus, WAITFORINDEXHOME);
             }
           }
@@ -504,41 +511,27 @@ void WRK_HandleSequence(void)
           {
             if (gScrape.Status == 7) //pause scraping right part.
             {
-              if (IDX_SIDESTEPAFTERPAUSE)
-              {
-                if ((gIDX_Motor.SetPosition - gScrape.EndPosition)> gScrape.SideStep) 
-                {
-                  gIDX_SetPosition(gIDX_Motor.SetPosition - gScrape.SideStep);
-                }
-                else
-                {
-                  gIDX_SetPosition(gScrape.EndPosition);
-                  gScrape.Status = 1;
-                }
-              }
               gScrape.Status = 0;
               gUSR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK");
               USR_ShowScreen(4);
+#ifdef IDX_SHOWREALPOSITION
+                USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse));
+#else
+                USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse));
+#endif
               WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
               break;
             }
             else if (gScrape.Status == 9) //Pause scraping left part.
             {
-              if (IDX_SIDESTEPAFTERPAUSE)
-              {
-                if ((abs(gIDX_Motor.SetPosition) - abs(gScrape.EndPosition)) > gScrape.SideStep) 
-                {
-                  gIDX_SetPosition(gIDX_Motor.SetPosition + gScrape.SideStep);
-                }
-                else 
-                {
-                  gIDX_SetPosition(gScrape.EndPosition);
-                  gScrape.Status = 4;
-                }
-              }
               gScrape.Status = 3;
               gUSR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK");
               USR_ShowScreen(4);
+#ifdef IDX_SHOWREALPOSITION
+                USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse));
+#else
+                USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse));
+#endif
               WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
               break;
             }

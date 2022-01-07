@@ -65,6 +65,8 @@ void USR_DrawLogo (SSD1306_COLOR color);
 extern uint32_t gCurrentScreen;
 extern uint32_t gReturnScreen;
 extern uint32_t gLastScrapeScreen;
+extern void USR_ShowPosition (int32_t newPosition);
+extern void USR_ClearPosition (void);
 extern void gUSR_SetMessage (char* newMessage0, char* newMessage1, char* newMessage2, char* newMessage3, char* newMessage4, char* newMessage5);
 extern void USR_EnterValue(int16_t NewNumber);
 extern void USR_SaveParameter(void);

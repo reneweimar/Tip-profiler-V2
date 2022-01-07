@@ -36,8 +36,8 @@ typedef  struct
   enuStatus SubStatus;
   enuStatus SubStatusOld;
 } enuSTR_Unit;
-
-
+//-----------------------------------------------------------------------------
+//STR_exported variables
 //-----------------------------------------------------------------------------
 extern stcDCMotor gSTR_Motor;
 extern enuSTR_Unit gSTR_Status;
@@ -46,12 +46,10 @@ extern uint8_t STR_HomeFlag;
 //-----------------------------------------------------------------------------
 //STR_functions
 //---------------------- SYSTEM ------------------------
-void gSTR_HandleTasks(void);
-
+extern void gSTR_HandleTasks(void);
 extern enuStatus STR_Set(enuStatus newStatus, int32_t newSpeed);
 extern void STR_Init(void);
 extern void STR_HandleMotor (void);
-extern void STR_HandleEncoder (void);
 extern void STR_SetPWM (enuStatus newStatus, uint8_t newSpeed, uint8_t FastDecay);
 extern void STR_SetStatus (enuType newType, enuStatus newStatus);
 extern void STR_Stop(void);

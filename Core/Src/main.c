@@ -137,7 +137,10 @@ int main(void)
       gSTR_Motor.Encoder = 0;
       gSTR_Motor.EncoderOld = 0;
       gSTR_Motor.IsHomed = 1;
-      gScrape.NextSideStep = 1;
+      if (gWRK_Status.MainStatus == SCRAPEREED) 
+        gScrape.NextSideStep = 1;
+      else
+        gScrape.NextSideStep = 0;
       if ((gScrape.Status == 1)||(gScrape.Status == 4)) gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
       if (gSTR_Status.MainStatus == HOME)
       {
@@ -153,11 +156,11 @@ int main(void)
     {
       STR_Stop();
     }
-    if ((gWRK_Status.MainStatus == SCRAPEREED) && ((gWRK_Status.SubStatus == WAITFORSTROKEMOTORSTOP) || (gWRK_Status.SubStatus == WAITFORUSER)) && (gSTR_Motor.Encoder == 300))
+    if ((gWRK_Status.MainStatus == SCRAPEREED) && ((gWRK_Status.SubStatus == WAITFORSTROKEMOTORSTOP) || (gWRK_Status.SubStatus == WAITFORUSER)))
     {
-      if (gScrape.NextSideStep)
+      
+      if (gSTR_Motor.Encoder == 300)
       {
-        gScrape.NextSideStep = 0;
         if (gScrape.Status == 1)
         {
           gScrape.Status = 2;
@@ -168,35 +171,48 @@ int main(void)
           gScrape.Status = 5;
           STR_Stop();
         }
-        else if (gScrape.Status == 6) //Pause right scrape
+        else if (gScrape.Status == 6)//Pause right scrape
         {
           gScrape.Status = 7;
           STR_Stop();
         }
-        else if (gScrape.Status == 8) //Pause left scrape
+        else if (gScrape.Status == 8)//Pause left scrape
         {
           gScrape.Status = 9;
           STR_Stop();
         }
-        if (gScrape.Status < 3)
+        else
+        {
+          #ifdef IDX_SHOWREALPOSITION
+            USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse));
+          #else
+            USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse));
+          #endif
+        }
+      }
+      if (gScrape.NextSideStep)
+      {
+        gScrape.NextSideStep = 0;
+      
+        if ((gScrape.Status == 0)||(gScrape.Status == 6))
         {
           if ((gIDX_Motor.SetPosition - gScrape.EndPosition)> gScrape.SideStep) 
           {
             gIDX_SetPosition(gIDX_Motor.SetPosition - gScrape.SideStep);
           }
-          else if  (gScrape.Status == 0)
+          else
           {
             gIDX_SetPosition(gScrape.EndPosition);
             gScrape.Status = 1;
           }
         }
-        else if (gScrape.Status < 6)
+        else if ((gScrape.Status == 3)||(gScrape.Status == 8))
         {
           if ((abs(gIDX_Motor.SetPosition) - abs(gScrape.EndPosition)) > gScrape.SideStep) 
           {
             gIDX_SetPosition(gIDX_Motor.SetPosition + gScrape.SideStep);
           }
-          else if (gScrape.Status == 3)
+          else 
           {
             gIDX_SetPosition(gScrape.EndPosition);
             gScrape.Status = 4;
