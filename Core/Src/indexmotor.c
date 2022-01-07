@@ -226,7 +226,7 @@ void IDX_HandleMotor (void)
   static float Position;
 
   gIDX_Motor.GetPosition = TIM8->CNT - 32767;
-  if ((abs(gIDX_Motor.GetPosition - gIDX_Motor.SetPosition) < 3) && (gIDX_Motor.IsHomed == 1))
+  if ((abs(gIDX_Motor.GetPosition) < IDX_ACCURACY) && (gIDX_Motor.IsHomed == 1))
   {
     gIDX_Motor.IsInStartPosition = 1;
   }
@@ -239,7 +239,10 @@ void IDX_HandleMotor (void)
   //gIDX_Motor.SetUm = (int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse);
 
   Position = gIDX_Motor.GetPosition;
-  gIDX_Motor.GetSpeed = (int16_t) ((Position - PositionOld) / (float) gIDX_Motor.PulsesPerRevolution * 60000);
+  if (abs (Position - PositionOld) < 3)
+    gIDX_Motor.GetSpeed = 0;  
+  else
+    gIDX_Motor.GetSpeed = (int16_t) ((Position - PositionOld) / (float) gIDX_Motor.PulsesPerRevolution * 60000);
   PositionOld = Position;
   
   if (gIDX_Motor.MainStatus==INACTIVE)
@@ -295,6 +298,10 @@ void IDX_HandleMotor (void)
     gIDX_Motor.SetSpeed = 0;
   }
 }
+//-----------------------------------------------------------------------------
+//! \brief       Sets the index motor position and starts the movement
+//! \details     This goes outside handlemotor, so the speed is fast enough
+//! \param[in]   int32_t newPosition
 void gIDX_SetPosition (int32_t newPosition)
 {
   gIDX_Motor.MainStatus = ACTIVE;
@@ -307,20 +314,12 @@ void gIDX_SetPosition (int32_t newPosition)
 //! \param       None
 void gIDX_HandleTasks(void)
 { 
+  static uint8_t CheckStoppedCounter;
   switch (gIDX_Status.MainStatus)
   {
     case UNDEFINED:
     {
       gIDX_Motor.MainStatus = INACTIVE;
-      break;
-    }
-    case SETPOSITION:
-    {
-      gIDX_Motor.PosI = 0.001;
-      gIDX_Motor.PosD = 500;
-      gIDX_Motor.MainStatus = ACTIVE;
-      gIDX_Motor.SetPosition = IDX_Position;
-      IDX_SetStatus(MainStatus,UNDEFINED);
       break;
     }
     case GOTOPOSITION:
@@ -333,15 +332,19 @@ void gIDX_HandleTasks(void)
           gIDX_Motor.PosD = 500;
           gIDX_Motor.MainStatus = ACTIVE;
           gIDX_Motor.SetPosition = IDX_Position;
+          CheckStoppedCounter = 0;
           IDX_SetStatus(SubStatus,WAITFORPOSITION);
           break;
         }
         case WAITFORPOSITION:
         {
-          if ((abs(gIDX_Motor.GetPosition - gIDX_Motor.SetPosition) < 3) && (gIDX_Motor.GetSpeed == 0))
+          if ((abs(gIDX_Motor.GetPosition - gIDX_Motor.SetPosition) < IDX_ACCURACY) && (gIDX_Motor.GetSpeed == 0))
           {
-            gIDX_Motor.MainStatus = INACTIVE;  
-            IDX_SetStatus(SubStatus,GOTOPOSITION);
+            if (CheckStoppedCounter ++ > 10)
+            {
+              gIDX_Motor.MainStatus = INACTIVE;  
+              IDX_SetStatus(SubStatus,GOTOPOSITION);
+            }
           }
         }
         default:
@@ -355,9 +358,11 @@ void gIDX_HandleTasks(void)
       {
         case UNDEFINED:
         {
+          gIDX_Motor.MaxSpeed = 10000;
           gIDX_Motor.PosI = 0.01;
           gIDX_Motor.PosD = 1000;
           gIDX_Motor.IsHomed = 0;
+          CheckStoppedCounter = 0;
           if (IDX_HomeOn()) //Homesensor is on, so move left
           {
             TIM8->CNT = 42767;
@@ -378,20 +383,24 @@ void gIDX_HandleTasks(void)
         }
         case WAITFORHOMESENSOR:
         {
-          if ((abs(gIDX_Motor.GetPosition - gIDX_Motor.SetPosition) < 3) && (gIDX_Motor.GetSpeed == 0))
+          if ((abs(gIDX_Motor.GetPosition - gIDX_Motor.SetPosition) < IDX_ACCURACY) && (gIDX_Motor.GetSpeed == 0))
           {
-						if (gIDX_Motor.SetPosition == 0)
+            if (CheckStoppedCounter ++ > 10)
             {
-              gIDX_Motor.IsHomed = 1;
-							IDX_SetPWM(INACTIVE,0);
-							gIDX_Motor.MainStatus = INACTIVE;
-							IDX_SetStatus(SubStatus, HOME);
-						}
-						else
-						{
-							gIDX_ResetPosition = 0;
-							gIDX_Motor.SetPosition = 0;
-						}
+  						if (gIDX_Motor.SetPosition == 0)
+              {
+                gIDX_Motor.MaxSpeed = 10000;
+                gIDX_Motor.IsHomed = 1;
+  							IDX_SetPWM(INACTIVE,0);
+  							gIDX_Motor.MainStatus = INACTIVE;
+  							IDX_SetStatus(SubStatus, HOME);
+  						}
+  						else
+  						{
+  							gIDX_ResetPosition = 0;
+  							gIDX_Motor.SetPosition = 0;
+  						}
+            }
           }
           break;
         }

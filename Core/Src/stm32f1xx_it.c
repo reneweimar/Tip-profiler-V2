@@ -241,20 +241,7 @@ void EXTI2_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI2_IRQn 0 */
   //If homing is active only switch off stroke motor as soon as the home switch transistion is detected
-	gSTR_Motor.Encoder = 0;
-  gSTR_Motor.EncoderOld = 0;
-  gSTR_Motor.IsHomed = 1;
-  gSTR_NextSideStep = 1;
-    
-  if (gSTR_Status.MainStatus == HOME)
-  {
-    STR_Stop();
-  }
-  if ((gSTR_Status.MainStatus == GOTOSTARTPOSITION) && (gSTR_Status.SubStatus == WAITFORHOMESENSOR))
-  {
-    gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
-    STR_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
-  }
+	STR_HomeFlag = 1;
   /* USER CODE END EXTI2_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_2);
   /* USER CODE BEGIN EXTI2_IRQn 1 */

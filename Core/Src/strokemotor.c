@@ -14,6 +14,7 @@ stcDCMotor gSTR_Motor;
 enuSTR_Unit gSTR_Status;
 uint16_t gSTR_PulseTime;
 int32_t STR_Speed;
+uint8_t STR_HomeFlag;
 //-----------------------------------------------------------------------------
 //! \brief      Calculates the motor speed
 //! \details    Counts the pulses per 100 us and converts to RPM
@@ -162,7 +163,7 @@ void STR_HandleMotor (void)
   }
   if (gSTR_Motor.MainStatus==ACTIVE)
   {
-      STR_SetPWM(CW, gSTR_Motor.Control/100,0);
+      STR_SetPWM(CW, gSTR_Motor.Control/100,1);
   }
   else
   {
@@ -215,7 +216,7 @@ void STR_Stop(void)
 //! \param [in]  enuStatus newStatus
 //! \param [in]  int32_t newSpeed
 //! \param [out] enuStatus STR_Motor.SubStatus or READY
-enuStatus gSTR_Set(enuStatus newStatus, int32_t newSpeed)
+enuStatus STR_Set(enuStatus newStatus, int32_t newSpeed)
 {
   if (gSTR_Status.MainStatus == newStatus) //Task already running
   {
@@ -246,7 +247,7 @@ enuStatus gSTR_Set(enuStatus newStatus, int32_t newSpeed)
 
 void STR_SetPWM (enuStatus newStatus, uint8_t newSpeed, uint8_t FastDecay)
 {
-  FastDecay = 1;
+  //FastDecay = 1;
 
   switch (newStatus)
   {

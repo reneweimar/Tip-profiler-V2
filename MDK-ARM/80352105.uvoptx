@@ -159,7 +159,7 @@
           <Type>0</Type>
           <LineNumber>140</LineNumber>
           <EnabledFlag>0</EnabledFlag>
-          <Address>134249406</Address>
+          <Address>134250008</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -256,6 +256,21 @@
           <count>16</count>
           <WinNumber>1</WinNumber>
           <ItemText>gSTR_NextSideStep</ItemText>
+        </Ww>
+        <Ww>
+          <count>17</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>gScrape,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>18</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>gLastScrapeScreen,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>19</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>gScrape</ItemText>
         </Ww>
       </WatchWindow1>
       <MemoryWindow1>

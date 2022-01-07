@@ -19,8 +19,9 @@
 //-----------------------------------------------------------------------------
 stcButtonStatus Button[NROFBUTTONS];
 uint32_t gCurrentScreen = 0xffffffff; //Undefined
+uint32_t gLastScrapeScreen = 30;
 uint32_t gReturnScreen;
-char USR_Message[4][50];
+char USR_Message[6][50];
 uint8_t gParameterNumber;
 int16_t gParameterValue;
 uint8_t CursorPosition;
@@ -31,12 +32,14 @@ uint8_t gParameterDecimals;
 //! \brief      Fills error message line 0 to 2
 //! \details    Fills gUSR_Errormessage
 //! \param[in]  char* newMessage0, newMessage1, newMessage2, newMessage3
-void gUSR_SetMessage (char* newMessage0, char* newMessage1, char* newMessage2, char* newMessage3)
+void gUSR_SetMessage (char* newMessage0, char* newMessage1, char* newMessage2, char* newMessage3, char* newMessage4, char* newMessage5)
 {
   strcpy (USR_Message[0], newMessage0);
   strcpy (USR_Message[1], newMessage1);
   strcpy (USR_Message[2], newMessage2);
   strcpy (USR_Message[3], newMessage3);
+  strcpy (USR_Message[4], newMessage4);
+  strcpy (USR_Message[5], newMessage5);
 }
 
 //-----------------------------------------------------------------------------
@@ -226,9 +229,9 @@ void USR_ShowScreen(uint32_t NewScreen)
     uint16_t TopPage;
     gCurrentScreen = NewScreen;
     USR_ClearScreen(2);
-    if ((gCurrentScreen == 9)||(gCurrentScreen == 11)||(gCurrentScreen == 40)) gCurrentScreen = 10;
-    if ((gCurrentScreen == 19)||(gCurrentScreen == 21)) gCurrentScreen = 20;
-    if ((gCurrentScreen == 0)||(gCurrentScreen == 35)) gCurrentScreen = 30;
+    if ((gCurrentScreen == 9)||(gCurrentScreen == 11) || ((gCurrentScreen >= 40) && (gCurrentScreen < 50))) gCurrentScreen = 10;
+    if ((gCurrentScreen == 19)||((gCurrentScreen >= 20) && (gCurrentScreen <30))) gCurrentScreen = 20;
+    if (gCurrentScreen == 35) gCurrentScreen = 30;
     if (gCurrentScreen == 29) gCurrentScreen = 34;
     if (gCurrentScreen == 100) gCurrentScreen = 102;
     if (gServiceMenu)
@@ -247,7 +250,8 @@ void USR_ShowScreen(uint32_t NewScreen)
       if ((gCurrentScreen >= 10201 + gCommandMaxUser + 1)&&(gCurrentScreen <10300)) gCurrentScreen = 10201;
       if (gCurrentScreen == 10200) gCurrentScreen = 10201 + gCommandMaxUser;
     }
-
+    if ((gCurrentScreen < 40) && (gCurrentScreen >= 30)) gLastScrapeScreen = gCurrentScreen;
+		
     switch (gCurrentScreen)
     {   
       case 1: //Splash screen
@@ -333,20 +337,22 @@ void USR_ShowScreen(uint32_t NewScreen)
         break;
       }
       case 3: //Error screen
-      case 4: //Message screen
+      case 4: //Message screen 
       {
         ssd1306_SetCursor(0, 0);
         if (gCurrentScreen == 3)
           ssd1306_WriteStringEightBitFont("ERROR      ", Font_6x7, White);
         else
           ssd1306_WriteStringEightBitFont("MESSAGE    ", Font_6x7, White);
-        ssd1306_SetCursor(0, 16);
-        ssd1306_WriteStringEightBitFont(USR_Message[0], Font_6x7, White);
-        ssd1306_SetCursor(0, 28);
-        ssd1306_WriteStringEightBitFont(USR_Message[1], Font_6x7, White);
-        ssd1306_SetCursor(0, 40);
-        ssd1306_WriteStringEightBitFont(USR_Message[2], Font_6x7, White);
-        USR_WriteKeys(USR_Message[3]);
+        for (uint8_t i = 0; i<5;i++)
+        {
+          if (strcmp("",USR_Message[i]))
+          {
+            ssd1306_SetCursor(0, 16 + i*6);
+            ssd1306_WriteStringEightBitFont(USR_Message[i], Font_6x7, White);
+          }
+        }
+        USR_WriteKeys(USR_Message[5]);
         USR_WriteInstrumentName();
         break;
       }

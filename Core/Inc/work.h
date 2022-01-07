@@ -37,11 +37,10 @@ typedef enum
     INACTIVE,
     INITIALIZE,
     READY,
-    SCRAPEFULLREED,
+    SCRAPEREED,
     SCRAPEINNERSECTIONS,
     SCRAPENOSIDESTEPS,
     SCRAPEOUTERSECTIONS,
-    SETPOSITION,
     START,
     STOP,
     WAITFORCOMMANDFINISHED,
@@ -112,13 +111,24 @@ typedef struct
   StcParameters Parameters[20];
 } StcMachine;
 //-----------------------------------------------------------------------------
-//! \brief  Storage structure
+//! \brief counter Storage structure
 typedef struct
 {
     uint32_t Sequence;
     uint32_t User; //Counter to check user action
     uint16_t Delay;
 } stcCounter;
+//-----------------------------------------------------------------------------
+//! \brief scrape Storage structure
+typedef struct
+{
+  uint8_t Status;
+  uint8_t NextSideStep;
+  int32_t StartPosition;
+  int32_t EndPosition;
+  int32_t SideStep;
+  int32_t Speed;
+} stcScrape;
 //-----------------------------------------------------------------------------
 //! \brief  Public variables
 extern uint8_t gInitialized;
@@ -139,6 +149,7 @@ extern int32_t gIDX_SideStepBig;
 extern int32_t gIDX_SideStepSmall;
 extern uint8_t gIDX_StatusFlag;
 extern uint8_t gSTR_NextSideStep;
+extern stcScrape gScrape;
 extern stcStatus gWRK_Status;
 extern StcMachine gMachineType[NROFMACHINETYPES];
 extern StcCommands gCommands[];

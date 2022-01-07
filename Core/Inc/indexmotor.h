@@ -11,6 +11,8 @@
 #include "main.h"
 #include "stm32f1xx_hal.h"
 //-----------------------------------------------------------------------------
+#define IDX_ACCURACY 10 //10 pulses = 17 um
+#define IDX_SIDESTEPAFTERPAUSE 1
 #define FaultIdx_Pin GPIO_PIN_15
 #define FaultIdx_GPIO_Port GPIOB
 #define SleepIdx_Pin GPIO_PIN_8

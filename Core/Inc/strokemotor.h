@@ -42,12 +42,13 @@ typedef  struct
 extern stcDCMotor gSTR_Motor;
 extern enuSTR_Unit gSTR_Status;
 extern uint16_t gSTR_PulseTime;
+extern uint8_t STR_HomeFlag;
 //-----------------------------------------------------------------------------
 //STR_functions
 //---------------------- SYSTEM ------------------------
 void gSTR_HandleTasks(void);
 
-extern enuStatus gSTR_Set(enuStatus newStatus, int32_t newSpeed);
+extern enuStatus STR_Set(enuStatus newStatus, int32_t newSpeed);
 extern void STR_Init(void);
 extern void STR_HandleMotor (void);
 extern void STR_HandleEncoder (void);

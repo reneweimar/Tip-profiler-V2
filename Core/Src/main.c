@@ -131,32 +131,79 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-  if ((gSTR_Status.MainStatus == GOTOSTARTPOSITION) && (gSTR_Status.SubStatus == WAITFORSTROKEMOTORSTART) && (gSTR_Motor.Encoder == 300))
-  {
-    STR_Stop();
-  }
-  if ((gWRK_Status.MainStatus == SCRAPEFULLREED) && (gWRK_Status.SubStatus == WAITFORSTROKEMOTORSTOP) && (gSTR_Motor.Encoder == 300))
-  {
-    if (gSTR_NextSideStep)
+    if (STR_HomeFlag == 1)
     {
-      gSTR_NextSideStep = 0;
-      if (gIDX_StatusFlag == 1)
+      STR_HomeFlag = 0;
+      gSTR_Motor.Encoder = 0;
+      gSTR_Motor.EncoderOld = 0;
+      gSTR_Motor.IsHomed = 1;
+      gScrape.NextSideStep = 1;
+      if ((gScrape.Status == 1)||(gScrape.Status == 4)) gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
+      if (gSTR_Status.MainStatus == HOME)
       {
-        gIDX_StatusFlag = 2;
         STR_Stop();
       }
-
-      if (gIDX_Motor.SetPosition > gIDX_SideStepBig) 
+      if ((gSTR_Status.MainStatus == GOTOSTARTPOSITION) && (gSTR_Status.SubStatus == WAITFORHOMESENSOR))
       {
-        gIDX_SetPosition(gIDX_Motor.SetPosition - gIDX_SideStepBig);
-      }
-      else 
-      {
-        gIDX_SetPosition(0);
-        gIDX_StatusFlag = 1;
+        gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
+        STR_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
       }
     }
-  }
+    if ((gSTR_Status.MainStatus == GOTOSTARTPOSITION) && (gSTR_Status.SubStatus == WAITFORSTROKEMOTORSTART) && (gSTR_Motor.Encoder == 300))
+    {
+      STR_Stop();
+    }
+    if ((gWRK_Status.MainStatus == SCRAPEREED) && ((gWRK_Status.SubStatus == WAITFORSTROKEMOTORSTOP) || (gWRK_Status.SubStatus == WAITFORUSER)) && (gSTR_Motor.Encoder == 300))
+    {
+      if (gScrape.NextSideStep)
+      {
+        gScrape.NextSideStep = 0;
+        if (gScrape.Status == 1)
+        {
+          gScrape.Status = 2;
+          STR_Stop();
+        }
+        else if (gScrape.Status == 4)
+        {
+          gScrape.Status = 5;
+          STR_Stop();
+        }
+        else if (gScrape.Status == 6) //Pause right scrape
+        {
+          gScrape.Status = 7;
+          STR_Stop();
+        }
+        else if (gScrape.Status == 8) //Pause left scrape
+        {
+          gScrape.Status = 9;
+          STR_Stop();
+        }
+        if (gScrape.Status < 3)
+        {
+          if ((gIDX_Motor.SetPosition - gScrape.EndPosition)> gScrape.SideStep) 
+          {
+            gIDX_SetPosition(gIDX_Motor.SetPosition - gScrape.SideStep);
+          }
+          else if  (gScrape.Status == 0)
+          {
+            gIDX_SetPosition(gScrape.EndPosition);
+            gScrape.Status = 1;
+          }
+        }
+        else if (gScrape.Status < 6)
+        {
+          if ((abs(gIDX_Motor.SetPosition) - abs(gScrape.EndPosition)) > gScrape.SideStep) 
+          {
+            gIDX_SetPosition(gIDX_Motor.SetPosition + gScrape.SideStep);
+          }
+          else if (gScrape.Status == 3)
+          {
+            gIDX_SetPosition(gScrape.EndPosition);
+            gScrape.Status = 4;
+          }
+        }
+      }
+    }
   
     /* USER CODE END WHILE */
 

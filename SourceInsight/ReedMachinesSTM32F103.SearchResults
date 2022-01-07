@@ -1,6 +1,5 @@
----- gSTR_NextSideStep Matches (5 in 4 files) ----
-Main.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    if (gSTR_NextSideStep)
-Main.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      gSTR_NextSideStep = 0;
-Stm32f1xx_it.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  gSTR_NextSideStep = 1;
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):uint8_t gSTR_NextSideStep;
-Work.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):extern uint8_t gSTR_NextSideStep;
+---- STR_SetPWM Matches (4 in 2 files) ----
+Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      STR_SetPWM(CW, gSTR_Motor.Control/100,0);
+Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  STR_SetPWM(CW,0,1);
+Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):void STR_SetPWM (enuStatus newStatus, uint8_t newSpeed, uint8_t FastDecay)
+Strokemotor.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):extern void STR_SetPWM (enuStatus newStatus, uint8_t newSpeed, uint8_t FastDecay);
