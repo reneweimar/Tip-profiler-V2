@@ -119,11 +119,32 @@ typedef struct
     uint16_t Delay;
 } stcCounter;
 //-----------------------------------------------------------------------------
+//! \brief  Scrape step enumeration
+typedef enum 
+{
+  RightSideNormalStep = 0,
+  RightSideLastStep = 1,
+  RightSideLastScrape = 2,
+  RightSideEndOfScraping = 3,
+  LeftSideNormalStep = 4,
+  LeftSideLastStep = 5,
+  LeftSideLastScrape = 6,
+  LeftSideEndOfScraping = 7,
+  RightSidePauseRequested = 8,
+  RightSidePaused = 9,
+  LeftSidePauseRequested = 10,
+  LeftSidePaused = 11,
+   
+} enuScrapeStatus;
+
 //! \brief scrape Storage structure
 typedef struct
 {
-  uint8_t Status;
+  enuScrapeStatus Status;
+  enuScrapeStatus StatusOld;
+  enuScrapeStatus StatusPause;
   uint8_t NextSideStep;
+  uint8_t NextScrape;
   int32_t StartPosition;
   int32_t EndPosition;
   int32_t SideStep;
@@ -157,6 +178,7 @@ extern stcCounter gCounter;
 //-----------------------------------------------------------------------------
 //WRK_functions
 //---------------------- SYSTEM ------------------------
+extern void SetScrapeStatus (enuScrapeStatus newStatus);
 extern void WRK_HandleTickTime (void);
 extern void WRK_HandleSequence(void);
 extern void WRK_ResetFactory(void);

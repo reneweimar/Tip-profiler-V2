@@ -364,7 +364,7 @@ void gIDX_HandleTasks(void)
           if (IDX_HomeOn()) //Homesensor is on, so move left
           {
             TIM8->CNT = 42767;
-            gIDX_Motor.SetPosition = -1000;
+            gIDX_Motor.SetPosition = -500;
             gIDX_Motor.MainStatus = ACTIVE;
             gIDX_ResetPosition = 1;
             IDX_SetStatus(SubStatus,WAITFORHOMESENSOR);
@@ -372,7 +372,7 @@ void gIDX_HandleTasks(void)
           else
           {
             TIM8->CNT = 22767;
-            gIDX_Motor.SetPosition = 1000;
+            gIDX_Motor.SetPosition = 500;
             gIDX_Motor.MainStatus = ACTIVE;
             gIDX_ResetPosition = 1;
             IDX_SetStatus(SubStatus,WAITFORHOMESENSOR);

@@ -136,6 +136,12 @@ uint32_t HomeCnt,HomeCntDelay;
 
 
 float BatteryVoltage;
+
+void SetScrapeStatus (enuScrapeStatus newStatus)
+{
+  gScrape.StatusOld = gScrape.Status;
+  gScrape.Status = newStatus;
+}
 //-----------------------------------------------------------------------------
 //! \brief      Initiates the work unit
 //! \details    Defines the parameters
@@ -412,7 +418,7 @@ void WRK_HandleSequence(void)
             gUSR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK");
             gReturnScreen = gCurrentScreen;
             USR_ShowScreen(4);
-            gScrape.Status = 0; //Right side of the reed
+            SetScrapeStatus (RightSideNormalStep);//SetScrapeStatus ( 0; //Right side of the reed
             WRK_SetStatus(SubStatus, WAITFORPOSITION);
           }
           break;
@@ -446,32 +452,40 @@ void WRK_HandleSequence(void)
         {
           if (USR_ButtonPressed(BtnOk,USR_SHORTPRESSTIME,1)==1)
           {
-            if (gScrape.Status == 0) //Busy scraping right part.
+            if ((gScrape.Status == RightSideNormalStep) || (gScrape.Status == RightSideLastStep))//(SetScrapeStatus (= 0) //Busy scraping right part.
             {
-              gScrape.Status = 6;
+              if (gScrape.Status == RightSideNormalStep) 
+                gScrape.StatusPause = gScrape.Status;
+              else
+                gScrape.StatusPause = (enuScrapeStatus) (gScrape.Status + 1);
+              SetScrapeStatus (RightSidePauseRequested);//SetScrapeStatus ( 6;
               gUSR_SetMessage("","","    PAUSE SCRAPING","","","");
               USR_ShowScreen(4);
-              
               break;
             }
-            else if (gScrape.Status == 3) //Busy scraping left part.
+            else if ((gScrape.Status == LeftSideNormalStep)||(gScrape.Status == LeftSideLastStep))//(SetScrapeStatus (= 3) //Busy scraping left part.
             {
-              gScrape.Status = 8;
+              if (gScrape.Status == LeftSideNormalStep) 
+                gScrape.StatusPause = gScrape.Status;
+              else
+                gScrape.StatusPause = (enuScrapeStatus) (gScrape.Status + 1);
+
+              SetScrapeStatus (LeftSidePauseRequested);//SetScrapeStatus ( 8;
               gUSR_SetMessage("","","    PAUSE SCRAPING","","","");
               USR_ShowScreen(4);
               break;
             }
           }
-          if (gScrape.Status == 2)
+          if (gScrape.Status == RightSideEndOfScraping)//(SetScrapeStatus (= 2)
           {
             gIDX_Motor.MainStatus = (INACTIVE);
             IDX_Set(UNDEFINED,0);
-            gScrape.Status = 3; 
+            SetScrapeStatus (LeftSideNormalStep);//SetScrapeStatus ( 3; 
             gScrape.EndPosition *= -1; //Left side of the reed
             gScrape.StartPosition *= -1; //Left side of the reed
             WRK_SetStatus(SubStatus, WAITFORPOSITION);            
           }
-          else if (gScrape.Status == 5)
+          else if (gScrape.Status == LeftSideEndOfScraping)//(SetScrapeStatus (= 5)
           {
             gIDX_Motor.MainStatus = (INACTIVE);
             IDX_Set(UNDEFINED,0);
@@ -487,7 +501,7 @@ void WRK_HandleSequence(void)
               WRK_SetStatus(SubStatus, WAITFORINDEXHOME);
             }
           }
-          else if ((gScrape.Status == 7) || (gScrape.Status == 9))
+          else if ((gScrape.Status == RightSidePaused) || (gScrape.Status == LeftSidePaused))//((SetScrapeStatus (= 7) || (SetScrapeStatus (= 9))
           {
             gUSR_SetMessage("","OK: CONTINUE SCRAPING",""," *: CANCEL SCRAPING","","*OK");
             USR_ShowScreen(4);
@@ -509,9 +523,9 @@ void WRK_HandleSequence(void)
         {
           if (USR_ButtonPressed(BtnOk,USR_SHORTPRESSTIME,1)==1)
           {
-            if (gScrape.Status == 7) //pause scraping right part.
+            if (gScrape.Status == RightSidePaused)//pause scraping right part.
             {
-              gScrape.Status = 0;
+              SetScrapeStatus(gScrape.StatusPause);//(RightSideNormalStep);
               gUSR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK");
               USR_ShowScreen(4);
 #ifdef IDX_SHOWREALPOSITION
@@ -522,9 +536,9 @@ void WRK_HandleSequence(void)
               WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
               break;
             }
-            else if (gScrape.Status == 9) //Pause scraping left part.
+            else if (gScrape.Status == LeftSidePaused)//(SetScrapeStatus (= 9) //Pause scraping left part.
             {
-              gScrape.Status = 3;
+              SetScrapeStatus(gScrape.StatusPause);//(LeftSideNormalStep)
               gUSR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK");
               USR_ShowScreen(4);
 #ifdef IDX_SHOWREALPOSITION
