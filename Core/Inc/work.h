@@ -17,8 +17,12 @@
 #define LOWCONTRAST             100
 #define HIGHCONTRAST            255
 #define NROFMACHINETYPES        4
-#define NB_OF_VAR               20*NROFMACHINETYPES //(20 per machine type)
-#define SCREENSAVERON           gMachineType[gMachine/100].Parameters[4].Value==100
+#define NROFPARAMETERS          20
+#define NROFCOUNTERS            2
+#define NROFERRORS              100
+#define NROFMAINMENUITEMS       5
+#define NB_OF_VAR               NROFPARAMETERS*NROFMACHINETYPES+NROFERRORS+NROFCOUNTERS //(20 per machine type)+ 100 error messages+2 counters
+#define SCREENSAVERON           gMachineType[gMachine/100].Parameters[5].Value==100
 
 //-----------------------------------------------------------------------------
 //! \brief  Status enumeration
@@ -28,7 +32,6 @@ typedef enum
     ACTIVE,
     CCW,
     CW,
-    ENCODERTEST,
     ENTERVALUE,
     EXECUTECOMMAND,
     GOTOPOSITION,
@@ -48,6 +51,7 @@ typedef enum
     WAITFORINDEXHOME,
     WAITFORINDEXSTART,
     WAITFORPOSITION,
+    WAITFORPOWERSENSOR,
     WAITFORSCRAPEREADY,
     WAITFORSPLASHSCREEN,
     WAITFORSTROKEMOTORHOME,
@@ -93,11 +97,9 @@ typedef struct
   uint8_t Decimals;
   uint8_t UserAccess;
   uint8_t Global;
-  uint16_t MasterCounter;
-  uint16_t ServiceCounter;
 } StcParameters;
 //-----------------------------------------------------------------------------
-//! \brief  Parameter storage structure
+//! \brief  Commands storage structure
 typedef struct
 {
   char Name[21];
@@ -107,9 +109,18 @@ typedef struct
 //! \brief  Machinetype storage structure
 typedef struct
 {
-  char Name[21];  //OBOE, BASSOON, future -> KLARINET
+  char Name[21];  //OBOE, BASSOON, CLARINET, BAGPIPE
   StcParameters Parameters[20];
+  uint16_t MasterCounter;
+  uint16_t ServiceCounter;
 } StcMachine;
+//-----------------------------------------------------------------------------
+//! \brief  Main Menu storage structure
+typedef struct
+{
+  char Name[21];  //OBOE, BASSOON, CLARINET, BAGPIPE
+  uint8_t UserAccess;
+} StcMainMenu;
 //-----------------------------------------------------------------------------
 //! \brief counter Storage structure
 typedef struct
@@ -145,6 +156,7 @@ typedef struct
   enuScrapeStatus StatusPause;
   uint8_t NextSideStep;
   uint8_t NextScrape;
+  uint8_t Endless;
   int32_t StartPosition;
   int32_t EndPosition;
   int32_t SideStep;
@@ -159,17 +171,22 @@ extern uint8_t gParameterMaxUser;
 extern uint8_t BattPercentage;
 extern uint16_t gMachine;
 extern uint16_t gParameterMaxService;
+extern uint8_t gMainMenuMaxService;
+extern uint8_t gMainMenuMaxUser;
+
 extern uint8_t gCommandMaxUser;
 extern uint16_t gCommandMaxService;
 extern uint16_t VirtAddVarTab[NB_OF_VAR];
 extern uint16_t ADC_Converted_Values[1];
 extern uint32_t HomeCnt;
-extern uint32_t HomeCntDelay;
 extern int32_t gIDX_HalfScrapeWidth;
 extern int32_t gIDX_SideStepBig;
 extern int32_t gIDX_SideStepSmall;
 extern uint8_t gIDX_StatusFlag;
 extern uint8_t gSTR_NextSideStep;
+extern int8_t ErrorDisplayPage;
+extern uint16_t Errors[NROFERRORS];
+extern StcMainMenu MainMenu[NROFMAINMENUITEMS];
 extern stcScrape gScrape;
 extern stcStatus gWRK_Status;
 extern StcMachine gMachineType[NROFMACHINETYPES];

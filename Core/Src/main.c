@@ -75,6 +75,7 @@ void SystemClock_Config(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+	
   
   /* USER CODE END 1 */
 
@@ -172,9 +173,9 @@ int main(void)
           if (gScrape.Status == RightSideLastStep)//(SetScrapeStatus (= 1)
           {
 #ifdef IDX_SHOWREALPOSITION
-            USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse));
+            USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[15].Value / 1000));
 #else
-            USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse));
+            USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[15].Value / 1000));
 #endif
             SetScrapeStatus (RightSideLastScrape);//SetScrapeStatus ( 2;
           }
@@ -186,9 +187,9 @@ int main(void)
           else if (gScrape.Status == LeftSideLastStep)//(SetScrapeStatus (= 4)
           {
 #ifdef IDX_SHOWREALPOSITION
-            USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse));
+            USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[15].Value / 1000));
 #else
-            USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse));
+            USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[15].Value / 1000));
 #endif
             SetScrapeStatus (LeftSideLastScrape);//SetScrapeStatus ( 5;
           }
@@ -210,9 +211,9 @@ int main(void)
           else
           {
 #ifdef IDX_SHOWREALPOSITION
-              USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse));
+              USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[15].Value / 1000));
 #else
-              USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse));
+              USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[15].Value / 1000));
 #endif
           }
         }
@@ -225,11 +226,11 @@ int main(void)
         {
           if ((gIDX_Motor.SetPosition - gScrape.EndPosition)> gScrape.SideStep) 
           {
-            gIDX_SetPosition(gIDX_Motor.SetPosition - gScrape.SideStep);
+            IDX_SetPosition(gIDX_Motor.SetPosition - gScrape.SideStep);
           }
           else
           {
-            gIDX_SetPosition(gScrape.EndPosition);
+            IDX_SetPosition(gScrape.EndPosition);
             SetScrapeStatus (RightSideLastStep);//SetScrapeStatus ( 1;
           }
         }
@@ -237,11 +238,11 @@ int main(void)
         {
           if ((abs(gIDX_Motor.SetPosition) - abs(gScrape.EndPosition)) > gScrape.SideStep) 
           {
-            gIDX_SetPosition(gIDX_Motor.SetPosition + gScrape.SideStep);
+            IDX_SetPosition(gIDX_Motor.SetPosition + gScrape.SideStep);
           }
           else 
           {
-            gIDX_SetPosition(gScrape.EndPosition);
+            IDX_SetPosition(gScrape.EndPosition);
             SetScrapeStatus (LeftSideLastStep);//SetScrapeStatus ( 4;
           }
         }

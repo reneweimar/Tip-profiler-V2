@@ -27,7 +27,7 @@
 #define PWR_SensorsOn() HAL_GPIO_WritePin(Sensors_GPIO_Port, Sensors_Pin,GPIO_PIN_SET)
 #define PWR_SensorsOff() HAL_GPIO_WritePin(Sensors_GPIO_Port, Sensors_Pin,GPIO_PIN_RESET)
 #define BATTVOLTAGEMIN          3600
-#define BATTVOLTAGEMAX          4125
+#define BATTVOLTAGEMAX          4050
 //-----------------------------------------------------------------------------
 //DSP_functions
 //---------------------- SYSTEM ------------------------

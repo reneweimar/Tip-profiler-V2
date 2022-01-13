@@ -4,11 +4,16 @@
 //! \brief      Contains routines for the index motor
 //! \details
 //! \Attention
+//! \There is a ratio between index motor posiiton and scrape position
+//! \This means the scrape width and the sidestep on the reed are different
+//! \from the scrape with and the sidestep on the index motor.
+//! \Ratio is 1.756 for Oboe and 1.838 for Bassoon
 //-----------------------------------------------------------------------------
 #include "indexmotor.h"
 #include "main.h"
 #include "gpio.h"
 #include "tim.h"
+#include "power.h"
 #include <stdlib.h>
 //-----------------------------------------------------------------------------
 //! \Global Index motor container
@@ -104,7 +109,7 @@ enuStatus IDX_Set(enuStatus newStatus, int32_t newPosition)
       }
       else
       {
-        gIDX_HandleTasks();
+        IDX_HandleTasks();
       }
     }
   }
@@ -300,9 +305,10 @@ void IDX_HandleMotor (void)
 //! \brief       Sets the index motor position and starts the movement
 //! \details     This goes outside handlemotor, so the speed is fast enough
 //! \param[in]   int32_t newPosition
-void gIDX_SetPosition (int32_t newPosition)
+void IDX_SetPosition (int32_t newPosition)
 {
   gIDX_Motor.MainStatus = ACTIVE;
+  PWR_SensorsOn();
   gIDX_Motor.SetPosition = newPosition;
 }
 
@@ -310,7 +316,7 @@ void gIDX_SetPosition (int32_t newPosition)
 //! \brief       Handles the tasks of the index motor
 //! \details     Evaluates the home sensor and encoder
 //! \params      None
-void gIDX_HandleTasks(void)
+void IDX_HandleTasks(void)
 { 
   static uint8_t CheckStoppedCounter;
   switch (gIDX_Status.MainStatus)
@@ -329,6 +335,7 @@ void gIDX_HandleTasks(void)
           gIDX_Motor.PosI = 0.001;
           gIDX_Motor.PosD = 500;
           gIDX_Motor.MainStatus = ACTIVE;
+          PWR_SensorsOn();
           gIDX_Motor.SetPosition = IDX_Position;
           CheckStoppedCounter = 0;
           IDX_SetStatus(SubStatus,WAITFORPOSITION);
@@ -356,16 +363,23 @@ void gIDX_HandleTasks(void)
       {
         case UNDEFINED:
         {
+          PWR_SensorsOn();
           gIDX_Motor.MaxSpeed = 10000;
           gIDX_Motor.PosI = 0.01;
           gIDX_Motor.PosD = 1000;
           gIDX_Motor.IsHomed = 0;
           CheckStoppedCounter = 0;
+          IDX_SetStatus(SubStatus,WAITFORPOWERSENSOR);
+          break;
+        }
+        case WAITFORPOWERSENSOR:
+        {
           if (IDX_HomeOn()) //Homesensor is on, so move left
           {
             TIM8->CNT = 42767;
             gIDX_Motor.SetPosition = -500;
             gIDX_Motor.MainStatus = ACTIVE;
+            PWR_SensorsOn();
             gIDX_ResetPosition = 1;
             IDX_SetStatus(SubStatus,WAITFORHOMESENSOR);
           }
@@ -374,6 +388,7 @@ void gIDX_HandleTasks(void)
             TIM8->CNT = 22767;
             gIDX_Motor.SetPosition = 500;
             gIDX_Motor.MainStatus = ACTIVE;
+            PWR_SensorsOn();
             gIDX_ResetPosition = 1;
             IDX_SetStatus(SubStatus,WAITFORHOMESENSOR);
           }

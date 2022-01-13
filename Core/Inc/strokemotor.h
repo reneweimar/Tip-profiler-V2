@@ -46,7 +46,7 @@ extern uint8_t STR_HomeFlag;
 //-----------------------------------------------------------------------------
 //STR_functions
 //---------------------- SYSTEM ------------------------
-extern void gSTR_HandleTasks(void);
+extern void STR_HandleTasks(void);
 extern enuStatus STR_Set(enuStatus newStatus, int32_t newSpeed);
 extern void STR_Init(void);
 extern void STR_HandleMotor (void);

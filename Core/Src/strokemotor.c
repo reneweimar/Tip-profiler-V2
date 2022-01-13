@@ -9,6 +9,7 @@
 #include "strokemotor.h"
 #include "tim.h"
 #include "gpio.h"
+#include "power.h"
 //-----------------------------------------------------------------------------
 //! \Global Stroke motor container
 stcDCMotor gSTR_Motor;
@@ -197,7 +198,7 @@ enuStatus STR_Set(enuStatus newStatus, int32_t newSpeed)
       }
       else
       {
-        gSTR_HandleTasks();
+        STR_HandleTasks();
       }
     }
   }
@@ -266,7 +267,7 @@ void STR_SetPWM (enuStatus newStatus, uint8_t newSpeed, uint8_t FastDecay)
 //! \brief       Handles the tasks of the stroke motor
 //! \details     Evaluates the home sensor and encoder
 //! \param       None
-void gSTR_HandleTasks(void)
+void STR_HandleTasks(void)
 {
   static int Encoder;
   
@@ -279,6 +280,7 @@ void gSTR_HandleTasks(void)
     case START:
     {
       gSTR_Motor.MainStatus = ACTIVE;
+      PWR_SensorsOn();
       gSTR_Motor.SetSpeed = STR_Speed;
       STR_SetStatus(SubStatus, START);
       break;
@@ -295,6 +297,12 @@ void gSTR_HandleTasks(void)
       switch (gSTR_Status.SubStatus)
       {
         case UNDEFINED:
+        {
+          PWR_SensorsOn();
+          STR_SetStatus(SubStatus,WAITFORPOWERSENSOR);
+          break;
+        }
+        case WAITFORPOWERSENSOR:
         {
           if (STR_HomeOff()) //Homesensor is on, so nothing to do
           {
@@ -337,6 +345,7 @@ void gSTR_HandleTasks(void)
         case UNDEFINED:
         {
           gSTR_Motor.MainStatus = ACTIVE;
+          PWR_SensorsOn();
           if ((gSTR_Motor.IsHomed == 0)||(gSTR_Motor.Encoder > 300)) //Goto home position first
           {
             gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
@@ -357,6 +366,7 @@ void gSTR_HandleTasks(void)
             gSTR_Motor.Encoder = 0;
             gSTR_Motor.EncoderOld = 0;
 						gSTR_Motor.MainStatus = ACTIVE;
+            PWR_SensorsOn();
             gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
             STR_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
           }

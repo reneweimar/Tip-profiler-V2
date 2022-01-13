@@ -1,8 +1,4 @@
----- pause scraping Matches (7 in 1 files) ----
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            gUSR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK");
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              gUSR_SetMessage("","","    PAUSE SCRAPING","","","");
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              gUSR_SetMessage("","","    PAUSE SCRAPING","","","");
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            if (gScrape.Status == RightSidePaused)//(gScrape.Status == 7) //pause scraping right part.
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              gUSR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK");
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            else if (gScrape.Status == LeftSidePaused)//(gScrape.Status == 9) //Pause scraping left part.
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              gUSR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK");
+---- gSTR_HandleTasks Matches (3 in 2 files) ----
+Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        gSTR_HandleTasks();
+Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):void gSTR_HandleTasks(void)
+Strokemotor.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):extern void gSTR_HandleTasks(void);

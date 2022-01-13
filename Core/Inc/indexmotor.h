@@ -58,8 +58,8 @@ extern stcDCMotor gIDX_Motor;
 extern void IDX_Init(void);
 extern void IDX_HandleMotor (void);
 extern enuStatus IDX_Set(enuStatus newStatus, int32_t newPosition);
-extern void gIDX_HandleTasks(void);
-extern void gIDX_SetPosition (int32_t newPosition);
+extern void IDX_HandleTasks(void);
+extern void IDX_SetPosition (int32_t newPosition);
 
 #endif  // _IDX_FUNCTIONS_H
 
