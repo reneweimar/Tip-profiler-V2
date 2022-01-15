@@ -30,11 +30,7 @@ TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim5;
 TIM_HandleTypeDef htim6;
-//TIM8
 TIM_HandleTypeDef htim8;
-//TIM8
-
-
 
 /* TIM1 init function */
 void MX_TIM1_Init(void)
@@ -182,8 +178,6 @@ void MX_TIM6_Init(void)
   }
 
 }
-
-//TIM8
 /* TIM8 init function */
 void MX_TIM8_Init(void)
 {
@@ -267,9 +261,6 @@ void HAL_TIM_Encoder_MspDeInit(TIM_HandleTypeDef* tim_encoderHandle)
   /* USER CODE END TIM8_MspDeInit 1 */
   }
 }
-
-//TIM8
-
 void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef* tim_pwmHandle)
 {
 

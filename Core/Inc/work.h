@@ -22,7 +22,10 @@
 #define NROFERRORS              100
 #define NROFMAINMENUITEMS       5
 #define NB_OF_VAR               NROFPARAMETERS*NROFMACHINETYPES+NROFERRORS+NROFCOUNTERS //(20 per machine type)+ 100 error messages+2 counters
-#define SCREENSAVERON           gMachineType[gMachine/100].Parameters[5].Value==100
+#define SCREENSAVERON           gMachineType[gMachine/100].Parameters[SCREENSAVER].Value==100
+#define SIDESTEPDIFFERENCE      5
+#define SCRAPEWIDTHDIFFERENCE   50
+
 
 //-----------------------------------------------------------------------------
 //! \brief  Status enumeration
@@ -58,7 +61,28 @@ typedef enum
     WAITFORSTROKEMOTORSTART,
     WAITFORSTROKEMOTORSTOP,
     WAITFORUSER,
+    WAITFORUSER2,
 }enuStatus;
+typedef enum //Numbering cannot be changed!!!!
+{
+  SCRAPEWIDTH = 0,
+  SCRAPEWIDTHINNER = 1,
+  SCRAPESPEED = 2,
+  SIDESTEPSMALL = 3,
+  SIDESTEPBIG = 4,
+  SCREENSAVER = 5,  
+  MACHINETYPE = 6,  
+  SIDESTEPOFFSET = 7,
+  SCRAPESPEEDMIN = 8,
+  SCRAPESPEEDMAX = 9,
+  SCRAPEWIDTHMAX = 10,
+  SCRAPEWIDTHFACT = 11,
+  SCRAPESPEEDFACT = 12,
+  SIDESTSMALLFACT = 13,
+  SIDESTBIGFACT = 14,
+  SIDESTRATIO = 15,
+} enuParameters;
+
 typedef enum
 {
   TASK_IDLE=0,
@@ -186,6 +210,7 @@ extern uint8_t gIDX_StatusFlag;
 extern uint8_t gSTR_NextSideStep;
 extern int8_t ErrorDisplayPage;
 extern uint16_t Errors[NROFERRORS];
+extern enuParameters gParameters;
 extern StcMainMenu MainMenu[NROFMAINMENUITEMS];
 extern stcScrape gScrape;
 extern stcStatus gWRK_Status;
@@ -195,7 +220,7 @@ extern stcCounter gCounter;
 //-----------------------------------------------------------------------------
 //WRK_functions
 //---------------------- SYSTEM ------------------------
-extern void SetScrapeStatus (enuScrapeStatus newStatus);
+extern void WRK_SetScrapeStatus (enuScrapeStatus newStatus);
 extern void WRK_HandleTickTime (void);
 extern void WRK_HandleSequence(void);
 extern void WRK_ResetFactory(void);

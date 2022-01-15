@@ -20,6 +20,7 @@
 stcButtonStatus Button[NROFBUTTONS];
 uint32_t gCurrentScreen = 0xffffffff; //Undefined
 uint32_t gLastScrapeScreen = 30;
+uint32_t gLastScrapeScreenEndless = 40;
 uint32_t gReturnScreen;
 char USR_Message[6][50];
 uint8_t gParameterNumber;
@@ -97,7 +98,7 @@ void USR_SaveParameter(void)
     EE_WriteVariable(gParameterNumber+gMachine, gParameterValue);
   }
 	//Make sure after chaning machine type new parameters and name are used
-  if (strcmp(gMachineType[gMachine/100].Parameters[gParameterNumber].Name,"MACHINE TYPE"))
+  if (gParameterNumber == MACHINETYPE)
   {
     gMachine = gParameterValue ; 
   }
@@ -313,7 +314,7 @@ void USR_ShowScreen(uint32_t NewScreen)
       if ((gCurrentScreen >= 10201 + gCommandMaxUser + 1)&&(gCurrentScreen <10300)) gCurrentScreen = 10201;
       if (gCurrentScreen == 10200) gCurrentScreen = 10201 + gCommandMaxUser;
     }
-    if ((gCurrentScreen < 40) && (gCurrentScreen >= 29)) gLastScrapeScreen = gCurrentScreen;
+    
 		
     switch (gCurrentScreen)
     {   
@@ -475,17 +476,19 @@ void USR_ShowScreen(uint32_t NewScreen)
 
         break;
       }
-      case 35:
+      case 34:
       case 30: //Scrape big steps
       {
         gCurrentScreen = 30;
         ssd1306_SetCursor(0, 0);
         ssd1306_WriteStringEightBitFont("            ", Font_6x7, White);
         ssd1306_DrawRectangle(White,0,15,55,35,2);
-        ssd1306_SetCursor(60,  22);
+        ssd1306_SetCursor(60,  16);
         ssd1306_WriteStringEightBitFont("WHOLE REED", Font_6x7, White);
-        ssd1306_SetCursor(60,  34);
+        ssd1306_SetCursor(60,  28);
         ssd1306_WriteStringEightBitFont("BIG STEPS", Font_6x7, White);
+        ssd1306_SetCursor(60,  40);
+        ssd1306_WriteStringEightBitFont("ONE CYCLE", Font_6x7, White);
         ssd1306_SetCursor(0, 24);
         ssd1306_WriteString("SCRAPE", Font_11x18, Black);
         USR_WriteKeys("#,$&*OK");
@@ -497,10 +500,13 @@ void USR_ShowScreen(uint32_t NewScreen)
         ssd1306_SetCursor(0, 0);
         ssd1306_WriteStringEightBitFont("            ", Font_6x7, White);
         ssd1306_DrawRectangle(White,0,15,55,35,2);
-        ssd1306_SetCursor(60,  22);
+        ssd1306_SetCursor(60,  16);
         ssd1306_WriteStringEightBitFont("WHOLE REED", Font_6x7, White);
-        ssd1306_SetCursor(60,  34);
+        ssd1306_SetCursor(60,  28);
         ssd1306_WriteStringEightBitFont("SMALL STEPS", Font_6x7, White);
+        ssd1306_SetCursor(60,  40);
+        ssd1306_WriteStringEightBitFont("ONE CYCLE", Font_6x7, White);
+
         ssd1306_SetCursor(0, 24);
         ssd1306_WriteString("SCRAPE", Font_11x18, Black);
         USR_WriteKeys("#,$&*OK");
@@ -512,25 +518,12 @@ void USR_ShowScreen(uint32_t NewScreen)
         ssd1306_SetCursor(0, 0);
         ssd1306_WriteStringEightBitFont("            ", Font_6x7, White);
         ssd1306_DrawRectangle(White,0,15,55,35,2);
-        ssd1306_SetCursor(60,  22);
+        ssd1306_SetCursor(60,  16);
         ssd1306_WriteStringEightBitFont("ONLY OUTER", Font_6x7, White);
-        ssd1306_SetCursor(60,  34);
-        ssd1306_WriteStringEightBitFont("SECTIONS  ", Font_6x7, White);
-        ssd1306_SetCursor(0, 24);
-        ssd1306_WriteString("SCRAPE", Font_11x18, Black);
-        USR_WriteKeys("#,$&*OK");
-        USR_WriteInstrumentName();
-        break;
-      }
-      case 33: //ScrapeInner
-      {
-        ssd1306_SetCursor(0, 0);
-        ssd1306_WriteStringEightBitFont("            ", Font_6x7, White);
-        ssd1306_DrawRectangle(White,0,15,55,35,2);
-        ssd1306_SetCursor(60,  22);
-        ssd1306_WriteStringEightBitFont("ONLY INNER", Font_6x7, White);
-        ssd1306_SetCursor(60,  34);
-        ssd1306_WriteStringEightBitFont("SECTIONS  ", Font_6x7, White);
+        ssd1306_SetCursor(60,  28);
+        ssd1306_WriteStringEightBitFont("SECTIONS", Font_6x7, White);
+        ssd1306_SetCursor(60,  40);
+        ssd1306_WriteStringEightBitFont("ONE CYCLE", Font_6x7, White);
         ssd1306_SetCursor(0, 24);
         ssd1306_WriteString("SCRAPE", Font_11x18, Black);
         USR_WriteKeys("#,$&*OK");
@@ -538,23 +531,25 @@ void USR_ShowScreen(uint32_t NewScreen)
         break;
       }
       case 29:
-      case 34: //ScrapeNoIndex
+      case 33: //ScrapeInner
       {
-        gCurrentScreen = 34;
+        gCurrentScreen = 33;
         ssd1306_SetCursor(0, 0);
         ssd1306_WriteStringEightBitFont("            ", Font_6x7, White);
         ssd1306_DrawRectangle(White,0,15,55,35,2);
-        ssd1306_SetCursor(60,  22);
-        ssd1306_WriteStringEightBitFont("NO SIDE   ", Font_6x7, White);
-        ssd1306_SetCursor(60,  34);
-        ssd1306_WriteStringEightBitFont("STEPS     ", Font_6x7, White);
+        ssd1306_SetCursor(60,  16);
+        ssd1306_WriteStringEightBitFont("ONLY INNER", Font_6x7, White);
+        ssd1306_SetCursor(60,  28);
+        ssd1306_WriteStringEightBitFont("SECTIONS", Font_6x7, White);
+        ssd1306_SetCursor(60,  40);
+        ssd1306_WriteStringEightBitFont("ONE CYCLE", Font_6x7, White);
         ssd1306_SetCursor(0, 24);
         ssd1306_WriteString("SCRAPE", Font_11x18, Black);
         USR_WriteKeys("#,$&*OK");
         USR_WriteInstrumentName();
         break;
       }
-      case 42:
+      case 43:
       case 40: //Scrape big steps endless
       {
         gCurrentScreen = 40;
@@ -573,10 +568,8 @@ void USR_ShowScreen(uint32_t NewScreen)
         USR_WriteInstrumentName();
         break;
       }
-      case 39:
       case 41: //Scrape small steps endless
       {
-        gCurrentScreen = 41;
         ssd1306_SetCursor(0, 0);
         ssd1306_WriteStringEightBitFont("            ", Font_6x7, White);
         ssd1306_DrawRectangle(White,0,15,55,35,2);
@@ -584,6 +577,25 @@ void USR_ShowScreen(uint32_t NewScreen)
         ssd1306_WriteStringEightBitFont("WHOLE REED", Font_6x7, White);
         ssd1306_SetCursor(60,  28);
         ssd1306_WriteStringEightBitFont("SMALL STEPS", Font_6x7, White);
+        ssd1306_SetCursor(60,  40);
+        ssd1306_WriteStringEightBitFont("ENDLESS", Font_6x7, White);
+        ssd1306_SetCursor(0, 24);
+        ssd1306_WriteString("SCRAPE", Font_11x18, Black);
+        USR_WriteKeys("#,$&*OK");
+        USR_WriteInstrumentName();
+        break;
+      }
+      case 39:
+      case 42: //ScrapeNoIndex
+      {
+        gCurrentScreen = 42;
+        ssd1306_SetCursor(0, 0);
+        ssd1306_WriteStringEightBitFont("            ", Font_6x7, White);
+        ssd1306_DrawRectangle(White,0,15,55,35,2);
+        ssd1306_SetCursor(60,  16);
+        ssd1306_WriteStringEightBitFont("NO SIDE", Font_6x7, White);
+        ssd1306_SetCursor(60,  28);
+        ssd1306_WriteStringEightBitFont("STEPS", Font_6x7, White);
         ssd1306_SetCursor(60,  40);
         ssd1306_WriteStringEightBitFont("ENDLESS", Font_6x7, White);
         ssd1306_SetCursor(0, 24);
@@ -883,6 +895,8 @@ void USR_ShowScreen(uint32_t NewScreen)
         USR_WriteKeys("");
 			}
     }
+    if ((gCurrentScreen < 40) && (gCurrentScreen >= 29)) gLastScrapeScreen = gCurrentScreen;
+    if ((gCurrentScreen < 50) && (gCurrentScreen >= 39)) gLastScrapeScreenEndless = gCurrentScreen;
     ssd1306_UpdateScreen();
 }
 //-----------------------------------------------------------------------------

@@ -17,9 +17,9 @@ stcDCMotor gSTR_Motor;
 enuSTR_Unit gSTR_Status;
 //! \Global Pulsetime for speed calculation
 uint16_t gSTR_PulseTime;
-//! \Global Stroke motor speed setting
+//! \Stroke motor speed setting
 int32_t STR_Speed;
-//! \Global Stroke motor home flag
+//! \Stroke motor home flag
 uint8_t STR_HomeFlag;
 //-----------------------------------------------------------------------------
  //! \brief     Initiates the stroke motor unit

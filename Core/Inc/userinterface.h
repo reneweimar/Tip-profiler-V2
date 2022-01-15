@@ -59,9 +59,13 @@ typedef struct
   uint16_t TimeOff;
 } stcButtonStatus;
 extern stcButtonStatus Button[NROFBUTTONS];
+extern uint8_t gParameterNumber;
+extern int16_t gParameterValue;
 extern uint32_t gCurrentScreen;
 extern uint32_t gReturnScreen;
 extern uint32_t gLastScrapeScreen;
+extern uint32_t gLastScrapeScreenEndless;
+
 //-----------------------------------------------------------------------------
 //USR_functions
 //---------------------- SYSTEM ------------------------

@@ -8,6 +8,7 @@
 //! \This means the scrape width and the sidestep on the reed are different
 //! \from the scrape with and the sidestep on the index motor.
 //! \Ratio is 1.756 for Oboe and 1.838 for Bassoon
+//! \TIM8 is used as quadrature encoder
 //-----------------------------------------------------------------------------
 #include "indexmotor.h"
 #include "main.h"
@@ -22,7 +23,7 @@ stcDCMotor gIDX_Motor;
 enuIDX_Unit gIDX_Status;
 //! \Global Reset index motor position flag
 uint8_t gIDX_ResetPosition;
-//! \Global Index motor position setting for side step
+//! \Index motor position setting for side step
 int32_t IDX_Position;
 
 //-----------------------------------------------------------------------------
@@ -73,7 +74,7 @@ void IDX_Init(void)
 //-----------------------------------------------------------------------------
 //! \brief      Sets the IDX_Unit status
 //! \details    Sets the selected status (main or sub) and stores the 
-//! previous status
+//! previous status. Sets SubStatus to UNDEFINED when MainStatus is changed.
 //! \param[in]  newType   MainStatus or SubStatus
 //! \param[in]  newStatus New status for the selected status
 void IDX_SetStatus (enuType newType, enuStatus newStatus)

@@ -33,7 +33,6 @@
 #include "power.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-//#include "work.h"
 
 /* USER CODE END Includes */
 
@@ -79,6 +78,7 @@ int main(void)
   
   /* USER CODE END 1 */
 
+	
   /* MCU Configuration------------------------------------------------------
 	--*/
 
@@ -105,24 +105,20 @@ int main(void)
   MX_TIM1_Init();
   MX_TIM3_Init();
   MX_TIM5_Init();
-  //TIM8
   MX_TIM8_Init();
-  //TIM8
   MX_TIM6_Init();
-  //MX_USART1_UART_Init();
+  //TODO MX_USART1_UART_Init();
 
   /* USER CODE BEGIN 2 */
   USR_Init();
   IDX_Init();
   STR_Init();
   PWR_Init();
-  //CLI_Init();
   WRK_Init();
   EE_Init();
-  //TIM8
+  //TODO CLI_Init();
   HAL_TIM_Encoder_Start(&htim8,TIM_CHANNEL_ALL); 
   TIM8->CNT = 32767;
-  //TIM8
   HAL_ADC_Start_DMA(&hadc1,(uint32_t*) &ADC_Converted_Values,1);
   HAL_TIM_Base_Start (&htim6);
   gInitialized = 1;
@@ -170,50 +166,50 @@ int main(void)
         if (gScrape.NextScrape == 1) //To wait for passing home switch again
         {
           gScrape.NextScrape = 0;
-          if (gScrape.Status == RightSideLastStep)//(SetScrapeStatus (= 1)
+          if (gScrape.Status == RightSideLastStep)
           {
 #ifdef IDX_SHOWREALPOSITION
-            USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[15].Value / 1000));
+            USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
 #else
-            USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[15].Value / 1000));
+            USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
 #endif
-            SetScrapeStatus (RightSideLastScrape);//SetScrapeStatus ( 2;
+            WRK_SetScrapeStatus (RightSideLastScrape);
           }
           else if (gScrape.Status == RightSideLastScrape)
           {
-            SetScrapeStatus (RightSideEndOfScraping);//SetScrapeStatus ( 2;
+            WRK_SetScrapeStatus (RightSideEndOfScraping);
             STR_Stop();
           }
-          else if (gScrape.Status == LeftSideLastStep)//(SetScrapeStatus (= 4)
+          else if (gScrape.Status == LeftSideLastStep)
           {
 #ifdef IDX_SHOWREALPOSITION
-            USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[15].Value / 1000));
+            USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
 #else
-            USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[15].Value / 1000));
+            USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
 #endif
-            SetScrapeStatus (LeftSideLastScrape);//SetScrapeStatus ( 5;
+            WRK_SetScrapeStatus (LeftSideLastScrape);
           }
           else if (gScrape.Status == LeftSideLastScrape)
           {
-            SetScrapeStatus (LeftSideEndOfScraping);//SetScrapeStatus ( 5;
+            WRK_SetScrapeStatus (LeftSideEndOfScraping);
             STR_Stop();
           }
-          else if (gScrape.Status == RightSidePauseRequested)//(SetScrapeStatus (= 6)//Pause right scrape
+          else if (gScrape.Status == RightSidePauseRequested)
           {
-            SetScrapeStatus (RightSidePaused);//SetScrapeStatus ( 7;
+            WRK_SetScrapeStatus (RightSidePaused);
             STR_Stop();
           }
-          else if (gScrape.Status == LeftSidePauseRequested)//(SetScrapeStatus (= 8)//Pause left scrape
+          else if (gScrape.Status == LeftSidePauseRequested)
           {
-            SetScrapeStatus (LeftSidePaused);//SetScrapeStatus ( 9;
+            WRK_SetScrapeStatus (LeftSidePaused);
             STR_Stop();
           }
           else
           {
 #ifdef IDX_SHOWREALPOSITION
-              USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[15].Value / 1000));
+              USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
 #else
-              USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[15].Value / 1000));
+              USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
 #endif
           }
         }
@@ -222,7 +218,7 @@ int main(void)
       {
         gScrape.NextSideStep = 0;
       
-        if ((gScrape.Status == RightSideNormalStep)||(gScrape.Status == RightSidePauseRequested))//((SetScrapeStatus (= 0)||(SetScrapeStatus (= 6))
+        if ((gScrape.Status == RightSideNormalStep)||(gScrape.Status == RightSidePauseRequested))//((WRK_SetScrapeStatus (= 0)||(WRK_SetScrapeStatus (= 6))
         {
           if ((gIDX_Motor.SetPosition - gScrape.EndPosition)> gScrape.SideStep) 
           {
@@ -231,10 +227,10 @@ int main(void)
           else
           {
             IDX_SetPosition(gScrape.EndPosition);
-            SetScrapeStatus (RightSideLastStep);//SetScrapeStatus ( 1;
+            WRK_SetScrapeStatus (RightSideLastStep);//WRK_SetScrapeStatus ( 1;
           }
         }
-        else if ((gScrape.Status == LeftSideNormalStep)||(gScrape.Status == LeftSidePauseRequested))//((SetScrapeStatus (= 3)||(SetScrapeStatus (= 8))
+        else if ((gScrape.Status == LeftSideNormalStep)||(gScrape.Status == LeftSidePauseRequested))//((WRK_SetScrapeStatus (= 3)||(WRK_SetScrapeStatus (= 8))
         {
           if ((abs(gIDX_Motor.SetPosition) - abs(gScrape.EndPosition)) > gScrape.SideStep) 
           {
@@ -243,7 +239,7 @@ int main(void)
           else 
           {
             IDX_SetPosition(gScrape.EndPosition);
-            SetScrapeStatus (LeftSideLastStep);//SetScrapeStatus ( 4;
+            WRK_SetScrapeStatus (LeftSideLastStep);//WRK_SetScrapeStatus ( 4;
           }
         }
       }
