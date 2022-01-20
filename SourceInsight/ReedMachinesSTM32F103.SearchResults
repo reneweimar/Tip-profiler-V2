@@ -1,6 +1,4 @@
----- saveerror Matches (5 in 3 files) ----
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):void USR_SaveError(uint16_t newError, uint8_t newShow)
-Userinterface.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):extern void USR_SaveError(uint16_t newError, uint8_t newShow);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_SaveError(11001,1);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_SaveError(11002,1);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_SaveError(21002,1);
+---- stccounter Matches (3 in 2 files) ----
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):stcCounter gCounter;
+Work.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):} stcCounter;
+Work.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):extern stcCounter gCounter;

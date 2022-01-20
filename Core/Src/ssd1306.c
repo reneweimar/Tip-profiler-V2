@@ -715,28 +715,22 @@ void ssd1306_DrawBitmap(uint8_t X, uint8_t Y, uint8_t W, uint8_t H, const uint8_
 char ssd1306_WriteChar(char ch, FontDef Font,SSD1306_COLOR color)
 {
   uint32_t i, b, j;
-
-  // Check remaining space on current line
-  /*if (width() <= (SSD1306.CurrentX + Font.FontWidth) ||
-    height() <= (SSD1306.CurrentY + Font.FontHeight))
-  {
-    // Not enough space on current line
-    return 0;
-  }
-  */
   // Use the font to write
   for (i = 0; i < Font.FontHeight; i++)
   {
     b = Font.data[(ch - 32) * Font.FontHeight + i];
     for (j = 0; j < Font.FontWidth; j++)
     {
-      if ((b << j) & 0x8000)
+      if ((SSD1306.CurrentX + j < SSD1306_WIDTH) && (SSD1306.CurrentY + i < SSD1306_HEIGHT))//Check if still inside array
       {
-        ssd1306_DrawPixel(SSD1306.CurrentX + j, SSD1306.CurrentY + i, color);
-      }
-      else
-      {
-        ssd1306_DrawPixel(SSD1306.CurrentX + j, SSD1306.CurrentY + i, (SSD1306_COLOR) !color);
+        if ((b << j) & 0x8000)
+        {
+          ssd1306_DrawPixel(SSD1306.CurrentX + j, SSD1306.CurrentY + i, color);
+        }
+        else
+        {
+          ssd1306_DrawPixel(SSD1306.CurrentX + j, SSD1306.CurrentY + i, (SSD1306_COLOR) !color);
+        }
       }
     }
   }
@@ -765,6 +759,8 @@ char ssd1306_WriteCharEightBitFont(char ch, FontDefEightBit Font, SSD1306_COLOR 
       b = Font.data[(ch - 32) * Font.FontHeight + i];
       for (j = 0; j < Font.FontWidth; j++)
       {
+        if ((SSD1306.CurrentX + j < SSD1306_WIDTH) && (SSD1306.CurrentY + i < SSD1306_HEIGHT)) //Check if still inside array
+        {
           if ((b << j) & 0x80)
           {
               ssd1306_DrawPixel(SSD1306.CurrentX + j, (SSD1306.CurrentY + i), (SSD1306_COLOR) color);
@@ -773,6 +769,7 @@ char ssd1306_WriteCharEightBitFont(char ch, FontDefEightBit Font, SSD1306_COLOR 
           {
               ssd1306_DrawPixel(SSD1306.CurrentX + j, (SSD1306.CurrentY + i), (SSD1306_COLOR) !color);
           }
+        }
       }
 
     }
@@ -791,8 +788,9 @@ char ssd1306_WriteCharEightBitFont(char ch, FontDefEightBit Font, SSD1306_COLOR 
 //! \param[in]  SSD1306_COLOR color -> Character color (Black or white)
 //! \param[out] char response *str -> Last character sent
 
-char ssd1306_WriteStringEightBitFont(char* str, FontDefEightBit Font, SSD1306_COLOR color)
+char ssd1306_WriteStringEightBitFont(uint8_t newX, uint8_t newY,char* str, FontDefEightBit Font, SSD1306_COLOR color)
 {
+    ssd1306_SetCursor(newX, newY);
     // Write until null-byte
     while (*str)
     {
@@ -812,8 +810,9 @@ char ssd1306_WriteStringEightBitFont(char* str, FontDefEightBit Font, SSD1306_CO
 //
 //  Write full string to screenbuffer
 //
-char ssd1306_WriteString(char* str, FontDef Font,SSD1306_COLOR color)
+char ssd1306_WriteString(uint8_t newX, uint8_t newY, char* str, FontDef Font,SSD1306_COLOR color)
 {
+  ssd1306_SetCursor(newX, newY);
   // Write until null-byte
   while (*str)
   {

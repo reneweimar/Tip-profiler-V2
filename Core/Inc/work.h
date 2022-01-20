@@ -21,10 +21,10 @@
 #define NROFCOUNTERS            2
 #define NROFERRORS              100
 #define NROFMAINMENUITEMS       5
-#define NB_OF_VAR               NROFPARAMETERS*NROFMACHINETYPES+NROFERRORS+NROFCOUNTERS //(20 per machine type)+ 100 error messages+2 counters
+#define NB_OF_VAR               NROFPARAMETERS*NROFMACHINETYPES+NROFERRORS+NROFCOUNTERS*2//(20 per machine type)+ 100 error messages+ 2 counters LSB and MSB
 #define SCREENSAVERON           gMachineType[gMachine/100].Parameters[SCREENSAVER].Value==100
 #define SIDESTEPDIFFERENCE      5
-#define SCRAPEWIDTHDIFFERENCE   50
+#define SCRAPEWIDTHDIFFERENCE   100
 
 
 //-----------------------------------------------------------------------------
@@ -135,8 +135,6 @@ typedef struct
 {
   char Name[21];  //OBOE, BASSOON, CLARINET, BAGPIPE
   StcParameters Parameters[20];
-  uint16_t MasterCounter;
-  uint16_t ServiceCounter;
 } StcMachine;
 //-----------------------------------------------------------------------------
 //! \brief  Main Menu storage structure
@@ -150,6 +148,8 @@ typedef struct
 typedef struct
 {
     uint32_t Sequence;
+    uint32_t MasterCounter;
+    uint32_t ServiceCounter;
     uint32_t User; //Counter to check user action
     uint16_t Delay;
 } stcCounter;
@@ -197,7 +197,6 @@ extern uint16_t gMachine;
 extern uint16_t gParameterMaxService;
 extern uint8_t gMainMenuMaxService;
 extern uint8_t gMainMenuMaxUser;
-
 extern uint8_t gCommandMaxUser;
 extern uint16_t gCommandMaxService;
 extern uint16_t VirtAddVarTab[NB_OF_VAR];

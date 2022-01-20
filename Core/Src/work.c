@@ -65,7 +65,7 @@ StcCommands gCommands[] =
 {
   {"RESET TO FACTORY   ",1},
   {"SET STROKE LENGTH  ",1},
-  {"STROKE MOTOR       ",0},
+//  {"STROKE MOTOR       ",0},
 };
 //! \Global User command max flag
 uint8_t gCommandMaxUser;
@@ -78,8 +78,8 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
     {"SCRAPE WIDTH      ",0,1160,780,"MM",3,1,1,0},
     {"SCRAPE WIDTH INNER",0,200,390,"MM",3,1,1,0},
     {"SCRAPE SPEED      ",50,200,50,"RPS",2,1,1,0},
-    {"SIDE STEP SMALL   ",5,50,30,"MM",3,2,1,0},
-    {"SIDE STEP BIG     ",30,100,50,"MM",3,2,1,0},
+    {"SIDE STEP SMALL   ",5,95,20,"MM",3,2,1,0},
+    {"SIDE STEP BIG     ",20,100,40,"MM",3,2,1,0},
     {"SCREEN SAVER      ",0,100,0,"-",1,0,0,1},
     {"MACHINE TYPE      ",0,100,0,"-",1,0,0,1},
     {"SIDE STEP OFFSET  ",-100,100,0,"MM",3,2,0,0},
@@ -96,8 +96,8 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
     {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0},
     {"SCRAPE WIDTH INNER",0,200,830,"MM",3,1,1,0},
     {"SCRAPE SPEED      ",50,200,50,"RPS",2,1,1,0},
-    {"SIDE STEP SMALL   ",5,60,40,"MM",3,2,1,0},
-    {"SIDE STEP BIG     ",40,100,60,"MM",3,2,1,0},
+    {"SIDE STEP SMALL   ",5,60,30,"MM",3,2,1,0},
+    {"SIDE STEP BIG     ",30,100,60,"MM",3,2,1,0},
     {"SCREEN SAVER      ",0,100,0,"-",1,0,0,1},
     {"MACHINE TYPE      ",0,100,0,"-",1,0,0,1},
     {"SIDE STEP OFFSET  ",-100,100,0,"MM",3,2,0,0},
@@ -182,13 +182,18 @@ void WRK_SetScrapeStatus (enuScrapeStatus newStatus)
 //! \param      None
 void WRK_Init(void)
 {
-  //Create the virtual table
+	uint16_t Counter = 0;
+	uint16_t VirtaddVarCounter = 0;
+	//Create the virtual table
   for (uint8_t i = 0; i < NROFMACHINETYPES; i++)
   {
     memcpy( &gMachineType[i].Parameters, &DefaultsMachine[i], sizeof DefaultsMachine[i]);
     for (uint8_t j = 0; j<NROFPARAMETERS;j++)
     {
-      VirtAddVarTab[i*NROFPARAMETERS+j] = i*100 + j;
+			
+      //VirtAddVarTab[i*NROFPARAMETERS+j] = i*100 + j;
+			VirtAddVarTab[VirtaddVarCounter] = i*100 + j;
+			VirtaddVarCounter ++;
     }
   }
   strcpy(gMachineType[0].Name, "OBOE");
@@ -198,17 +203,18 @@ void WRK_Init(void)
   //Add the virtual names for the errors
   for (uint8_t j = 0; j<NROFERRORS;j++)
   {
-    VirtAddVarTab[NROFMACHINETYPES*NROFPARAMETERS+j] = 1000 + j;
+    VirtAddVarTab[VirtaddVarCounter] = 1000 + j;
+		VirtaddVarCounter ++;
   }
   //Add the virtual names for the counters for each machine type
-  for (uint8_t i = 0; i < NROFMACHINETYPES; i++)
-  {
     for (uint8_t j = 0; j<NROFCOUNTERS;j++)
     {
-      VirtAddVarTab[i*NROFCOUNTERS+j] = 2000 + i*100 + j;
+      VirtAddVarTab[VirtaddVarCounter] = 2000 + j * 2;     //LSB
+			VirtaddVarCounter++;
+      VirtAddVarTab[VirtaddVarCounter] = 2000 + j * 2 + 1; //MSB
+			VirtaddVarCounter++;
     }
-  }
-      
+        
   EE_ReadVariable(6, &gMachine);
   
   uint8_t NotEmpty = 0;
@@ -263,11 +269,14 @@ void WRK_Init(void)
     EE_ReadVariable(i + 1000, &Errors[i]);
   }
   //Read counters
-  for (uint8_t i = 0; i < NROFMACHINETYPES; i++)
-  {
-    EE_ReadVariable(i * 100 + 2000, &gMachineType[i].MasterCounter);
-    EE_ReadVariable(i * 100 + 2001, &gMachineType[i].ServiceCounter);
-  }
+	EE_ReadVariable( 2000, &Counter);
+	gCounter.MasterCounter = Counter;
+	EE_ReadVariable( 2001, &Counter);
+	gCounter.MasterCounter += Counter * 0x10000;
+	EE_ReadVariable( 2002, &Counter);
+	gCounter.ServiceCounter = Counter;
+	EE_ReadVariable( 2003, &Counter);
+	gCounter.ServiceCounter += Counter * 0x10000;
   //Check first initialization
   if (Errors[0]==0) Errors[0]=1001; //First available place to store the next error
 }
@@ -997,7 +1006,7 @@ void WRK_HandleActive(void)
     {
       gScrape.Endless = 0;
       //SERVICE MODE: Press OK for 3 seconds firstly and then MENU button for 3 seconds
-      if (Button[BtnOk].WaitForRelease)
+      if ((Button[BtnOk].WaitForRelease)&&(gCurrentScreen < 10000))
       {
         if (OkPressed3Seconds)
         {
@@ -1083,9 +1092,13 @@ void WRK_HandleActive(void)
           {
             USR_ShowScreen (LastNormalScreen);
           }
+          else if (gCurrentScreen == 1040101) //Reset Counter -> Cancel reset
+          {
+            USR_ShowScreen(LastScreen);
+          }
         }
       }
-      else if (gCurrentScreen >= 100) //Bigger delay for SERVICE MODE OK BUTTON
+      else if ((gCurrentScreen >= 100)&&(gCurrentScreen < 10000)) //Bigger delay for SERVICE MODE OK BUTTON
       {
         if (USR_ButtonPressed(BtnOk,3000,1)==1)
         {
@@ -1154,6 +1167,16 @@ void WRK_HandleActive(void)
           gScrape.SideStep = 0;
           gReturnScreen = gCurrentScreen;
           WRK_SetStatus(MainStatus, SCRAPENOSIDESTEPS);
+        }
+        else if ((gCurrentScreen > 10400) && (gCurrentScreen < 10500)) //Counter screen
+        {
+          LastScreen = gCurrentScreen;
+          USR_ShowScreen(gCurrentScreen*100+1);
+        }
+        else if (gCurrentScreen == 1040101) //Reset Counter
+        {
+          USR_ResetServiceCounter();
+          USR_ShowScreen(LastScreen);
         }
         OkPressed3Seconds = 0;
       }

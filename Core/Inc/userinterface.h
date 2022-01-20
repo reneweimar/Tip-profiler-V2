@@ -69,7 +69,7 @@ extern uint32_t gLastScrapeScreenEndless;
 //-----------------------------------------------------------------------------
 //USR_functions
 //---------------------- SYSTEM ------------------------
-extern void USR_DrawLogo (SSD1306_COLOR color);
+extern void USR_DrawLogo (uint8_t newX, uint8_t newY,SSD1306_COLOR color);
 extern void USR_ShowPosition (int32_t newPosition);
 extern void USR_ClearPosition (void);
 extern void USR_SetMessage (char* newMessage0, char* newMessage1, char* newMessage2, char* newMessage3, char* newMessage4, char* newMessage5);
