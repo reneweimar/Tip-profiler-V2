@@ -1,4 +1,4 @@
----- stccounter Matches (3 in 2 files) ----
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):stcCounter gCounter;
-Work.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):} stcCounter;
-Work.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):extern stcCounter gCounter;
+---- gSTR_Motor.Timeout Matches (3 in 1 files) ----
+Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    gSTR_Motor.TimeOut+=10;
+Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    if (gSTR_Motor.TimeOut > STROKEMOTORTIMEOUT) 
+Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    gSTR_Motor.TimeOut = 0;

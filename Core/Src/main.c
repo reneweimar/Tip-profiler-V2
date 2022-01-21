@@ -147,9 +147,16 @@ int main(void)
       if ((gScrape.Status == RightSideLastStep)||(gScrape.Status == LeftSideLastStep)) gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
       if (gSTR_Status.MainStatus == HOME)
       {
-        STR_Stop();
+        if (gSTR_Motor.GetSpeed == 0) //Encoder signal missing but motor aparently turning
+        {
+          gSTR_ErrorNumber = 23002;
+        }
+        else
+        {
+          STR_Stop();
+        }
       }
-      if ((gSTR_Status.MainStatus == GOTOSTARTPOSITION) && (gSTR_Status.SubStatus == WAITFORHOMESENSOR))
+      if ((gSTR_Status.MainStatus == GOTOSTARTPOSITION) && (gSTR_Status.SubStatus == WAITFORHOMESENSORON))
       {
         gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
         STR_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);

@@ -22,6 +22,7 @@ uint32_t gCurrentScreen = 0xffffffff; //Undefined
 uint32_t gLastScrapeScreen = 30;
 uint32_t gLastScrapeScreenEndless = 40;
 uint32_t gReturnScreen;
+uint32_t gReturnFromErrorScreen;
 char USR_Message[6][50];
 uint8_t gParameterNumber;
 int16_t gParameterValue;
@@ -337,7 +338,7 @@ void USR_ShowScreen(uint32_t NewScreen)
         USR_ClearScreen(0);
         USR_DrawLogo(15,5, White);
         ssd1306_WriteStringEightBitFont(60,5,"VERSION:", Font_6x7, White);
-        sprintf(strValue, "%02u.%02u", VERSIONMAJOR, VERSIONMINOR);
+        sprintf(strValue, "%02u.%02u.%04u", VERSIONMAJOR, VERSIONMINOR, VERSIONTWEAK);
         ssd1306_WriteStringEightBitFont(60,15,strValue, Font_6x7, White);
         ssd1306_WriteStringEightBitFont(60, 30,"TYPE:", Font_6x7, White);
         ssd1306_WriteStringEightBitFont(60, 40,gMachineType[gMachine/100].Name, Font_6x7, White);

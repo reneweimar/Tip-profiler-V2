@@ -428,116 +428,167 @@ void WRK_HandleCommand(uint32_t newCommand)
 //! \param      None
 void WRK_HandleScrapeReed (void)
 {
-  switch (gWRK_Status.SubStatus)
+  if (gSTR_Status.MainStatus == UNITERROR) 
   {
-    case UNDEFINED:
+    STR_Set(STOP,0);
+    IDX_Set(STOP,0);
+    if (gSTR_ErrorNumber == 23001) //Stroke motor not turning or encoder not detected
     {
-      if (gIDX_Motor.IsHomed == 0)
-      {
-        USR_SetMessage("SIDE STEP SET IS","","NOT HOMED","","","OK");
-        gReturnScreen = gCurrentScreen;
-        USR_ShowScreen(3);
-        USR_SaveError(11001,1);
-        WRK_SetStatus(MainStatus, ACTIVE);
-        WRK_SetStatus(SubStatus, WAITFORUSER);
-      }
-      else if (gIDX_Motor.IsInStartPosition == 0)
-      {
-        USR_SetMessage("SIDE STEP SET NOT","","AT START POSITION","","","OK");
-        gReturnScreen = gCurrentScreen;
-        USR_ShowScreen(3);
-        USR_SaveError(11002,1);
-        WRK_SetStatus(MainStatus, ACTIVE);
-        WRK_SetStatus(SubStatus, WAITFORUSER);
-      }
-      else if (gSTR_Motor.IsInStartPosition == 0)
-      {
-        USR_SetMessage("STROKE SET NOT","","AT START POSITION","","","OK");
-        gReturnScreen = gCurrentScreen;
-        USR_ShowScreen(3);
-        USR_SaveError(21002,1);
-        WRK_SetStatus(MainStatus, ACTIVE);
-        WRK_SetStatus(SubStatus, WAITFORUSER);
-      }
-      else
-      {
-        USR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK");
-        gReturnScreen = gCurrentScreen;
-        USR_IncreaseCounters();
-        USR_ShowScreen(4);
-        WRK_SetScrapeStatus (RightSideNormalStep);
-        WRK_SetStatus(SubStatus, WAITFORPOSITION);
-      }
-      break;
+      USR_SetMessage("STROKE MOTOR IS NOT","","TURNING OR ENCODER","","SIGNAL IS MISSING","OK");
     }
-    case WAITFORPOSITION:
+    USR_ShowScreen(3);
+    USR_SaveError(gSTR_ErrorNumber,1);
+    WRK_SetStatus(MainStatus, ACTIVE);
+    WRK_SetStatus(SubStatus, WAITFORUSER); 
+  }
+  else
+  {
+    switch (gWRK_Status.SubStatus)
     {
-      gScrape.Speed = gMachineType[gMachine/100].Parameters[SCRAPESPEED].Value*30; // Value / 100 * 50 (ratio) * 60 (1 min = 60 s)
-      USR_ClearPosition();
-      if (IDX_Set(GOTOPOSITION, gScrape.StartPosition )==READY)
+      case UNDEFINED:
       {
+        if (gIDX_Motor.IsHomed == 0)
+        {
+          USR_SetMessage("SIDE STEP SET IS","","NOT HOMED","","","OK");
+          gReturnScreen = gCurrentScreen;
+          USR_ShowScreen(3);
+          USR_SaveError(11001,1);
+          WRK_SetStatus(MainStatus, ACTIVE);
+          WRK_SetStatus(SubStatus, WAITFORUSER);
+        }
+        else if (gIDX_Motor.IsInStartPosition == 0)
+        {
+          USR_SetMessage("SIDE STEP SET NOT","","AT START POSITION","","","OK");
+          gReturnScreen = gCurrentScreen;
+          USR_ShowScreen(3);
+          USR_SaveError(11002,1);
+          WRK_SetStatus(MainStatus, ACTIVE);
+          WRK_SetStatus(SubStatus, WAITFORUSER);
+        }
+        else if (gSTR_Motor.IsInStartPosition == 0)
+        {
+          USR_SetMessage("STROKE SET NOT","","AT START POSITION","","","OK");
+          gReturnScreen = gCurrentScreen;
+          USR_ShowScreen(3);
+          USR_SaveError(21002,1);
+          WRK_SetStatus(MainStatus, ACTIVE);
+          WRK_SetStatus(SubStatus, WAITFORUSER);
+        }
+        else
+        {
+          USR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK");
+          gReturnScreen = gCurrentScreen;
+          USR_IncreaseCounters();
+          USR_ShowScreen(4);
+          WRK_SetScrapeStatus (RightSideNormalStep);
+          WRK_SetStatus(SubStatus, WAITFORPOSITION);
+        }
+        break;
+      }
+      case WAITFORPOSITION:
+      {
+        gScrape.Speed = gMachineType[gMachine/100].Parameters[SCRAPESPEED].Value*30; // Value / 100 * 50 (ratio) * 60 (1 min = 60 s)
+        USR_ClearPosition();
+        if (IDX_Set(GOTOPOSITION, gScrape.StartPosition )==READY)
+        {
 #ifdef IDX_SHOWREALPOSITION
-          USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+            USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
 #else
-          USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+            USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
 #endif
-        IDX_Set(UNDEFINED,0);
-        WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
-      }
-      break;
-    }
-    case WAITFORSTROKEMOTORSTART:
-    {
-      if (STR_Set(START,gScrape.Speed) == READY) 
-      {
-        STR_Set(UNDEFINED,0);
-        WRK_SetStatus(SubStatus, WAITFORSTROKEMOTORSTOP);
-      }
-      break;
-    }
-    case WAITFORSTROKEMOTORSTOP:
-    {
-      if (USR_ButtonPressed(BtnOk,USR_SHORTPRESSTIME,1)==1)
-      {
-        if ((gScrape.Status == RightSideNormalStep) || (gScrape.Status == RightSideLastStep))
-        {
-          if (gScrape.Status == RightSideNormalStep) 
-            gScrape.StatusPause = gScrape.Status;
-          else
-            gScrape.StatusPause = (enuScrapeStatus) (gScrape.Status + 1);
-          WRK_SetScrapeStatus (RightSidePauseRequested);
-          USR_SetMessage("","","    PAUSE SCRAPING","","","");
-          USR_ShowScreen(4);
-          break;
+          IDX_Set(UNDEFINED,0);
+          WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
         }
-        else if ((gScrape.Status == LeftSideNormalStep)||(gScrape.Status == LeftSideLastStep))
+        break;
+      }
+      case WAITFORSTROKEMOTORSTART:
+      {
+        if (STR_Set(START,gScrape.Speed) == READY) 
         {
-          if (gScrape.Status == LeftSideNormalStep) 
-            gScrape.StatusPause = gScrape.Status;
-          else
-            gScrape.StatusPause = (enuScrapeStatus) (gScrape.Status + 1);
+          STR_Set(UNDEFINED,0);
+          WRK_SetStatus(SubStatus, WAITFORSTROKEMOTORSTOP);
+        }
+        break;
+      }
+      case WAITFORSTROKEMOTORSTOP:
+      {
+        if (USR_ButtonPressed(BtnOk,USR_SHORTPRESSTIME,1)==1)
+        {
+          if ((gScrape.Status == RightSideNormalStep) || (gScrape.Status == RightSideLastStep))
+          {
+            if (gScrape.Status == RightSideNormalStep) 
+              gScrape.StatusPause = gScrape.Status;
+            else
+              gScrape.StatusPause = (enuScrapeStatus) (gScrape.Status + 1);
+            WRK_SetScrapeStatus (RightSidePauseRequested);
+            USR_SetMessage("","","    PAUSE SCRAPING","","","");
+            USR_ShowScreen(4);
+            break;
+          }
+          else if ((gScrape.Status == LeftSideNormalStep)||(gScrape.Status == LeftSideLastStep))
+          {
+            if (gScrape.Status == LeftSideNormalStep) 
+              gScrape.StatusPause = gScrape.Status;
+            else
+              gScrape.StatusPause = (enuScrapeStatus) (gScrape.Status + 1);
 
-          WRK_SetScrapeStatus (LeftSidePauseRequested);
-          USR_SetMessage("","","    PAUSE SCRAPING","","","");
-          USR_ShowScreen(4);
-          break;
+            WRK_SetScrapeStatus (LeftSidePauseRequested);
+            USR_SetMessage("","","    PAUSE SCRAPING","","","");
+            USR_ShowScreen(4);
+            break;
+          }
         }
-      }
-      if (gScrape.Status == RightSideEndOfScraping)
-      {
-        gIDX_Motor.MainStatus = (INACTIVE);
-        IDX_Set(UNDEFINED,0);
-        WRK_SetScrapeStatus (LeftSideNormalStep);
-        gScrape.EndPosition *= -1; //Left side of the reed
-        gScrape.StartPosition *= -1; //Left side of the reed
-        WRK_SetStatus(SubStatus, WAITFORPOSITION);            
-      }
-      else if (gScrape.Status == LeftSideEndOfScraping)
-      {
-        gIDX_Motor.MainStatus = (INACTIVE);
-        IDX_Set(UNDEFINED,0);
-        if (gScrape.EndPosition == 0)
+        if (gScrape.Status == RightSideEndOfScraping)
         {
+          gIDX_Motor.MainStatus = (INACTIVE);
+          IDX_Set(UNDEFINED,0);
+          WRK_SetScrapeStatus (LeftSideNormalStep);
+          gScrape.EndPosition *= -1; //Left side of the reed
+          gScrape.StartPosition *= -1; //Left side of the reed
+          WRK_SetStatus(SubStatus, WAITFORPOSITION);            
+        }
+        else if (gScrape.Status == LeftSideEndOfScraping)
+        {
+          gIDX_Motor.MainStatus = (INACTIVE);
+          IDX_Set(UNDEFINED,0);
+          if (gScrape.EndPosition == 0)
+          {
+            if (gScrape.Endless)
+            {
+              gScrape.EndPosition *= -1; //Right side of the reed
+              gScrape.StartPosition *= -1; //Right side of the reed
+              USR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK");
+              USR_IncreaseCounters();
+              USR_ShowScreen(4);
+              WRK_SetScrapeStatus (RightSideNormalStep);
+              WRK_SetStatus(SubStatus, WAITFORPOSITION);
+            }
+            else
+            {
+              WRK_SetStatus(MainStatus, ACTIVE);
+              WRK_SetStatus(SubStatus, WAITFORUSER);
+              USR_ShowScreen(gReturnScreen); 
+            }
+          }
+          else
+          {
+            USR_ClearPosition();
+            WRK_SetStatus(SubStatus, WAITFORINDEXHOME);
+          }
+        }
+        else if ((gScrape.Status == RightSidePaused) || (gScrape.Status == LeftSidePaused))
+        {
+          USR_SetMessage("","OK: CONTINUE SCRAPING",""," *: CANCEL SCRAPING","","*OK");
+          USR_ShowScreen(4);
+          WRK_SetStatus(SubStatus,WAITFORUSER);
+        }
+        break;
+      }
+      case WAITFORINDEXHOME:
+      {
+        if (IDX_Set(GOTOPOSITION, 0)==READY)
+        {
+          IDX_Set(UNDEFINED,0);
           if (gScrape.Endless)
           {
             gScrape.EndPosition *= -1; //Right side of the reed
@@ -545,7 +596,7 @@ void WRK_HandleScrapeReed (void)
             USR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK");
             USR_IncreaseCounters();
             USR_ShowScreen(4);
-            WRK_SetScrapeStatus (RightSideNormalStep);
+            WRK_SetScrapeStatus (RightSideNormalStep);//Right side of the reed
             WRK_SetStatus(SubStatus, WAITFORPOSITION);
           }
           else
@@ -555,85 +606,50 @@ void WRK_HandleScrapeReed (void)
             USR_ShowScreen(gReturnScreen); 
           }
         }
-        else
+      }
+      case WAITFORUSER:
+      {
+        if (USR_ButtonPressed(BtnOk,USR_SHORTPRESSTIME,1)==1)
         {
-          USR_ClearPosition();
+          if (gScrape.Status == RightSidePaused)//pause scraping right part.
+          {
+            WRK_SetScrapeStatus(gScrape.StatusPause);//(RightSideNormalStep);
+            USR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK");
+            USR_ShowScreen(4);
+#ifdef IDX_SHOWREALPOSITION
+            USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+#else
+            USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+#endif
+            WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
+            break;
+          }
+          else if (gScrape.Status == LeftSidePaused)//(WRK_SetScrapeStatus (= 9) //Pause scraping left part.
+          {
+            WRK_SetScrapeStatus(gScrape.StatusPause);//(LeftSideNormalStep)
+            USR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK");
+            USR_ShowScreen(4);
+#ifdef IDX_SHOWREALPOSITION
+            USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+#else
+            USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+#endif
+            WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
+            break;
+          }
+        }
+        else if (USR_ButtonPressed(BtnMenu,USR_SHORTPRESSTIME,1)==1)
+        {
+          USR_SetMessage("","","   CANCEL SCRAPING","","","");
+          USR_ShowScreen(4);  
+          gScrape.Endless = 0;
           WRK_SetStatus(SubStatus, WAITFORINDEXHOME);
         }
+        break;
       }
-      else if ((gScrape.Status == RightSidePaused) || (gScrape.Status == LeftSidePaused))
-      {
-        USR_SetMessage("","OK: CONTINUE SCRAPING",""," *: CANCEL SCRAPING","","*OK");
-        USR_ShowScreen(4);
-        WRK_SetStatus(SubStatus,WAITFORUSER);
-      }
-      break;
+      default:
+        break;
     }
-    case WAITFORINDEXHOME:
-    {
-      if (IDX_Set(GOTOPOSITION, 0)==READY)
-      {
-        IDX_Set(UNDEFINED,0);
-        if (gScrape.Endless)
-        {
-          gScrape.EndPosition *= -1; //Right side of the reed
-          gScrape.StartPosition *= -1; //Right side of the reed
-          USR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK");
-          USR_IncreaseCounters();
-          USR_ShowScreen(4);
-          WRK_SetScrapeStatus (RightSideNormalStep);//Right side of the reed
-          WRK_SetStatus(SubStatus, WAITFORPOSITION);
-        }
-        else
-        {
-          WRK_SetStatus(MainStatus, ACTIVE);
-          WRK_SetStatus(SubStatus, WAITFORUSER);
-          USR_ShowScreen(gReturnScreen); 
-        }
-      }
-    }
-    case WAITFORUSER:
-    {
-      if (USR_ButtonPressed(BtnOk,USR_SHORTPRESSTIME,1)==1)
-      {
-        if (gScrape.Status == RightSidePaused)//pause scraping right part.
-        {
-          WRK_SetScrapeStatus(gScrape.StatusPause);//(RightSideNormalStep);
-          USR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK");
-          USR_ShowScreen(4);
-#ifdef IDX_SHOWREALPOSITION
-          USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
-#else
-          USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
-#endif
-          WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
-          break;
-        }
-        else if (gScrape.Status == LeftSidePaused)//(WRK_SetScrapeStatus (= 9) //Pause scraping left part.
-        {
-          WRK_SetScrapeStatus(gScrape.StatusPause);//(LeftSideNormalStep)
-          USR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK");
-          USR_ShowScreen(4);
-#ifdef IDX_SHOWREALPOSITION
-          USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
-#else
-          USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
-#endif
-          WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
-          break;
-        }
-      }
-      else if (USR_ButtonPressed(BtnMenu,USR_SHORTPRESSTIME,1)==1)
-      {
-        USR_SetMessage("","","   CANCEL SCRAPING","","","");
-        USR_ShowScreen(4);  
-        gScrape.Endless = 0;
-        WRK_SetStatus(SubStatus, WAITFORINDEXHOME);
-      }
-      break;
-    }
-    default:
-      break;
   }
 }
 
@@ -905,6 +921,45 @@ void WRK_HandleScrapeNoSideSteps(void)
 //! \param      None
 void WRK_HandleInitialize(void)
 {
+  if (gSTR_Status.MainStatus == UNITERROR) 
+  {
+    STR_Set(STOP,0);
+    IDX_Set(STOP,0);
+    if (gSTR_ErrorNumber == 23001) //Stroke motor not turning or encoder not detected
+      USR_SetMessage("STROKE MOTOR NOT","","TURNING OR ENCODER","","SIGNAL MISSING","OK");
+    else if (gSTR_ErrorNumber == 23002) //Stroke motor turning but encoder not detected
+      USR_SetMessage("STROKE MOTOR ","","TURNING BUT ENCODER","","SIGNAL MISSING","OK");
+    else if (gSTR_ErrorNumber == 23003) //Stroke motor turning but home sensor not detected when expected
+      USR_SetMessage("STROKE MOTOR TURNING","","BUT HOME SENSOR","","SIGNAL MISSING","OK");
+    else if (gSTR_ErrorNumber == 23004) //Stroke motor is at starttposition but home sensor isnot off
+      USR_SetMessage("STROKE UNIT AT START","","POSITION BUT HOME","","SENSOR STILL ON","OK");
+    else
+    {
+      USR_SetMessage("","","    UNKNOWN ERROR","","","OK");
+    }
+    
+    USR_ShowScreen(3);
+    USR_SaveError(gSTR_ErrorNumber,1);
+    WRK_SetStatus(MainStatus, ACTIVE);
+    WRK_SetStatus(SubStatus, WAITFORUSER); 
+    return;
+  }
+  if (gIDX_Status.MainStatus == UNITERROR) 
+  {
+    STR_Set(STOP,0);
+    IDX_Set(STOP,0);
+    if (gIDX_ErrorNumber == 13001) //Index motor not turning or encoder not detected
+      USR_SetMessage("SIDE STEP MOTOR NOT","","TURNING OR ENCODER","","SIGNAL MISSING","OK");
+    if (gIDX_ErrorNumber == 13002) //Index motor turning wrong direction or encoder channels swapped
+      USR_SetMessage("SIDE STEP MOTOR","","TURNING WRONG","","DIRECTION","OK");
+    if (gIDX_ErrorNumber == 13003) //Stroke motor turning but home sensor status not changing
+      USR_SetMessage("SIDE STEP MOTOR ","","TURNING BUT HOME","","SENSOR MISSING","OK");
+    USR_ShowScreen(3);
+    USR_SaveError(gIDX_ErrorNumber,1);
+    WRK_SetStatus(MainStatus, ACTIVE);
+    WRK_SetStatus(SubStatus, WAITFORUSER); 
+    return;
+  }
   switch (gWRK_Status.SubStatus)
   {
     case WAITFORINDEXHOME:
@@ -1006,7 +1061,7 @@ void WRK_HandleActive(void)
     {
       gScrape.Endless = 0;
       //SERVICE MODE: Press OK for 3 seconds firstly and then MENU button for 3 seconds
-      if ((Button[BtnOk].WaitForRelease)&&(gCurrentScreen < 10000))
+      if ((Button[BtnOk].WaitForRelease)&&(gCurrentScreen < 10000) && (gCurrentScreen >= 10))
       {
         if (OkPressed3Seconds)
         {
@@ -1109,11 +1164,14 @@ void WRK_HandleActive(void)
       {
         if (gCurrentScreen == 3) //Error screen
         {
-          USR_ShowScreen (gReturnScreen);
+          USR_ShowScreen (gReturnFromErrorScreen);
         }
         else if (gCurrentScreen == 10) //Find HOME screen
         {
           gReturnScreen = 20;
+          gReturnFromErrorScreen = 10;
+          gSTR_ErrorNumber = 0;
+          gIDX_ErrorNumber = 0;
           USR_SetMessage("","","     PLEASE WAIT","","","");
           USR_ShowScreen(4);
           WRK_SetStatus(MainStatus,INITIALIZE);
@@ -1122,6 +1180,9 @@ void WRK_HandleActive(void)
         else if (gCurrentScreen == 20) //Goto START screen
         {
           gReturnScreen = gLastScrapeScreen;
+          gReturnFromErrorScreen = 20;
+          gSTR_ErrorNumber = 0;
+          gIDX_ErrorNumber = 0;
           USR_SetMessage("","","     PLEASE WAIT","","","");
           USR_ShowScreen(4);
           WRK_SetStatus(MainStatus,INITIALIZE);
@@ -1129,8 +1190,11 @@ void WRK_HandleActive(void)
         }
         else if ((gCurrentScreen == 30)||(gCurrentScreen == 40)) //Start Scrape process with big side step (40 = endless)
         {
+          gSTR_ErrorNumber = 0;
+          gIDX_ErrorNumber = 0;
           if (gCurrentScreen == 40) gScrape.Endless = 1;
           gReturnScreen = gCurrentScreen;
+          gReturnFromErrorScreen = gCurrentScreen;
           gScrape.SideStep = gMachineType[gMachine/100].Parameters[SIDESTEPBIG].Value * 84 / 15 * 1000 / gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value; //Pulses -> Value * 10 * 840 / 1500
           gScrape.StartPosition = gMachineType[gMachine/100].Parameters[SCRAPEWIDTH].Value * 42 / 15 * 1000 / gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value; //Pulses -> Value * 10 / 2 (Half scrape width) * 840 / 1500 um -> Pulse
           gScrape.EndPosition = 0;
@@ -1138,8 +1202,11 @@ void WRK_HandleActive(void)
         }
         else if ((gCurrentScreen == 31)||(gCurrentScreen == 41)) //Start Scrape process with small side step (41 is endless)
         {
+          gSTR_ErrorNumber = 0;
+          gIDX_ErrorNumber = 0;
           if (gCurrentScreen == 41) gScrape.Endless = 1;
           gReturnScreen = gCurrentScreen;
+          gReturnFromErrorScreen = gCurrentScreen;
           gScrape.SideStep = gMachineType[gMachine/100].Parameters[SIDESTEPSMALL].Value * 84 / 15 * 1000 / gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value; //Pulses -> Value * 10 * 840 / 1500
           gScrape.StartPosition = gMachineType[gMachine/100].Parameters[SCRAPEWIDTH].Value * 42 / 15 * 1000 / gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value; //Pulses -> Value * 10 / 2 (Half scrape width) * 840 / 1500 um -> Pulse
           gScrape.EndPosition = 0;
@@ -1147,7 +1214,10 @@ void WRK_HandleActive(void)
         }
         else if (gCurrentScreen == 32) //Start Scrape process only outer sections
         {
+          gSTR_ErrorNumber = 0;
+          gIDX_ErrorNumber = 0;
           gReturnScreen = gCurrentScreen;
+          gReturnFromErrorScreen = gCurrentScreen;
           gScrape.SideStep = gMachineType[gMachine/100].Parameters[SIDESTEPSMALL].Value * 84 / 15 * 1000 / gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value; //Pulses -> Value * 10 * 840 / 1500
           gScrape.StartPosition = gMachineType[gMachine/100].Parameters[SCRAPEWIDTH].Value * 42 / 15 * 1000 / gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value; //Pulses -> Value * 10 / 2 (Half scrape width) * 840 / 1500 um -> Pulse
           gScrape.EndPosition = gMachineType[gMachine/100].Parameters[SCRAPEWIDTHINNER].Value * 42 / 15; //Pulses -> Value * 10 / 2 (Half scrape width inner) * 840 / 1500 um -> Pulse;
@@ -1155,7 +1225,10 @@ void WRK_HandleActive(void)
         }
         else if (gCurrentScreen == 33) //Start Scrape process only inner sections
         {
+          gSTR_ErrorNumber = 0;
+          gIDX_ErrorNumber = 0;
           gReturnScreen = gCurrentScreen;
+          gReturnFromErrorScreen = gCurrentScreen;
           gScrape.SideStep = gMachineType[gMachine/100].Parameters[SIDESTEPSMALL].Value * 84 / 15 * 1000 / gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value; //Pulses -> Value * 10 * 840 / 1500
           gScrape.StartPosition = gMachineType[gMachine/100].Parameters[SCRAPEWIDTHINNER].Value * 42 / 15; //Pulses -> Value * 10 / 2 (Half scrape width) * 840 / 1500 um -> Pulse
           gScrape.EndPosition = 0;              
@@ -1163,9 +1236,11 @@ void WRK_HandleActive(void)
         }
         else if (gCurrentScreen == 42) //Start Scrape process without side steps
         {
-          gReturnScreen = gCurrentScreen;
+          gSTR_ErrorNumber = 0;
+          gIDX_ErrorNumber = 0;
           gScrape.SideStep = 0;
           gReturnScreen = gCurrentScreen;
+          gReturnFromErrorScreen = gCurrentScreen;
           WRK_SetStatus(MainStatus, SCRAPENOSIDESTEPS);
         }
         else if ((gCurrentScreen > 10400) && (gCurrentScreen < 10500)) //Counter screen

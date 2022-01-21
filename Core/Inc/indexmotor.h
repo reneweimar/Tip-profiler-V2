@@ -13,6 +13,8 @@
 //-----------------------------------------------------------------------------
 #define IDX_ACCURACY 10 //10 pulses = 17 um
 #define IDX_SHOWREALPOSITION 1
+#define INDEXMOTORTIMEOUT 5000
+#define INDEXMOTORTIMEOUTNORMAL 1000
 #define FaultIdx_Pin GPIO_PIN_15
 #define FaultIdx_GPIO_Port GPIOB
 #define SleepIdx_Pin GPIO_PIN_8
@@ -52,6 +54,9 @@ typedef  struct
 //-----------------------------------------------------------------------------
 extern uint8_t gIDX_ResetPosition;
 extern stcDCMotor gIDX_Motor;
+extern enuIDX_Unit gIDX_Status;
+extern uint16_t gIDX_ErrorNumber;
+extern uint8_t IDX_HomeFlag;
 //-----------------------------------------------------------------------------
 //IDX_functions
 //---------------------- SYSTEM ------------------------

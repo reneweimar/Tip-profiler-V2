@@ -21,6 +21,9 @@ uint16_t gSTR_PulseTime;
 int32_t STR_Speed;
 //! \Stroke motor home flag
 uint8_t STR_HomeFlag;
+//! \Global error number for correct display of error number
+uint16_t gSTR_ErrorNumber;
+
 //-----------------------------------------------------------------------------
  //! \brief     Initiates the stroke motor unit
 //! \details    Defines the GPIO and interrupts related to the stroke motor
@@ -133,6 +136,21 @@ void STR_HandleMotor (void)
   if (gSTR_Motor.SpeedControl)
   {
       STR_HandleSpeedPID();
+  }
+  if ((gSTR_Motor.Control > 2500) && (gSTR_Motor.GetSpeed == 0)) //Motor is controlled > 25%, but not turning or encoder not detecting any pulses
+  {
+    gSTR_Motor.TimeOut+=10;
+    if (gSTR_Motor.TimeOut > STROKEMOTORTIMEOUT) 
+    {
+      gSTR_Motor.TimeOut = 0;
+      gSTR_ErrorNumber = 23001;
+      gSTR_Motor.MainStatus = INACTIVE;
+      STR_SetStatus(MainStatus,UNITERROR);
+    }
+  }
+  else
+  {
+    gSTR_Motor.TimeOut = 0;
   }
   if (gSTR_Motor.MainStatus==ACTIVE)
   {
@@ -270,6 +288,7 @@ void STR_SetPWM (enuStatus newStatus, uint8_t newSpeed, uint8_t FastDecay)
 void STR_HandleTasks(void)
 {
   static int Encoder;
+  static uint32_t TimeOut;
   
   switch (gSTR_Status.MainStatus)
   {
@@ -294,47 +313,85 @@ void STR_HandleTasks(void)
     }
     case HOME:
     {
-      switch (gSTR_Status.SubStatus)
+      if (gSTR_ErrorNumber >= 23001) //A system error occured. HOME routine will be canceled
       {
-        case UNDEFINED:
+        gSTR_Motor.MainStatus = INACTIVE;
+        STR_SetStatus(MainStatus,UNITERROR);
+      }
+      else
+      {
+        switch (gSTR_Status.SubStatus)
         {
-          PWR_SensorsOn();
-          STR_SetStatus(SubStatus,WAITFORPOWERSENSOR);
-          break;
-        }
-        case WAITFORPOWERSENSOR:
-        {
-          if (STR_HomeOff()) //Homesensor is on, so nothing to do
+          case UNDEFINED:
           {
-            STR_SetStatus(SubStatus, HOME);
+            PWR_SensorsOn();
+            STR_SetStatus(SubStatus,WAITFORPOWERSENSOR);
+            break;
           }
-          else
+          case WAITFORPOWERSENSOR:
           {
-            gSTR_Motor.MainStatus = ACTIVE;
-            gSTR_Motor.SetSpeed = STR_HOMESPEED;
-            STR_SetStatus(SubStatus,WAITFORHOMESENSOR);
-          }  
-          break;
-        }
-        case WAITFORHOMESENSOR:
-        {
-					//TODO timeout
-          if ((gSTR_Motor.Encoder == Encoder) && (STR_HomeOff()))
-          {
-  					gSTR_Motor.Encoder = 0;
-            gSTR_Motor.EncoderOld = 0;
-            gSTR_Motor.IsHomed = 1;
-            gSTR_Motor.IsInStartPosition = 0;
-            STR_SetStatus(SubStatus, HOME);
+            if (STR_HomeOn()) //Homesensor is on, so first see if it can work by turning the stroke motor
+            {
+              TimeOut = 0;
+              gSTR_Motor.MainStatus = ACTIVE;
+              gSTR_Motor.SetSpeed = STR_HOMESPEED;
+              STR_SetStatus(SubStatus, WAITFORHOMESENSOROFF);
+            }
+            else
+            {
+              gSTR_Motor.MainStatus = ACTIVE;
+              gSTR_Motor.SetSpeed = STR_HOMESPEED;
+              gSTR_Motor.Encoder = 20;
+              STR_SetStatus(SubStatus,WAITFORHOMESENSORON);
+            }  
+            break;
           }
-          else 
+          case WAITFORHOMESENSOROFF:
           {
-            Encoder = gSTR_Motor.Encoder;
+            if (STR_HomeOff())
+            {
+              TimeOut = 0;
+              gSTR_Motor.Encoder = 20;
+              STR_SetStatus(SubStatus,WAITFORHOMESENSORON);
+            }
+            else
+            {
+              TimeOut += 100;
+              if (TimeOut > 1000)
+              {
+                gSTR_ErrorNumber = 23003;
+                gSTR_Motor.MainStatus = INACTIVE;
+                STR_SetStatus(MainStatus,UNITERROR);
+              }
+            }
+            break;
           }
-          break;
-        }
-        default:
-          break;
+          case WAITFORHOMESENSORON:
+          {
+            if (gSTR_Motor.Encoder > 600) //Home sensor not detected
+            {
+              gSTR_ErrorNumber = 23003;
+              gSTR_Motor.MainStatus = INACTIVE;
+              STR_SetStatus(MainStatus,UNITERROR);
+            }
+  					//TODO timeout
+            else if ((gSTR_Motor.Encoder == Encoder) && (STR_HomeOn()))
+            {
+    					gSTR_Motor.Encoder = 0;
+              gSTR_Motor.EncoderOld = 0;
+              gSTR_Motor.IsHomed = 1;
+              gSTR_Motor.IsInStartPosition = 0;
+              STR_SetStatus(SubStatus, HOME);
+            }
+            else 
+            {
+              Encoder = gSTR_Motor.Encoder;
+            }
+            break;
+          }
+          default:
+            break;
+       }
       }
       break;
     }
@@ -346,22 +403,53 @@ void STR_HandleTasks(void)
         {
           gSTR_Motor.MainStatus = ACTIVE;
           PWR_SensorsOn();
-          if ((gSTR_Motor.IsHomed == 0)||(gSTR_Motor.Encoder > 300)) //Goto home position first
-          {
+          STR_SetStatus(SubStatus,WAITFORPOWERSENSOR);
+          break;
+        }
+        case WAITFORPOWERSENSOR:
+        {
+          //if ((gSTR_Motor.IsHomed == 0)||(gSTR_Motor.Encoder > 300) || STR_HomeOn()) //Goto home position first
+          //{
+            TimeOut = 0;
             gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
-            STR_SetStatus(SubStatus,WAITFORHOMESENSOR);
-          }  
+            STR_SetStatus(SubStatus,WAITFORHOMESENSOROFF);
+          //}  
+          //else
+          //{
+           // gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
+           // STR_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
+          //}
+          break;
+        }
+        case WAITFORHOMESENSOROFF:
+        {
+          if (STR_HomeOff())
+          {
+            TimeOut = 0;
+            STR_SetStatus(SubStatus,WAITFORHOMESENSORON);
+          }
           else
           {
-            gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
-            STR_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
+            TimeOut += 100;
+            if (TimeOut > 1000)
+            {
+              gSTR_ErrorNumber = 23004;
+              gSTR_Motor.MainStatus = INACTIVE;
+              STR_SetStatus(MainStatus,UNITERROR);
+            }
           }
           break;
         }
-        case WAITFORHOMESENSOR:
+        case WAITFORHOMESENSORON:
         {
-					//TODO timeout
-          if ((gSTR_Motor.Encoder == Encoder) && (STR_HomeOff()) && (gSTR_Motor.GetSpeed == 0)) //Motor has stopped and home switch is on
+          TimeOut += 100;
+          if (TimeOut > 2000)
+          {
+            gSTR_ErrorNumber = 23003;
+            gSTR_Motor.MainStatus = INACTIVE;
+            STR_SetStatus(MainStatus,UNITERROR);
+          }
+          else if ((gSTR_Motor.Encoder == Encoder) && (STR_HomeOn()) && (gSTR_Motor.GetSpeed == 0)) //Motor has stopped and home switch is on
           {
             gSTR_Motor.Encoder = 0;
             gSTR_Motor.EncoderOld = 0;
@@ -381,8 +469,17 @@ void STR_HandleTasks(void)
 					//TODO timeout
           if ((gSTR_Motor.Encoder == Encoder)&& (gSTR_Motor.Encoder >= STARTPOSITION - 50)) //Motor has stopped and encoder position is around start position
           {
-            gSTR_Motor.IsInStartPosition = 1;
-            STR_SetStatus(SubStatus, GOTOSTARTPOSITION);
+            if (STR_HomeOn()) //Stroke is at START position, but home sensor is still on
+            {
+              gSTR_ErrorNumber = 23005;
+              gSTR_Motor.MainStatus = INACTIVE;
+              STR_SetStatus(MainStatus,UNITERROR);
+            }
+            else
+            {
+              gSTR_Motor.IsInStartPosition = 1;
+              STR_SetStatus(SubStatus, GOTOSTARTPOSITION);
+            }
           }
           else 
           {

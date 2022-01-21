@@ -25,6 +25,11 @@ enuIDX_Unit gIDX_Status;
 uint8_t gIDX_ResetPosition;
 //! \Index motor position setting for side step
 int32_t IDX_Position;
+//! \Global error numbner for index motor
+uint16_t gIDX_ErrorNumber;
+//! \Global home flag
+uint8_t IDX_HomeFlag = 0;
+
 
 //-----------------------------------------------------------------------------
 //! \brief      Initiates the index motor unit
@@ -229,7 +234,22 @@ void IDX_HandleMotor (void)
 {
   static float PositionOld;
   static float Position;
+  static uint8_t TimeOut;
 
+  if (((gIDX_Motor.GetSpeed < 0)&&(gIDX_Motor.Control > 0)) || ((gIDX_Motor.GetSpeed > 0)&&(gIDX_Motor.Control < 0))) //Motor turning wrong direction
+  {
+    if (TimeOut ++ > 10)
+    {
+      gIDX_Motor.TimeOut = 0;
+      gIDX_ErrorNumber = 13002;
+      gIDX_Motor.MainStatus = INACTIVE;
+      IDX_SetStatus(MainStatus,UNITERROR);
+    }
+  } 
+  else 
+  {
+    TimeOut = 0;
+  }
   gIDX_Motor.GetPosition = TIM8->CNT - 32767;
   if ((abs(gIDX_Motor.GetPosition) < IDX_ACCURACY) && (gIDX_Motor.IsHomed == 1))
   {
@@ -275,6 +295,32 @@ void IDX_HandleMotor (void)
   {
     gIDX_Motor.Control = gIDX_Motor.SetSpeed;
   }
+  if ((abs(gIDX_Motor.Control) > 5000) && (gIDX_Motor.GetSpeed == 0) && (gIDX_Status.MainStatus == HOME)) //Motor is controlled > 75%, but not turning or encoder not detecting any pulses
+  {
+    gIDX_Motor.TimeOut+=10;
+    if (gIDX_Motor.TimeOut > INDEXMOTORTIMEOUT) 
+    {
+      gIDX_Motor.TimeOut = 0;
+      gIDX_ErrorNumber = 13001;
+      gIDX_Motor.MainStatus = INACTIVE;
+      IDX_SetStatus(MainStatus,UNITERROR);
+    }
+  }
+  else if ((abs(gIDX_Motor.Control) > 5000) && (gIDX_Motor.GetSpeed == 0) ) //Motor is controlled > 75%, but not turning or encoder not detecting any pulses
+  {
+    gIDX_Motor.TimeOut+=10;
+    if (gIDX_Motor.TimeOut > INDEXMOTORTIMEOUTNORMAL) 
+    {
+      gIDX_Motor.TimeOut = 0;
+      gIDX_ErrorNumber = 13001;
+      gIDX_Motor.MainStatus = INACTIVE;
+      IDX_SetStatus(MainStatus,UNITERROR);
+    }
+  }
+  else
+  {
+    gIDX_Motor.TimeOut = 0;
+  }
   if ((gIDX_Motor.Control < 0)&&(gIDX_Motor.MainStatus==ACTIVE))
   {
     IDX_SetPWM(CW, - gIDX_Motor.Control/100);
@@ -312,7 +358,11 @@ void IDX_SetPosition (int32_t newPosition)
   PWR_SensorsOn();
   gIDX_Motor.SetPosition = newPosition;
 }
+//float TempP = 30;
+//float TempI = 0.005;
+//float TempD = 2000;
 
+  
 //-----------------------------------------------------------------------------
 //! \brief       Handles the tasks of the index motor
 //! \details     Evaluates the home sensor and encoder
@@ -320,6 +370,7 @@ void IDX_SetPosition (int32_t newPosition)
 void IDX_HandleTasks(void)
 { 
   static uint8_t CheckStoppedCounter;
+  static uint16_t IDXHomeAccuracy;
   switch (gIDX_Status.MainStatus)
   {
     case UNDEFINED:
@@ -333,6 +384,7 @@ void IDX_HandleTasks(void)
       {
         case UNDEFINED:
         {
+          gIDX_Motor.PosP = 20;  
           gIDX_Motor.PosI = 0.001;
           gIDX_Motor.PosD = 500;
           gIDX_Motor.MainStatus = ACTIVE;
@@ -365,9 +417,12 @@ void IDX_HandleTasks(void)
         case UNDEFINED:
         {
           PWR_SensorsOn();
+          IDX_HomeFlag = 0;
+          IDXHomeAccuracy = 300;
           gIDX_Motor.MaxSpeed = 10000;
-          gIDX_Motor.PosI = 0.01;
-          gIDX_Motor.PosD = 1000;
+          gIDX_Motor.PosP = 30; 
+          gIDX_Motor.PosI = 0.005;
+          gIDX_Motor.PosD = 2000;
           gIDX_Motor.IsHomed = 0;
           CheckStoppedCounter = 0;
           IDX_SetStatus(SubStatus,WAITFORPOWERSENSOR);
@@ -375,45 +430,66 @@ void IDX_HandleTasks(void)
         }
         case WAITFORPOWERSENSOR:
         {
-          if (IDX_HomeOn()) //Homesensor is on, so move left
+          if (IDX_HomeOn()) //Homesensor is on, so move left (flag is in between sensor)
           {
-            TIM8->CNT = 42767;
+            TIM8->CNT = 52767;
             gIDX_Motor.SetPosition = -500;
             gIDX_Motor.MainStatus = ACTIVE;
-            PWR_SensorsOn();
             gIDX_ResetPosition = 1;
-            IDX_SetStatus(SubStatus,WAITFORHOMESENSOR);
+            IDX_SetStatus(SubStatus,WAITFORHOMESENSORON);
           }
-          else
+          else //Homesensor is off, so move right (flag is not in between sensor)
           {
-            TIM8->CNT = 22767;
+            TIM8->CNT = 12767;
             gIDX_Motor.SetPosition = 500;
             gIDX_Motor.MainStatus = ACTIVE;
-            PWR_SensorsOn();
             gIDX_ResetPosition = 1;
-            IDX_SetStatus(SubStatus,WAITFORHOMESENSOR);
+            IDX_SetStatus(SubStatus,WAITFORHOMESENSORON2);
           }
           break;
         }
-        case WAITFORHOMESENSOR:
+        case WAITFORHOMESENSORON:
+        case WAITFORHOMESENSORON2:
         {
-          if ((abs(gIDX_Motor.GetPosition - gIDX_Motor.SetPosition) < IDX_ACCURACY) && (gIDX_Motor.GetSpeed == 0))
+          if ((abs(gIDX_Motor.GetPosition - gIDX_Motor.SetPosition) < IDXHomeAccuracy) && (gIDX_Motor.GetSpeed == 0))
           {
             if (CheckStoppedCounter ++ > 10) //To avoid preliminary triggering in case of overshoot
             {
-  						if (gIDX_Motor.SetPosition == 0)
+              if (gIDX_Status.SubStatus == WAITFORHOMESENSORON2)
               {
-                gIDX_Motor.MaxSpeed = 10000;
-                gIDX_Motor.IsHomed = 1;
-  							IDX_SetPWM(INACTIVE,0);
-  							gIDX_Motor.MainStatus = INACTIVE;
-  							IDX_SetStatus(SubStatus, HOME);
-  						}
-  						else
-  						{
-  							gIDX_ResetPosition = 0;
-  							gIDX_Motor.SetPosition = 0;
-  						}
+                TIM8->CNT = 52767;
+                gIDX_Motor.SetPosition = -500;
+                gIDX_Motor.MainStatus = ACTIVE;
+                gIDX_ResetPosition = 1;
+                IDX_SetStatus(SubStatus,WAITFORHOMESENSORON);
+              }
+              else //Last step
+              {
+    						if (gIDX_Motor.SetPosition == 0)
+                {
+                  if (IDX_HomeFlag == 1)
+                  {
+                    gIDX_Motor.MaxSpeed = 10000;
+                    gIDX_Motor.IsHomed = 1;
+      							IDX_SetPWM(INACTIVE,0);
+      							gIDX_Motor.MainStatus = INACTIVE;
+      							IDX_SetStatus(SubStatus, HOME);
+                  }
+                  else
+                  {
+                    gIDX_Motor.TimeOut = 0;
+                    gIDX_ErrorNumber = 13003;
+                    gIDX_Motor.MainStatus = INACTIVE;
+                    IDX_SetStatus(MainStatus,UNITERROR);     
+                  }
+    						}
+    						else
+    						{
+    							gIDX_ResetPosition = 0;
+    							gIDX_Motor.SetPosition = 0;
+                  IDXHomeAccuracy = 10;
+    						}
+              }
             }
           }
           break;

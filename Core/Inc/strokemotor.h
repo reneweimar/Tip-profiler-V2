@@ -11,6 +11,7 @@
 #define STR_GOTOSTARTSPEED 1500
 #define STR_HOMESPEED 1500
 #define STARTPOSITION 300
+#define STROKEMOTORTIMEOUT 5000
 #define IntEncoder_Pin GPIO_PIN_1
 #define IntEncoder_GPIO_Port GPIOA
 #define IntHome_Pin GPIO_PIN_2
@@ -25,8 +26,8 @@
 #define FaultStr_GPIO_Port GPIOB
 #define STR_Enable() HAL_GPIO_WritePin(SleepStr_GPIO_Port, SleepStr_Pin,GPIO_PIN_SET)
 #define STR_Disable() HAL_GPIO_WritePin(SleepStr_GPIO_Port, SleepStr_Pin,GPIO_PIN_RESET)
-#define STR_HomeOn() HAL_GPIO_ReadPin(IntHome_GPIO_Port, IntHome_Pin)==1
-#define STR_HomeOff() HAL_GPIO_ReadPin(IntHome_GPIO_Port, IntHome_Pin)==0
+#define STR_HomeOff() HAL_GPIO_ReadPin(IntHome_GPIO_Port, IntHome_Pin)==1
+#define STR_HomeOn() HAL_GPIO_ReadPin(IntHome_GPIO_Port, IntHome_Pin)==0
 #define STR_CCW()		TIM3->CCR3
 #define STR_CW() 		TIM3->CCR4
 typedef  struct
@@ -43,6 +44,7 @@ extern stcDCMotor gSTR_Motor;
 extern enuSTR_Unit gSTR_Status;
 extern uint16_t gSTR_PulseTime;
 extern uint8_t STR_HomeFlag;
+extern uint16_t gSTR_ErrorNumber;
 //-----------------------------------------------------------------------------
 //STR_functions
 //---------------------- SYSTEM ------------------------

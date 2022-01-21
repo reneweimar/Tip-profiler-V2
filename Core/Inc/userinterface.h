@@ -63,6 +63,7 @@ extern uint8_t gParameterNumber;
 extern int16_t gParameterValue;
 extern uint32_t gCurrentScreen;
 extern uint32_t gReturnScreen;
+extern uint32_t gReturnFromErrorScreen;
 extern uint32_t gLastScrapeScreen;
 extern uint32_t gLastScrapeScreenEndless;
 
