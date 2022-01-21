@@ -1,1 +1,4 @@
----- ,1 , Matches (0 in 0 files) ----
+---- gSTR_Motor.Timeout Matches (3 in 1 files) ----
+Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    gSTR_Motor.TimeOut+=10;
+Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    if (gSTR_Motor.TimeOut > STROKEMOTORTIMEOUT) 
+Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    gSTR_Motor.TimeOut = 0;

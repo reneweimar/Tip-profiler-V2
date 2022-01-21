@@ -29,33 +29,59 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_hal.h"
-
+#include "work.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "stdio.h"
-#include "stdlib.h"
-#include "string.h"
-#include "adc.h"
-#include "dma.h"
-#include "i2c.h"
-#include "tim.h"
-#include "usart.h"
-#include "gpio.h"
-#include "work.h"
-#include "userinterface.h"
-#include "cli.h"
-#include "ssd1306.h"
-#include "fonts.h"
-#include "indexmotor.h"
-#include "strokemotor.h"
-#include "power.h"
-#include "eeprom.h"
 
 /* USER CODE END Includes */
 
 /* defines ------------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
+//! \brief  Index motor structure
+typedef struct
+{
+  enuStatus MainStatus;
+  enuStatus MainStatusOld;
+  enuStatus SubStatus;
+  enuStatus SubStatusOld;
+  uint8_t PositionControl;
+  uint8_t SpeedControl;
+  uint8_t IsHomed;
+  uint8_t IsInStartPosition;
+  uint16_t Ratio;
+  uint32_t TimeOut;
+  float P;
+	float I;
+	float D;
+	float PosP;
+	float PosI;
+	float PosD;
+  uint8_t PulsesPerRevolution;   //12
+  int16_t SetSpeed;
+  int16_t GetSpeed;
+  int32_t SetPosition;
+  int32_t GetPosition;
+  int32_t SetUm;
+  int32_t GetUm;
+  int16_t MaxSpeed;
+  int32_t Encoder;
+  int32_t EncoderOld;
+  int32_t Control;
+  int32_t PosControl;
+  float ErrorPOld;
+	float ErrorP;
+	float ErrorI;
+	float ErrorD;
+	float PosErrorPOld;
+	float PosErrorP;
+	float PosErrorI;
+	float PosErrorD;
+	float PID;
+	float PosPID;
+  float UmPerPulse;
+  int16_t GetSpeedOld;
+} stcDCMotor;
 
 /* USER CODE END ET */
 

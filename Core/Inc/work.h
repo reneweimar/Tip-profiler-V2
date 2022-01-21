@@ -13,12 +13,20 @@
 #define SPLASHSCREENTIME        3000
 #define VERSIONMAJOR            1
 #define VERSIONMINOR            1
+#define VERSIONTWEAK            20
 #define LOWPOWERTIME            10000
 #define LOWCONTRAST             100
 #define HIGHCONTRAST            255
-#define NB_OF_VAR               40 //(20 per machine type)
-#define NROFMACHINETYPES        2
-#define SCREENSAVERON           gMachineType[gMachine/100].Parameters[4].Value==100
+#define NROFMACHINETYPES        4
+#define NROFPARAMETERS          20
+#define NROFCOUNTERS            2
+#define NROFERRORS              100
+#define NROFMAINMENUITEMS       5
+#define NB_OF_VAR               NROFPARAMETERS*NROFMACHINETYPES+NROFERRORS+NROFCOUNTERS*2//(20 per machine type)+ 100 error messages+ 2 counters LSB and MSB
+#define SCREENSAVERON           gMachineType[gMachine/100].Parameters[SCREENSAVER].Value==100
+#define SIDESTEPDIFFERENCE      5
+#define SCRAPEWIDTHDIFFERENCE   100
+
 
 //-----------------------------------------------------------------------------
 //! \brief  Status enumeration
@@ -26,19 +34,74 @@ typedef enum
 {
     UNDEFINED=0,
     ACTIVE,
+    CCW,
+    CW,
     ENTERVALUE,
     EXECUTECOMMAND,
+    GOTOPOSITION,
+    GOTOSTARTPOSITION,
+    HOME,
     INACTIVE,
     INITIALIZE,
+    READY,
+    SCRAPEREED,
+    SCRAPEINNERSECTIONS,
+    SCRAPENOSIDESTEPS,
+    SCRAPEOUTERSECTIONS,
+    START,
+    STOP,
+    UNITERROR,
+    WAITFORCOMMANDFINISHED,
+    WAITFORHOMESENSOROFF,
+    WAITFORHOMESENSORON,
+    WAITFORHOMESENSORON2,
+    WAITFORINDEXHOME,
+    WAITFORINDEXSTART,
+    WAITFORPOSITION,
+    WAITFORPOWERSENSOR,
+    WAITFORSCRAPEREADY,
     WAITFORSPLASHSCREEN,
+    WAITFORSTROKEMOTORHOME,
+    WAITFORSTROKEMOTORSTART,
+    WAITFORSTROKEMOTORSTOP,
     WAITFORUSER,
+    WAITFORUSER2,
 }enuStatus;
+typedef enum //Numbering cannot be changed!!!!
+{
+  SCRAPEWIDTH = 0,
+  SCRAPEWIDTHINNER = 1,
+  SCRAPESPEED = 2,
+  SIDESTEPSMALL = 3,
+  SIDESTEPBIG = 4,
+  SCREENSAVER = 5,  
+  MACHINETYPE = 6,  
+  SIDESTEPOFFSET = 7,
+  SCRAPESPEEDMIN = 8,
+  SCRAPESPEEDMAX = 9,
+  SCRAPEWIDTHMAX = 10,
+  SCRAPEWIDTHFACT = 11,
+  SCRAPESPEEDFACT = 12,
+  SIDESTSMALLFACT = 13,
+  SIDESTBIGFACT = 14,
+  SIDESTRATIO = 15,
+} enuParameters;
+
+typedef enum
+{
+  TASK_IDLE=0,
+  TASK_BUSY,
+  TASK_ERROR,
+  TASK_READY
+} enuTask;
 //-----------------------------------------------------------------------------
 //! \brief  Status type enumeration
 typedef enum
 {
     MainStatus,
+    MainStatusOld,
     SubStatus,
+    SubStatusOld,
 } enuType;
 //-----------------------------------------------------------------------------
 //! \brief  Status storage structure
@@ -64,50 +127,103 @@ typedef struct
   uint8_t Global;
 } StcParameters;
 //-----------------------------------------------------------------------------
-//! \brief  Parameter storage structure
+//! \brief  Commands storage structure
 typedef struct
 {
   char Name[21];
   uint8_t UserAccess;
-  uint8_t BtnOK_Command;
-  uint8_t BtnMenu_Command;
-  uint8_t BtnLeft_Command;
-  uint8_t BtnUp_Command;
-  uint8_t BtnDown_Command;
-  uint8_t BtnRight_Command;
 } StcCommands;
 //-----------------------------------------------------------------------------
 //! \brief  Machinetype storage structure
 typedef struct
 {
-  char Name[21];  //OBOE, BASSOON
+  char Name[21];  //OBOE, BASSOON, CLARINET, BAGPIPE
   StcParameters Parameters[20];
 } StcMachine;
 //-----------------------------------------------------------------------------
-//! \brief  Storage structure
+//! \brief  Main Menu storage structure
+typedef struct
+{
+  char Name[21];  //OBOE, BASSOON, CLARINET, BAGPIPE
+  uint8_t UserAccess;
+} StcMainMenu;
+//-----------------------------------------------------------------------------
+//! \brief counter Storage structure
 typedef struct
 {
     uint32_t Sequence;
+    uint32_t MasterCounter;
+    uint32_t ServiceCounter;
     uint32_t User; //Counter to check user action
     uint16_t Delay;
 } stcCounter;
+//-----------------------------------------------------------------------------
+//! \brief  Scrape step enumeration
+typedef enum 
+{
+  RightSideNormalStep = 0,
+  RightSideLastStep = 1,
+  RightSideLastScrape = 2,
+  RightSideEndOfScraping = 3,
+  LeftSideNormalStep = 4,
+  LeftSideLastStep = 5,
+  LeftSideLastScrape = 6,
+  LeftSideEndOfScraping = 7,
+  RightSidePauseRequested = 8,
+  RightSidePaused = 9,
+  LeftSidePauseRequested = 10,
+  LeftSidePaused = 11,
+   
+} enuScrapeStatus;
+
+//! \brief scrape Storage structure
+typedef struct
+{
+  enuScrapeStatus Status;
+  enuScrapeStatus StatusOld;
+  enuScrapeStatus StatusPause;
+  uint8_t NextSideStep;
+  uint8_t NextScrape;
+  uint8_t Endless;
+  int32_t StartPosition;
+  int32_t EndPosition;
+  int32_t SideStep;
+  int32_t Speed;
+} stcScrape;
 //-----------------------------------------------------------------------------
 //! \brief  Public variables
 extern uint8_t gInitialized;
 extern uint8_t PluggedIn;
 extern uint8_t gServiceMenu;
 extern uint8_t gParameterMaxUser;
+extern uint8_t BattPercentage;
 extern uint16_t gMachine;
 extern uint16_t gParameterMaxService;
+extern uint8_t gMainMenuMaxService;
+extern uint8_t gMainMenuMaxUser;
 extern uint8_t gCommandMaxUser;
 extern uint16_t gCommandMaxService;
 extern uint16_t VirtAddVarTab[NB_OF_VAR];
-extern StcMachine gMachineType[2];
+extern uint16_t ADC_Converted_Values[1];
+extern uint32_t HomeCnt;
+extern int32_t gIDX_HalfScrapeWidth;
+extern int32_t gIDX_SideStepBig;
+extern int32_t gIDX_SideStepSmall;
+extern uint8_t gIDX_StatusFlag;
+extern uint8_t gSTR_NextSideStep;
+extern int8_t ErrorDisplayPage;
+extern uint16_t Errors[NROFERRORS];
+extern enuParameters gParameters;
+extern StcMainMenu MainMenu[NROFMAINMENUITEMS];
+extern stcScrape gScrape;
+extern stcStatus gWRK_Status;
+extern StcMachine gMachineType[NROFMACHINETYPES];
 extern StcCommands gCommands[];
 extern stcCounter gCounter;
 //-----------------------------------------------------------------------------
 //WRK_functions
 //---------------------- SYSTEM ------------------------
+extern void WRK_SetScrapeStatus (enuScrapeStatus newStatus);
 extern void WRK_HandleTickTime (void);
 extern void WRK_HandleSequence(void);
 extern void WRK_ResetFactory(void);

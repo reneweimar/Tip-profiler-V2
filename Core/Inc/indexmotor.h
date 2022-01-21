@@ -8,12 +8,17 @@
 #ifndef _IDX_FUNCTIONS_H
 #define _IDX_FUNCTIONS_H
 //-----------------------------------------------------------------------------
+#include "main.h"
 #include "stm32f1xx_hal.h"
 //-----------------------------------------------------------------------------
-#define FaultIdx_Pin GPIO_PIN_6
-#define FaultIdx_GPIO_Port GPIOC
-#define SleepIdx_Pin GPIO_PIN_15
-#define SleepIdx_GPIO_Port GPIOB
+#define IDX_ACCURACY 10 //10 pulses = 17 um
+#define IDX_SHOWREALPOSITION 1
+#define INDEXMOTORTIMEOUT 5000
+#define INDEXMOTORTIMEOUTNORMAL 1000
+#define FaultIdx_Pin GPIO_PIN_15
+#define FaultIdx_GPIO_Port GPIOB
+#define SleepIdx_Pin GPIO_PIN_8
+#define SleepIdx_GPIO_Port GPIOA
 #define IntIndex_Pin GPIO_PIN_0
 #define IntIndex_GPIO_Port GPIOA
 #define IntIndex_EXTI_IRQn EXTI0_IRQn
@@ -31,25 +36,35 @@
 #define A2Off()HAL_GPIO_WritePin(A2_GPIO_Port, A2_Pin,GPIO_PIN_RESET)
 #define IDX_Enable() HAL_GPIO_WritePin(SleepIdx_GPIO_Port, SleepIdx_Pin,GPIO_PIN_SET)
 #define IDX_Disable() HAL_GPIO_WritePin(SleepIdx_GPIO_Port, SleepIdx_Pin,GPIO_PIN_RESET)
-
-//-----------------------------------------------------------------------------
-//! \brief  Index motor structure
-typedef struct
+#define IDX_A() HAL_GPIO_ReadPin(A_GPIO_Port, A_Pin)
+#define IDX_B() HAL_GPIO_ReadPin(B_GPIO_Port, B_Pin)
+#define IDX_HomeOn() HAL_GPIO_ReadPin(IntIndex_GPIO_Port, IntIndex_Pin)==1
+#define IDX_HomeOff() HAL_GPIO_ReadPin(IntIndex_GPIO_Port, IntIndex_Pin)==0
+#define IDX_CCW()		TIM1->CCR1
+#define IDX_CW() 		TIM1->CCR2
+typedef  struct
 {
-    uint8_t StepsPerRevolution;   //200
-    uint8_t NrOfSteps;            //4, bistable motor, so 2 phases, so 4 steps
-    int8_t CurrentStep;           //0 to 3
-    uint16_t StepDelay;
-    int32_t SetPosition;
-    int32_t GetPosition;
-} stcStepperMotor;
+  enuStatus MainStatus;
+  enuStatus MainStatusOld;
+  enuStatus SubStatus;
+  enuStatus SubStatusOld;
+} enuIDX_Unit;
+//-----------------------------------------------------------------------------
+//IDX_exported variables
+//-----------------------------------------------------------------------------
+extern uint8_t gIDX_ResetPosition;
+extern stcDCMotor gIDX_Motor;
+extern enuIDX_Unit gIDX_Status;
+extern uint16_t gIDX_ErrorNumber;
+extern uint8_t IDX_HomeFlag;
 //-----------------------------------------------------------------------------
 //IDX_functions
 //---------------------- SYSTEM ------------------------
-extern stcStepperMotor gIndexMotor;
-
-void IDX_Init(void);
-void IDX_Tick(void);
+extern void IDX_Init(void);
+extern void IDX_HandleMotor (void);
+extern enuStatus IDX_Set(enuStatus newStatus, int32_t newPosition);
+extern void IDX_HandleTasks(void);
+extern void IDX_SetPosition (int32_t newPosition);
 
 #endif  // _IDX_FUNCTIONS_H
 

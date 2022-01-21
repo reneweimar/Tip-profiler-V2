@@ -4,11 +4,33 @@
 //! \brief      Contains routines for the index motor
 //! \details
 //! \Attention
+//! \There is a ratio between index motor posiiton and scrape position
+//! \This means the scrape width and the sidestep on the reed are different
+//! \from the scrape with and the sidestep on the index motor.
+//! \Ratio is 1.756 for Oboe and 1.838 for Bassoon
+//! \TIM8 is used as quadrature encoder
 //-----------------------------------------------------------------------------
+#include "indexmotor.h"
 #include "main.h"
+#include "gpio.h"
+#include "tim.h"
+#include "power.h"
+#include <stdlib.h>
 //-----------------------------------------------------------------------------
-//! \Global step counter
-stcStepperMotor gIndexMotor;
+//! \Global Index motor container
+stcDCMotor gIDX_Motor;
+//! \Global Index motor status container
+enuIDX_Unit gIDX_Status;
+//! \Global Reset index motor position flag
+uint8_t gIDX_ResetPosition;
+//! \Index motor position setting for side step
+int32_t IDX_Position;
+//! \Global error numbner for index motor
+uint16_t gIDX_ErrorNumber;
+//! \Global home flag
+uint8_t IDX_HomeFlag = 0;
+
+
 //-----------------------------------------------------------------------------
 //! \brief      Initiates the index motor unit
 //! \details    Defines the GPIO and interrupts related to the index motor
@@ -18,128 +40,468 @@ void IDX_Init(void)
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   HAL_GPIO_WritePin(SleepIdx_GPIO_Port, SleepIdx_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(A1_GPIO_Port, A1_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(A2_GPIO_Port, A2_Pin, GPIO_PIN_RESET);
   GPIO_InitStruct.Pin = IntIndex_Pin;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(IntIndex_GPIO_Port, &GPIO_InitStruct);
-  GPIO_InitStruct.Pin = A_Pin;
-  HAL_GPIO_Init(A_GPIO_Port, &GPIO_InitStruct);
-  GPIO_InitStruct.Pin = B_Pin;
-  HAL_GPIO_Init(B_GPIO_Port, &GPIO_InitStruct);
   GPIO_InitStruct.Pin = SleepIdx_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(SleepIdx_GPIO_Port, &GPIO_InitStruct);
-  GPIO_InitStruct.Pin = A1_Pin;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(A1_GPIO_Port, &GPIO_InitStruct);
-  GPIO_InitStruct.Pin = A2_Pin;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(A2_GPIO_Port, &GPIO_InitStruct);
   GPIO_InitStruct.Pin = FaultIdx_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(FaultIdx_GPIO_Port, &GPIO_InitStruct);
-
   HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI0_IRQn);
-  
-  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
-
-  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
-
-  gIndexMotor.StepsPerRevolution = 200;
-  gIndexMotor.StepDelay = 100; // = 100 * 100 us = 10 ms --> 200 * 10 ms --> 2 seconds per revolution
-  gIndexMotor.SetPosition = 0;
-  gIndexMotor.GetPosition = 0;
-  gIndexMotor.NrOfSteps = 4;
+  HAL_TIM_Base_Start(&htim1);
+  HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_1);
+  HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_2);
+  gIDX_Motor.UmPerPulse = 0.56;
+  gIDX_Motor.P = 0.1;
+  gIDX_Motor.I = 0;
+  gIDX_Motor.D = 0;
+  gIDX_Motor.PosP = 20;
+  gIDX_Motor.PosI = 0.001;
+  gIDX_Motor.PosD = 500;
+  gIDX_Motor.MaxSpeed = 10000;
+  gIDX_Motor.SpeedControl = 0;
+  gIDX_Motor.PositionControl = 1;
+  gIDX_Motor.MainStatus=INACTIVE;
+  gIDX_Motor.Ratio = 30;
+  gIDX_Motor.PulsesPerRevolution = 28; //(PPR = 7 * 4)
 }
 //-----------------------------------------------------------------------------
-//! \brief      Handles the stepper motor control
-//! \details    Handles the stepper motor control by moving to the next step at
-//!             a certain interval. switches off the motor coils when the 
-//!             position is reached or if no position is controlled within 1 ms
-//! \param      None
-void IDX_Tick(void)
+//! \brief      Sets the IDX_Unit status
+//! \details    Sets the selected status (main or sub) and stores the 
+//! previous status. Sets SubStatus to UNDEFINED when MainStatus is changed.
+//! \param[in]  newType   MainStatus or SubStatus
+//! \param[in]  newStatus New status for the selected status
+void IDX_SetStatus (enuType newType, enuStatus newStatus)
 {
-  /*
-  static uint16_t TickTime = 0;
-  int16_t StepsToGo;
-  TickTime ++;
-  if (TickTime == 100)// 10 ms has passed, so motor coils are switched off to save power
+    if (newType == MainStatus)
+    {
+        gIDX_Status.MainStatusOld = gIDX_Status.MainStatus;
+        gIDX_Status.MainStatus = newStatus;
+        gIDX_Status.SubStatusOld = gIDX_Status.SubStatus;
+        gIDX_Status.SubStatus = UNDEFINED;
+    }
+    else
+    {
+        gIDX_Status.SubStatusOld = gIDX_Status.SubStatus;
+        gIDX_Status.SubStatus = newStatus;
+    }
+}
+//-----------------------------------------------------------------------------
+//! \brief       Sets the index motor status
+//! \details     Sets status and the position
+//! \param [in]  enuStatus newStatus
+//! \param [in]  int32_t newPosition in pulses
+//! \param [out] enuStatus IDX_Motor.SubStatus or READY
+enuStatus IDX_Set(enuStatus newStatus, int32_t newPosition)
+{
+  if (gIDX_Status.MainStatus == newStatus) //Task already running
   {
-    A1Off();
-    A2Off();
-    B2Off();
-    B1Off();
-    IDX_Disable();
+    if (gIDX_Status.SubStatus != READY)
+    {
+      if (gIDX_Status.MainStatus == gIDX_Status.SubStatus)
+      {
+        IDX_SetStatus(SubStatus,READY);
+      }
+      else
+      {
+        IDX_HandleTasks();
+      }
+    }
   }
-  if (TickTime < gIndexMotor.StepDelay) return;//Check if the delay is passed already. If not exit function
-  TickTime = 0;
-  
-  StepsToGo = gIndexMotor.GetPosition - gIndexMotor.SetPosition;//Calculate remaining steps
+  else
+  {
+    IDX_Position = newPosition;
+    IDX_SetStatus(MainStatus,newStatus);
+  }
+  return gIDX_Status.SubStatus;
+}
+//-----------------------------------------------------------------------------
+//! \brief      Controls the index motor position PID
+//! \details    Calculates the PID value for the position control
+//! \param      None
+static void IDX_HandlePosPID (void)
+{   
+    gIDX_Motor.PosErrorP = (float) (gIDX_Motor.SetPosition - gIDX_Motor.GetPosition);
+    if ((abs(gIDX_Motor.PosErrorP) < 5) &&(gIDX_Status.MainStatus!=HOME))
+    {
+      gIDX_Motor.PosErrorP = 0; //Avoid jittering
+      gIDX_Motor.PosErrorPOld = 0;
+      gIDX_Motor.PosErrorI = 0;
+      gIDX_Motor.PosPID = 0;
+      gIDX_Motor.PosControl = 0;
+    }
+    gIDX_Motor.PosErrorI = gIDX_Motor.PosErrorI + gIDX_Motor.PosErrorP;
+    gIDX_Motor.PosErrorD = gIDX_Motor.PosErrorP - gIDX_Motor.PosErrorPOld;
+    gIDX_Motor.PosErrorPOld = gIDX_Motor.PosErrorP;
+    gIDX_Motor.PosPID = gIDX_Motor.PosErrorP * gIDX_Motor.PosP + gIDX_Motor.PosErrorI * gIDX_Motor.PosI + gIDX_Motor.PosErrorD * gIDX_Motor.PosD;
+    gIDX_Motor.PosControl = gIDX_Motor.PosControl + (int32_t) gIDX_Motor.PosPID;
 
-  if (StepsToGo > 0) //Reverse
+    if (((int32_t) gIDX_Motor.PosPID < 5) && (abs(gIDX_Motor.GetPosition - gIDX_Motor.SetPosition) < 3))
+    {
+      gIDX_Motor.PosControl = 0;
+      gIDX_Motor.PosErrorI = 0;
+      
+    }
+    if (gIDX_Motor.PosControl < - gIDX_Motor.MaxSpeed ) //-(gIDX_Motor.MaxSpeed * 5.333))
+    {
+        gIDX_Motor.PosControl = - gIDX_Motor.MaxSpeed ;//  -(gIDX_Motor.MaxSpeed * 5.333);
+    }
+    if (gIDX_Motor.PosControl > gIDX_Motor.MaxSpeed ) //(gIDX_Motor.MaxSpeed * 5.333))
+    {
+        gIDX_Motor.PosControl = gIDX_Motor.MaxSpeed ; //gIDX_Motor.MaxSpeed * 5.333;
+    }
+    if (gIDX_Motor.SpeedControl)
+    {
+        gIDX_Motor.SetSpeed = gIDX_Motor.PosControl / 5.333;
+    }
+    else
+    {
+        if ((gIDX_Motor.PosControl > -1000) && (gIDX_Motor.PosControl < 1000))
+        {
+          gIDX_Motor.Control = 0;
+        }
+        else
+        {
+          gIDX_Motor.Control = gIDX_Motor.PosControl;
+        }
+    }
+}
+//-----------------------------------------------------------------------------
+//! \brief      Controls the index motor direction and speed
+//! \details    Sets the PWM with the calculated speed
+//! \param      None
+void IDX_SetPWM (enuStatus newStatus, uint8_t newSpeed)
+{
+  switch (newStatus)
   {
-    gIndexMotor.CurrentStep --;
-    if (gIndexMotor.CurrentStep < 0) gIndexMotor.CurrentStep = gIndexMotor.NrOfSteps - 1;
-    gIndexMotor.GetPosition --;
-    IDX_Enable();
+    case CCW:
+    {
+      IDX_CW() = 100 - newSpeed;
+      IDX_CCW()=100;
+      break;
+    }
+    case CW:
+    {
+      IDX_CW() = 100;
+      IDX_CCW() = 100 - newSpeed;
+      break;
+    }
+    default:
+    {
+      IDX_CCW() = 100;
+      IDX_CW()=100;
+      break;
+    }
   }
-  else if (StepsToGo < 0) //Forward
+}
+//-----------------------------------------------------------------------------
+//! \brief      Controls the index motor speed PID
+//! \details    Calculates the PID value for the speed control
+//! \param      None
+static void IDX_HandleSpeedPID (void) //newname
+{
+    gIDX_Motor.ErrorP = (float) (gIDX_Motor.SetSpeed - gIDX_Motor.GetSpeed);
+    gIDX_Motor.ErrorI = gIDX_Motor.ErrorI + gIDX_Motor.ErrorP;
+    gIDX_Motor.ErrorD = gIDX_Motor.ErrorP - gIDX_Motor.ErrorPOld;
+    gIDX_Motor.ErrorPOld = gIDX_Motor.ErrorP;
+    gIDX_Motor.PID = gIDX_Motor.ErrorP * gIDX_Motor.P + gIDX_Motor.ErrorI * gIDX_Motor.I + gIDX_Motor.ErrorD * gIDX_Motor.D;
+    gIDX_Motor.Control = gIDX_Motor.Control + (int16_t) gIDX_Motor.PID;
+    if (gIDX_Motor.Control < -10000)
+    {
+        gIDX_Motor.Control = -10000;
+    }
+    if (gIDX_Motor.Control > 10000)
+    {
+        gIDX_Motor.Control = 10000;
+    }
+}
+//-----------------------------------------------------------------------------
+//! \brief      Handles the index motor position
+//! \details    Controls the motor to the set position
+//! \params     None
+void IDX_HandleMotor (void)
+{
+  static float PositionOld;
+  static float Position;
+  static uint8_t TimeOut;
+
+  if (((gIDX_Motor.GetSpeed < 0)&&(gIDX_Motor.Control > 0)) || ((gIDX_Motor.GetSpeed > 0)&&(gIDX_Motor.Control < 0))) //Motor turning wrong direction
   {
-    gIndexMotor.CurrentStep ++;
-    if (gIndexMotor.CurrentStep >= gIndexMotor.NrOfSteps) gIndexMotor.CurrentStep = 0;
-    gIndexMotor.GetPosition ++;
-    IDX_Enable();
+    if (TimeOut ++ > 10)
+    {
+      gIDX_Motor.TimeOut = 0;
+      gIDX_ErrorNumber = 13002;
+      gIDX_Motor.MainStatus = INACTIVE;
+      IDX_SetStatus(MainStatus,UNITERROR);
+    }
+  } 
+  else 
+  {
+    TimeOut = 0;
   }
-  else //Nothing to do. Power off the motor to save power
+  gIDX_Motor.GetPosition = TIM8->CNT - 32767;
+  if ((abs(gIDX_Motor.GetPosition) < IDX_ACCURACY) && (gIDX_Motor.IsHomed == 1))
   {
-    A1Off();
-    A2Off();
-    B2Off();
-    B1Off();
+    gIDX_Motor.IsInStartPosition = 1;
+  }
+  else
+  {
+    gIDX_Motor.IsInStartPosition = 0;
+  }
+    
+  gIDX_Motor.GetUm = (int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse);
+
+  Position = gIDX_Motor.GetPosition;
+  if (abs (Position - PositionOld) < 3)
+    gIDX_Motor.GetSpeed = 0;  
+  else
+    gIDX_Motor.GetSpeed = (int16_t) ((Position - PositionOld) / (float) gIDX_Motor.PulsesPerRevolution * 60000);
+  PositionOld = Position;
+  
+  if (gIDX_Motor.MainStatus==INACTIVE)
+  {
     IDX_Disable();
+    gIDX_Motor.ErrorI = 0;
+    gIDX_Motor.PosErrorI = 0;
+    gIDX_Motor.Control = 0;
+    gIDX_Motor.PosControl = 0;
+    gIDX_Motor.SetSpeed = 0; 
     return;
   }
-    switch (gIndexMotor.CurrentStep) 
+  else
   {
-    case 0:  // 1010
-      A1On();
-      A2Off();
-      B2On();
-      B1Off();
-    break;
-    case 1:  // 0110
-      A1Off();
-      A2On();
-      B2On();
-      B1Off();
-    break;
-    case 2:  //0101
-      A1Off();
-      A2On();
-      B2Off();
-      B1On();
-    break;
-    case 3:  //1001
-      A1On();
-      A2Off();
-      B2Off();
-      B1On();
-    break;
+    IDX_Enable();
   }
-  */
+  if (gIDX_Motor.PositionControl)
+  {
+    IDX_HandlePosPID();
+  }
+  if (gIDX_Motor.SpeedControl)
+  {
+    IDX_HandleSpeedPID();
+  }
+  if ((gIDX_Motor.PositionControl == 0) && (gIDX_Motor.SpeedControl == 0))
+  {
+    gIDX_Motor.Control = gIDX_Motor.SetSpeed;
+  }
+  if ((abs(gIDX_Motor.Control) > 5000) && (gIDX_Motor.GetSpeed == 0) && (gIDX_Status.MainStatus == HOME)) //Motor is controlled > 75%, but not turning or encoder not detecting any pulses
+  {
+    gIDX_Motor.TimeOut+=10;
+    if (gIDX_Motor.TimeOut > INDEXMOTORTIMEOUT) 
+    {
+      gIDX_Motor.TimeOut = 0;
+      gIDX_ErrorNumber = 13001;
+      gIDX_Motor.MainStatus = INACTIVE;
+      IDX_SetStatus(MainStatus,UNITERROR);
+    }
+  }
+  else if ((abs(gIDX_Motor.Control) > 5000) && (gIDX_Motor.GetSpeed == 0) ) //Motor is controlled > 75%, but not turning or encoder not detecting any pulses
+  {
+    gIDX_Motor.TimeOut+=10;
+    if (gIDX_Motor.TimeOut > INDEXMOTORTIMEOUTNORMAL) 
+    {
+      gIDX_Motor.TimeOut = 0;
+      gIDX_ErrorNumber = 13001;
+      gIDX_Motor.MainStatus = INACTIVE;
+      IDX_SetStatus(MainStatus,UNITERROR);
+    }
+  }
+  else
+  {
+    gIDX_Motor.TimeOut = 0;
+  }
+  if ((gIDX_Motor.Control < 0)&&(gIDX_Motor.MainStatus==ACTIVE))
+  {
+    IDX_SetPWM(CW, - gIDX_Motor.Control/100);
+  }
+  else if ((gIDX_Motor.Control > 0)&&(gIDX_Motor.MainStatus==ACTIVE))
+  {
+    IDX_SetPWM(CCW, gIDX_Motor.Control/100);
+  }
+  else if (gIDX_Motor.MainStatus==ACTIVE)
+  {
+    IDX_SetPWM(CW, 0);
+  }
+  else
+  {
+    IDX_SetPWM(CW,0);
+    gIDX_Motor.MainStatus = INACTIVE;
+    gIDX_Motor.ErrorI = 0;
+    gIDX_Motor.PosErrorD = 0;
+    gIDX_Motor.PosErrorI = 0;
+    gIDX_Motor.PosPID = 0;
+    gIDX_Motor.Control = 0;
+    IDX_CCW() = 0;
+    IDX_CW() = 0;
+    gIDX_Motor.PosControl = 0;
+    gIDX_Motor.SetSpeed = 0;
+  }
 }
-
 //-----------------------------------------------------------------------------
+//! \brief       Sets the index motor position and starts the movement
+//! \details     This goes outside handlemotor, so the speed is fast enough
+//! \param[in]   int32_t newPosition
+void IDX_SetPosition (int32_t newPosition)
+{
+  gIDX_Motor.MainStatus = ACTIVE;
+  PWR_SensorsOn();
+  gIDX_Motor.SetPosition = newPosition;
+}
+//float TempP = 30;
+//float TempI = 0.005;
+//float TempD = 2000;
 
+  
+//-----------------------------------------------------------------------------
+//! \brief       Handles the tasks of the index motor
+//! \details     Evaluates the home sensor and encoder
+//! \params      None
+void IDX_HandleTasks(void)
+{ 
+  static uint8_t CheckStoppedCounter;
+  static uint16_t IDXHomeAccuracy;
+  switch (gIDX_Status.MainStatus)
+  {
+    case UNDEFINED:
+    {
+      gIDX_Motor.MainStatus = INACTIVE;
+      break;
+    }
+    case GOTOPOSITION:
+    {
+      switch (gIDX_Status.SubStatus)
+      {
+        case UNDEFINED:
+        {
+          gIDX_Motor.PosP = 20;  
+          gIDX_Motor.PosI = 0.001;
+          gIDX_Motor.PosD = 500;
+          gIDX_Motor.MainStatus = ACTIVE;
+          PWR_SensorsOn();
+          gIDX_Motor.SetPosition = IDX_Position;
+          CheckStoppedCounter = 0;
+          IDX_SetStatus(SubStatus,WAITFORPOSITION);
+          break;
+        }
+        case WAITFORPOSITION:
+        {
+          if ((abs(gIDX_Motor.GetPosition - gIDX_Motor.SetPosition) < IDX_ACCURACY) && (gIDX_Motor.GetSpeed == 0))
+          {
+            if (CheckStoppedCounter ++ > 10) //To avoid preliminary triggering in case of overshoot
+            {
+              gIDX_Motor.MainStatus = INACTIVE;  
+              IDX_SetStatus(SubStatus,GOTOPOSITION);
+            }
+          }
+        }
+        default:
+          break;
+      }
+      break;
+    }
+    case HOME:
+    {
+      switch (gIDX_Status.SubStatus)
+      {
+        case UNDEFINED:
+        {
+          PWR_SensorsOn();
+          IDX_HomeFlag = 0;
+          IDXHomeAccuracy = 300;
+          gIDX_Motor.MaxSpeed = 10000;
+          gIDX_Motor.PosP = 30; 
+          gIDX_Motor.PosI = 0.005;
+          gIDX_Motor.PosD = 2000;
+          gIDX_Motor.IsHomed = 0;
+          CheckStoppedCounter = 0;
+          IDX_SetStatus(SubStatus,WAITFORPOWERSENSOR);
+          break;
+        }
+        case WAITFORPOWERSENSOR:
+        {
+          if (IDX_HomeOn()) //Homesensor is on, so move left (flag is in between sensor)
+          {
+            TIM8->CNT = 52767;
+            gIDX_Motor.SetPosition = -500;
+            gIDX_Motor.MainStatus = ACTIVE;
+            gIDX_ResetPosition = 1;
+            IDX_SetStatus(SubStatus,WAITFORHOMESENSORON);
+          }
+          else //Homesensor is off, so move right (flag is not in between sensor)
+          {
+            TIM8->CNT = 12767;
+            gIDX_Motor.SetPosition = 500;
+            gIDX_Motor.MainStatus = ACTIVE;
+            gIDX_ResetPosition = 1;
+            IDX_SetStatus(SubStatus,WAITFORHOMESENSORON2);
+          }
+          break;
+        }
+        case WAITFORHOMESENSORON:
+        case WAITFORHOMESENSORON2:
+        {
+          if ((abs(gIDX_Motor.GetPosition - gIDX_Motor.SetPosition) < IDXHomeAccuracy) && (gIDX_Motor.GetSpeed == 0))
+          {
+            if (CheckStoppedCounter ++ > 10) //To avoid preliminary triggering in case of overshoot
+            {
+              if (gIDX_Status.SubStatus == WAITFORHOMESENSORON2)
+              {
+                TIM8->CNT = 52767;
+                gIDX_Motor.SetPosition = -500;
+                gIDX_Motor.MainStatus = ACTIVE;
+                gIDX_ResetPosition = 1;
+                IDX_SetStatus(SubStatus,WAITFORHOMESENSORON);
+              }
+              else //Last step
+              {
+    						if (gIDX_Motor.SetPosition == 0)
+                {
+                  if (IDX_HomeFlag == 1)
+                  {
+                    gIDX_Motor.MaxSpeed = 10000;
+                    gIDX_Motor.IsHomed = 1;
+      							IDX_SetPWM(INACTIVE,0);
+      							gIDX_Motor.MainStatus = INACTIVE;
+      							IDX_SetStatus(SubStatus, HOME);
+                  }
+                  else
+                  {
+                    gIDX_Motor.TimeOut = 0;
+                    gIDX_ErrorNumber = 13003;
+                    gIDX_Motor.MainStatus = INACTIVE;
+                    IDX_SetStatus(MainStatus,UNITERROR);     
+                  }
+    						}
+    						else
+    						{
+    							gIDX_ResetPosition = 0;
+    							gIDX_Motor.SetPosition = 0;
+                  IDXHomeAccuracy = 10;
+    						}
+              }
+            }
+          }
+          break;
+        }
+        default:
+          break;
+      }
+      break;
+    }
+    default:
+      break;
+  }
+}
+//-----------------------------------------------------------------------------
 

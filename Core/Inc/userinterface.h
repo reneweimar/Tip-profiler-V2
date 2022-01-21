@@ -9,10 +9,13 @@
 #define _USR_FUNCTIONS_H
 //-----------------------------------------------------------------------------
 #include "stm32f1xx_hal.h"
+#include "ssd1306.h"
 //-----------------------------------------------------------------------------
 
 #define USR_PRESSTIMEMAX 5000
 #define USR_SHORTPRESSTIME 1
+#define USR_REPEATDELAYFIRST 10
+#define USR_REPEATDELAYSECOND 3
 #define NROFBUTTONS 6
 #define BtnMenuLeft_Pin GPIO_PIN_10
 #define BtnMenuLeft_GPIO_Port GPIOC
@@ -50,14 +53,31 @@ typedef enum
 typedef struct
 {
   uint8_t WaitForRelease;
+  uint8_t WaitForReleaseOld;
+  uint8_t DelayCounter;
   uint16_t TimeOn;
   uint16_t TimeOff;
 } stcButtonStatus;
+extern stcButtonStatus Button[NROFBUTTONS];
+extern uint8_t gParameterNumber;
+extern int16_t gParameterValue;
+extern uint32_t gCurrentScreen;
+extern uint32_t gReturnScreen;
+extern uint32_t gReturnFromErrorScreen;
+extern uint32_t gLastScrapeScreen;
+extern uint32_t gLastScrapeScreenEndless;
+
 //-----------------------------------------------------------------------------
 //USR_functions
 //---------------------- SYSTEM ------------------------
-extern uint16_t gCurrentScreen;
+extern void USR_DrawLogo (uint8_t newX, uint8_t newY,SSD1306_COLOR color);
+extern void USR_ShowPosition (int32_t newPosition);
+extern void USR_ClearPosition (void);
+extern void USR_SetMessage (char* newMessage0, char* newMessage1, char* newMessage2, char* newMessage3, char* newMessage4, char* newMessage5);
+extern void USR_SaveError(uint16_t newError, uint8_t newShow);
 extern void USR_EnterValue(int16_t NewNumber);
+extern void USR_IncreaseCounters(void);
+extern void USR_ResetServiceCounter(void);
 extern void USR_SaveParameter(void);
 extern void USR_CursorRight(void);
 extern void USR_CursorLeft(void);
@@ -65,8 +85,7 @@ extern void USR_CursorUp(void);
 extern void USR_CursorDown(void);
 extern uint8_t USR_ButtonWaitForRelease (enuButtons ReqButton);
 extern void USR_Init(void);
-extern void USR_ShowMessage(uint16_t NewMessage);
-extern void USR_ShowScreen(uint16_t NewScreen);
+extern void USR_ShowScreen(uint32_t NewScreen);
 extern void USR_ShowBattery (uint8_t PercentageNew);
 extern void USR_ClearScreen (uint8_t ShowTitle);
 extern void USR_HandleButtons (void);

@@ -42,6 +42,23 @@
 *.idb
 *.pdb
 
+# SourceInsight files
+*.IAB
+*.IAD
+*.PFI
+*.PO
+*.PR
+*.PRI
+*.PS
+*.WK3
+
+# Compiled files
+*.crf
+*.htm
+*.rene
+*.uvoptx
+*.dep
+
 # Kernel Module Compile Results
 *.mod*
 *.cmd
