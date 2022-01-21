@@ -48,8 +48,8 @@
             <NotGenerated>0</NotGenerated>
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
-          <OutputDirectory>80352105\</OutputDirectory>
-          <OutputName>80352105</OutputName>
+          <OutputDirectory>.\80352105\</OutputDirectory>
+          <OutputName>Version01-01-0021</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>1</CreateHexFile>
