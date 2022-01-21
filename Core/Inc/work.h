@@ -13,7 +13,7 @@
 #define SPLASHSCREENTIME        3000
 #define VERSIONMAJOR            1
 #define VERSIONMINOR            1
-#define VERSIONTWEAK            20
+#define VERSIONTWEAK            21
 #define LOWPOWERTIME            10000
 #define LOWCONTRAST             100
 #define HIGHCONTRAST            255
