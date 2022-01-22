@@ -13,7 +13,7 @@
 #define SPLASHSCREENTIME        3000
 #define VERSIONMAJOR            1
 #define VERSIONMINOR            1
-#define VERSIONTWEAK            21
+#define VERSIONTWEAK            22
 #define LOWPOWERTIME            10000
 #define LOWCONTRAST             100
 #define HIGHCONTRAST            255
@@ -173,6 +173,9 @@ typedef enum
   RightSidePaused = 9,
   LeftSidePauseRequested = 10,
   LeftSidePaused = 11,
+  NoSideStep = 12,
+  NoSideStepPauseRequested = 13,
+  NoSideStepPaused = 14
    
 } enuScrapeStatus;
 

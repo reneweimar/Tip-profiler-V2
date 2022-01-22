@@ -84,7 +84,7 @@ int main(void)
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
 
-  HAL_Init();
+HAL_Init();
 
 
   /* USER CODE BEGIN Init */
@@ -161,16 +161,19 @@ int main(void)
         gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
         STR_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
       }
+      if ((gScrape.Status == RightSidePauseRequested) || (gScrape.Status == LeftSidePauseRequested) || (gScrape.Status == NoSideStepPauseRequested)) //Reduce speed so the motor can stop in time
+        gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
+            
     }
     if ((gSTR_Status.MainStatus == GOTOSTARTPOSITION) && (gSTR_Status.SubStatus == WAITFORSTROKEMOTORSTART) && (gSTR_Motor.Encoder == 300))
     {
       STR_Stop();
     }
-    if ((gWRK_Status.MainStatus == SCRAPEREED) && ((gWRK_Status.SubStatus == WAITFORSTROKEMOTORSTOP) || (gWRK_Status.SubStatus == WAITFORUSER)))
+    if (((gWRK_Status.MainStatus == SCRAPEREED) || (gWRK_Status.MainStatus == SCRAPENOSIDESTEPS)) && ((gWRK_Status.SubStatus == WAITFORSTROKEMOTORSTOP) || (gWRK_Status.SubStatus == WAITFORUSER)))
     {
       if (gSTR_Motor.Encoder == 300)
       {
-        if (gScrape.NextScrape == 1) //To wait for passing home switch again
+        if ((gScrape.NextScrape == 1) || (gWRK_Status.MainStatus == SCRAPENOSIDESTEPS)) //To wait for passing home switch again
         {
           gScrape.NextScrape = 0;
           if (gScrape.Status == RightSideLastStep)
@@ -211,7 +214,12 @@ int main(void)
             WRK_SetScrapeStatus (LeftSidePaused);
             STR_Stop();
           }
-          else
+          else if (gScrape.Status == NoSideStepPauseRequested)
+          {
+            WRK_SetScrapeStatus (NoSideStepPaused);
+            STR_Stop();
+          }
+          else if (gScrape.Status != NoSideStep)
           {
 #ifdef IDX_SHOWREALPOSITION
               USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
