@@ -107,6 +107,7 @@ enuStatus IDX_Set(enuStatus newStatus, int32_t newPosition)
 {
   if (gIDX_Status.MainStatus == newStatus) //Task already running
   {
+    IDX_Position = newPosition;
     if (gIDX_Status.SubStatus != READY)
     {
       if (gIDX_Status.MainStatus == gIDX_Status.SubStatus)

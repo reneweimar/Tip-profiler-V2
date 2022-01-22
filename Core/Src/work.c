@@ -164,6 +164,42 @@ uint16_t ParameterTemp[20];
 float BatteryVoltage;
 
 //-----------------------------------------------------------------------------
+//! \brief      Shows the corresponding text for the error
+//! \details    Sets and saves the error text for displaying in screen 3
+//! \param[in]  uint16_t newError
+void WRK_ShowError (uint16_t newError)
+{
+  if (newError == 13001) //Index motor not turning or encoder not detected
+    USR_SetMessage("SIDE STEP MOTOR NOT","","TURNING OR ENCODER","","SIGNAL MISSING","OK");
+  else if (newError == 13002) //Index motor turning wrong direction or encoder channels swapped
+    USR_SetMessage("SIDE STEP MOTOR","","TURNING WRONG","","DIRECTION","OK");
+  else if (newError == 13003) //Stroke motor turning but home sensor status not changing
+    USR_SetMessage("SIDE STEP MOTOR ","","TURNING BUT HOME","","SENSOR MISSING","OK");
+  else if (newError == 23001) //Stroke motor not turning or encoder not detected
+    USR_SetMessage("STROKE MOTOR NOT","","TURNING OR ENCODER","","SIGNAL MISSING","OK");
+  else if (newError == 23002) //Stroke motor turning but encoder not detected
+    USR_SetMessage("STROKE MOTOR ","","TURNING BUT ENCODER","","SIGNAL MISSING","OK");
+  else if (newError == 23003) //Stroke motor turning but home sensor not detected when expected
+    USR_SetMessage("STROKE MOTOR TURNING","","BUT HOME SENSOR","","SIGNAL MISSING","OK");
+  else if (newError == 23004) //Stroke motor is at starttposition but home sensor isnot off
+    USR_SetMessage("STROKE UNIT AT START","","POSITION BUT HOME","","SENSOR STILL ON","OK");
+  else if (newError == 31001) 
+    USR_SetMessage("SIDE STEP CONFLICT","","BIG <= SMALL","","OK: CORRECT *: CANCEL","OK");
+  else if (newError == 31002) 
+    USR_SetMessage("SIDE STEP CONFLICT","","SMALL >= BIG","","OK: CORRECT *: CANCEL","OK");
+  else if (newError == 31003) 
+    USR_SetMessage("SIDE STEP CONFLICT","","WIDTH <= INNER","","OK: CORRECT *: CANCEL","OK");
+  else if (newError == 31004) 
+    USR_SetMessage("SIDE STEP CONFLICT","","INNER >= WIDTH","","OK: CORRECT *: CANCEL","OK");
+  else
+  {
+    USR_SetMessage("","","    UNKNOWN ERROR","","","OK");
+  }
+  USR_ShowScreen(3);
+  USR_SaveError(newError,1);
+}
+
+//-----------------------------------------------------------------------------
 //! \brief      Sets the scrape status
 //! \details    Sets the scrape status and stores the old scrape status
 //! \param[in]  enuScrapeStatus newStatus
@@ -430,14 +466,17 @@ void WRK_HandleScrapeReed (void)
 {
   if (gSTR_Status.MainStatus == UNITERROR) 
   {
-    STR_Set(STOP,0);
+    STR_Stop();
     IDX_Set(STOP,0);
-    if (gSTR_ErrorNumber == 23001) //Stroke motor not turning or encoder not detected
-    {
-      USR_SetMessage("STROKE MOTOR IS NOT","","TURNING OR ENCODER","","SIGNAL IS MISSING","OK");
-    }
-    USR_ShowScreen(3);
-    USR_SaveError(gSTR_ErrorNumber,1);
+    WRK_ShowError(gSTR_ErrorNumber);
+    WRK_SetStatus(MainStatus, ACTIVE);
+    WRK_SetStatus(SubStatus, WAITFORUSER); 
+  }
+  if (gIDX_Status.MainStatus == UNITERROR) 
+  {
+    STR_Stop();;
+    IDX_Set(STOP,0);
+    WRK_ShowError(gIDX_ErrorNumber);
     WRK_SetStatus(MainStatus, ACTIVE);
     WRK_SetStatus(SubStatus, WAITFORUSER); 
   }
@@ -447,7 +486,7 @@ void WRK_HandleScrapeReed (void)
     {
       case UNDEFINED:
       {
-        if (gIDX_Motor.IsHomed == 0)
+        if ((gIDX_Motor.IsHomed == 0) && (gWRK_Status.MainStatus != SCRAPENOSIDESTEPS)) //No side steps doesn't need IDX motor
         {
           USR_SetMessage("SIDE STEP SET IS","","NOT HOMED","","","OK");
           gReturnScreen = gCurrentScreen;
@@ -456,7 +495,7 @@ void WRK_HandleScrapeReed (void)
           WRK_SetStatus(MainStatus, ACTIVE);
           WRK_SetStatus(SubStatus, WAITFORUSER);
         }
-        else if (gIDX_Motor.IsInStartPosition == 0)
+        else if ((gIDX_Motor.IsInStartPosition == 0) && (gWRK_Status.MainStatus != SCRAPENOSIDESTEPS)) //No side steps doesn't need IDX motor
         {
           USR_SetMessage("SIDE STEP SET NOT","","AT START POSITION","","","OK");
           gReturnScreen = gCurrentScreen;
@@ -476,18 +515,26 @@ void WRK_HandleScrapeReed (void)
         }
         else
         {
+          gScrape.Speed = gMachineType[gMachine/100].Parameters[SCRAPESPEED].Value*30; // Value / 100 * 50 (ratio) * 60 (1 min = 60 s)
           USR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK");
           gReturnScreen = gCurrentScreen;
           USR_IncreaseCounters();
           USR_ShowScreen(4);
-          WRK_SetScrapeStatus (RightSideNormalStep);
-          WRK_SetStatus(SubStatus, WAITFORPOSITION);
+          if (gWRK_Status.MainStatus == SCRAPENOSIDESTEPS)
+          {
+            WRK_SetScrapeStatus (NoSideStep);
+            WRK_SetStatus(SubStatus, WAITFORSTROKEMOTORSTART);  
+          }
+          else
+          {
+            WRK_SetScrapeStatus (RightSideNormalStep);
+            WRK_SetStatus(SubStatus, WAITFORPOSITION);
+          }
         }
         break;
       }
       case WAITFORPOSITION:
       {
-        gScrape.Speed = gMachineType[gMachine/100].Parameters[SCRAPESPEED].Value*30; // Value / 100 * 50 (ratio) * 60 (1 min = 60 s)
         USR_ClearPosition();
         if (IDX_Set(GOTOPOSITION, gScrape.StartPosition )==READY)
         {
@@ -514,13 +561,21 @@ void WRK_HandleScrapeReed (void)
       {
         if (USR_ButtonPressed(BtnOk,USR_SHORTPRESSTIME,1)==1)
         {
-          if ((gScrape.Status == RightSideNormalStep) || (gScrape.Status == RightSideLastStep))
+          if (gScrape.Status == NoSideStep)
+          {
+            WRK_SetScrapeStatus (NoSideStepPauseRequested);
+            if (gSTR_Motor.Encoder < 300) //Reduce the speed, so the motor can stop in time
+              gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
+          }
+          else if ((gScrape.Status == RightSideNormalStep) || (gScrape.Status == RightSideLastStep))
           {
             if (gScrape.Status == RightSideNormalStep) 
               gScrape.StatusPause = gScrape.Status;
             else
               gScrape.StatusPause = (enuScrapeStatus) (gScrape.Status + 1);
             WRK_SetScrapeStatus (RightSidePauseRequested);
+            if (gSTR_Motor.Encoder < 300) //Reduce the speed, so the motor can stop in time
+              gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
             USR_SetMessage("","","    PAUSE SCRAPING","","","");
             USR_ShowScreen(4);
             break;
@@ -531,7 +586,8 @@ void WRK_HandleScrapeReed (void)
               gScrape.StatusPause = gScrape.Status;
             else
               gScrape.StatusPause = (enuScrapeStatus) (gScrape.Status + 1);
-
+            if (gSTR_Motor.Encoder < 300) //Reduce the speed, so the motor can stop in time
+              gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
             WRK_SetScrapeStatus (LeftSidePauseRequested);
             USR_SetMessage("","","    PAUSE SCRAPING","","","");
             USR_ShowScreen(4);
@@ -576,7 +632,7 @@ void WRK_HandleScrapeReed (void)
             WRK_SetStatus(SubStatus, WAITFORINDEXHOME);
           }
         }
-        else if ((gScrape.Status == RightSidePaused) || (gScrape.Status == LeftSidePaused))
+        else if ((gScrape.Status == RightSidePaused) || (gScrape.Status == LeftSidePaused) || (gScrape.Status == NoSideStepPaused))
         {
           USR_SetMessage("","OK: CONTINUE SCRAPING",""," *: CANCEL SCRAPING","","*OK");
           USR_ShowScreen(4);
@@ -611,6 +667,14 @@ void WRK_HandleScrapeReed (void)
       {
         if (USR_ButtonPressed(BtnOk,USR_SHORTPRESSTIME,1)==1)
         {
+          if (gScrape.Status == NoSideStepPaused)//pause scraping no side step
+          {
+            WRK_SetScrapeStatus(NoSideStep);
+            USR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK");
+            USR_ShowScreen(4);
+            WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
+            break;
+          }
           if (gScrape.Status == RightSidePaused)//pause scraping right part.
           {
             WRK_SetScrapeStatus(gScrape.StatusPause);//(RightSideNormalStep);
@@ -811,27 +875,19 @@ void WRK_HandleEnterValue(void)
         {
           if (gParameterNumber == SIDESTEPBIG)
           {
-            USR_SetMessage("SIDE STEP CONFLICT","","BIG <= SMALL","","OK: CORRECT *: CANCEL","OK");
-            USR_ShowScreen(3);
-            USR_SaveError(31001,1);
+            WRK_ShowError(31001);
           }
           else if (gParameterNumber == SIDESTEPSMALL)
           {
-            USR_SetMessage("SIDE STEP CONFLICT","","SMALL >= BIG","","OK: CORRECT *: CANCEL","OK");
-            USR_ShowScreen(3);
-            USR_SaveError(31002,1);          
+            WRK_ShowError(31002);
           }
           else if (gParameterNumber == SCRAPEWIDTH)
           {
-            USR_SetMessage("SIDE STEP CONFLICT","","WIDTH <= INNER","","OK: CORRECT *: CANCEL","OK");
-            USR_ShowScreen(3);
-            USR_SaveError(31003,1);
+            WRK_ShowError(31003);
           }
           else if (gParameterNumber == SCRAPEWIDTHINNER)
           {
-            USR_SetMessage("SIDE STEP CONFLICT","","INNER >= WIDTH","","OK: CORRECT *: CANCEL","OK");
-            USR_ShowScreen(3);
-            USR_SaveError(31004,1);
+            WRK_ShowError(31004);
           }
           WRK_SetStatus(SubStatus, WAITFORUSER2);
         }
@@ -864,57 +920,6 @@ void WRK_HandleEnterValue(void)
       break;
   }
 }
-
-//-----------------------------------------------------------------------------
-//! \brief      Handles the scraping of the reed without side steps
-//! \details    Handles the scraping of the reed without side steps
-//! \param      None
-void WRK_HandleScrapeNoSideSteps(void)
-{
-  switch (gWRK_Status.SubStatus)
-  {
-    case UNDEFINED:
-    {
-      WRK_SetStatus(SubStatus, WAITFORSTROKEMOTORSTART);
-      break;
-    }
-    case WAITFORSTROKEMOTORSTART:
-    {
-      if (STR_Set(START,gMachineType[gMachine/100].Parameters[SCRAPESPEED].Value*30) == READY)
-      {
-        STR_Set(UNDEFINED,0);
-        USR_SetMessage("","SCRAPING THE REED.","","OK: STOP SCRAPING","","OK");
-        USR_ShowScreen(4);
-        WRK_SetStatus(SubStatus, WAITFORUSER);
-      }
-      break;
-    }
-    case WAITFORUSER:
-    {
-      if (USR_ButtonPressed(BtnOk,1,1)==1)
-      {
-        USR_SetMessage("","","     STOP SCRAPING","","","");
-        USR_ShowScreen(4);
-        WRK_SetStatus(SubStatus, WAITFORSTROKEMOTORSTOP);
-      }
-      break;
-    }
-    case WAITFORSTROKEMOTORSTOP:
-    {
-      if (STR_Set(GOTOSTARTPOSITION,0) == READY)
-      {
-        STR_Set(UNDEFINED,0);
-        WRK_SetStatus(MainStatus, ACTIVE);
-        WRK_SetStatus(SubStatus, WAITFORUSER);
-        USR_ShowScreen(gReturnScreen);
-      }  
-      break;
-    }
-    default:
-      break;
-	}
-}
-
 //-----------------------------------------------------------------------------
 //! \brief      Handles the initialization of index and stroke motor
 //! \details    Handles the initialization of index and stroke motor
@@ -923,39 +928,18 @@ void WRK_HandleInitialize(void)
 {
   if (gSTR_Status.MainStatus == UNITERROR) 
   {
-    STR_Set(STOP,0);
+    STR_Stop();
     IDX_Set(STOP,0);
-    if (gSTR_ErrorNumber == 23001) //Stroke motor not turning or encoder not detected
-      USR_SetMessage("STROKE MOTOR NOT","","TURNING OR ENCODER","","SIGNAL MISSING","OK");
-    else if (gSTR_ErrorNumber == 23002) //Stroke motor turning but encoder not detected
-      USR_SetMessage("STROKE MOTOR ","","TURNING BUT ENCODER","","SIGNAL MISSING","OK");
-    else if (gSTR_ErrorNumber == 23003) //Stroke motor turning but home sensor not detected when expected
-      USR_SetMessage("STROKE MOTOR TURNING","","BUT HOME SENSOR","","SIGNAL MISSING","OK");
-    else if (gSTR_ErrorNumber == 23004) //Stroke motor is at starttposition but home sensor isnot off
-      USR_SetMessage("STROKE UNIT AT START","","POSITION BUT HOME","","SENSOR STILL ON","OK");
-    else
-    {
-      USR_SetMessage("","","    UNKNOWN ERROR","","","OK");
-    }
-    
-    USR_ShowScreen(3);
-    USR_SaveError(gSTR_ErrorNumber,1);
+    WRK_ShowError(gSTR_ErrorNumber);
     WRK_SetStatus(MainStatus, ACTIVE);
     WRK_SetStatus(SubStatus, WAITFORUSER); 
     return;
   }
   if (gIDX_Status.MainStatus == UNITERROR) 
   {
-    STR_Set(STOP,0);
+    STR_Stop();
     IDX_Set(STOP,0);
-    if (gIDX_ErrorNumber == 13001) //Index motor not turning or encoder not detected
-      USR_SetMessage("SIDE STEP MOTOR NOT","","TURNING OR ENCODER","","SIGNAL MISSING","OK");
-    if (gIDX_ErrorNumber == 13002) //Index motor turning wrong direction or encoder channels swapped
-      USR_SetMessage("SIDE STEP MOTOR","","TURNING WRONG","","DIRECTION","OK");
-    if (gIDX_ErrorNumber == 13003) //Stroke motor turning but home sensor status not changing
-      USR_SetMessage("SIDE STEP MOTOR ","","TURNING BUT HOME","","SENSOR MISSING","OK");
-    USR_ShowScreen(3);
-    USR_SaveError(gIDX_ErrorNumber,1);
+    WRK_ShowError (gIDX_ErrorNumber);
     WRK_SetStatus(MainStatus, ACTIVE);
     WRK_SetStatus(SubStatus, WAITFORUSER); 
     return;
@@ -1291,6 +1275,7 @@ void WRK_HandleSequence(void)
       WRK_SetStatus(MainStatus,ACTIVE);
       break;
     }
+    case SCRAPENOSIDESTEPS:
     case SCRAPEREED:
     {
       WRK_HandleScrapeReed();
@@ -1306,11 +1291,11 @@ void WRK_HandleSequence(void)
       WRK_HandleEnterValue();
       break;
     }
-    case SCRAPENOSIDESTEPS:
-    {
-      WRK_HandleScrapeNoSideSteps();
-      break;
-    }
+    //case SCRAPENOSIDESTEPS:
+    //{
+    //  WRK_HandleScrapeNoSideSteps();
+    //  break;
+    //}
     case INITIALIZE:
     {
       WRK_HandleInitialize();

@@ -208,6 +208,7 @@ enuStatus STR_Set(enuStatus newStatus, int32_t newSpeed)
 {
   if (gSTR_Status.MainStatus == newStatus) //Task already running
   {
+    STR_Speed = newSpeed;
     if (gSTR_Status.SubStatus != READY)
     {
       if (gSTR_Status.MainStatus == gSTR_Status.SubStatus)
