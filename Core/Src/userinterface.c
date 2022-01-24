@@ -29,142 +29,140 @@ int16_t gParameterValue;
 uint8_t CursorPosition;
 uint8_t gParameterDigits;
 uint8_t gParameterDecimals;
-
 //-----------------------------------------------------------------------------
-//! \brief      Fills error message line 0 to 2
-//! \details    Fills gUSR_Errormessage
-//! \param[in]  char* newMessage0, newMessage1, newMessage2, newMessage3
-void USR_SetMessage (char* newMessage0, char* newMessage1, char* newMessage2, char* newMessage3, char* newMessage4, char* newMessage5)
+//! \brief      Gets the button status of the requested button
+//! \details    Returns 1 if the TimeOn parameter of the requested button
+//!             equals or is larger than the required time, otherwise returns 0.
+//!             Sets the WaitForRelease flag if this is requested by the
+//!             ReqWaitForRelease flag
+//! \param[in]  enuButtons ReqButton      --> Requested button 
+//! \param[in]  uint16_t ReqTime          --> The minimum time the button needs
+//!                                           to be pressed by the user
+//! \param[in]  uint8_t ReqWaitForRelease --> 0 = Don't wait for button to be
+//!                                               released
+//!                                           1 = wait for button to be released
+//! \param[out] uint8_t ReturnValue       --> 0 = Not pressed or not long enough
+//!                                           1 = Pressed for ReqTime or more ms
+uint8_t USR_ButtonPressed (enuButtons ReqButton, uint16_t ReqTime, uint8_t ReqWaitForRelease)
 {
-  strcpy (USR_Message[0], newMessage0);
-  strcpy (USR_Message[1], newMessage1);
-  strcpy (USR_Message[2], newMessage2);
-  strcpy (USR_Message[3], newMessage3);
-  strcpy (USR_Message[4], newMessage4);
-  strcpy (USR_Message[5], newMessage5);
-}
-
-//-----------------------------------------------------------------------------
-//! \brief      Fills the values for entering values and starts the screen
-//! \details    Sets the max and min values, value, and curserlocation
-//! \param[in]  int16_t NewNumber
-void USR_EnterValue(int16_t NewNumber)
-{
-  if (NewNumber > 100) NewNumber = gParameterNumber - 80;//Parameter 1-20 user parameter, Parameter 21 - 120 service parameter
-  gParameterNumber = NewNumber; //Store the current parameter number
-  gParameterValue = gMachineType[gMachine/100].Parameters[NewNumber].Value; //Get the current parameter value
-  gParameterDecimals = gMachineType[gMachine/100].Parameters[NewNumber].Decimals;
-  gParameterDigits = gMachineType[gMachine/100].Parameters[NewNumber].Digits - gMachineType[gMachine/100].Parameters[NewNumber].Decimals;
-  CursorPosition = 24 - (gParameterDigits *6);
-  if (CursorPosition == 24) CursorPosition = 30;
-  USR_ClearScreen(2);
-  USR_ShowScreen (2); 
-}
-//-----------------------------------------------------------------------------
-//! \brief      Increases the counters and saves them to EEPROM
-//! \details    Stores the counter in the current machine
-//! \param      None  
-void USR_IncreaseCounters(void)
-{
-	uint16_t CounterLSB;
-	uint16_t CounterMSB;
-  gCounter.MasterCounter ++;
-	CounterLSB = (uint16_t) gCounter.MasterCounter ;
-	CounterMSB = gCounter.MasterCounter / 0x10000;
-	EE_WriteVariable(2000 + gMachine, CounterLSB);
-	EE_WriteVariable(2001 + gMachine, CounterMSB);
-  gCounter.ServiceCounter ++;
-	CounterLSB = (uint16_t) gCounter.ServiceCounter ;
-	CounterMSB = gCounter.ServiceCounter / 0x10000;
-	EE_WriteVariable(2002 + gMachine, CounterLSB);
-	EE_WriteVariable(2003 + gMachine, CounterMSB);
-  
-}
-//-----------------------------------------------------------------------------
-//! \brief      Resets the service counter and saves them to EEPROM
-//! \details    Resets only service counter. Master counter remains
-//! \param      None  
-void USR_ResetServiceCounter(void)
-{
-	gCounter.ServiceCounter = 0;
-  gCounter.ServiceCounter = 0;
-  EE_WriteVariable(2002 + gMachine, 0);        
-  EE_WriteVariable(2003 + gMachine, 0);
-}
-//-----------------------------------------------------------------------------
-//! \brief      Saves the modified parameter
-//! \details    Stores the saved parameter in the parameter array
-//! \param      None  
-void USR_SaveParameter(void)
-{
-  
-  if (gMachineType[gMachine/100].Parameters[gParameterNumber].Global == 1)
+  uint8_t ReturnValue = 0;
+  if (Button[(uint8_t) ReqButton].TimeOn >= ReqTime)
   {
-    for (uint8_t i = 0; i < NROFMACHINETYPES; i++)
+    Button[(uint8_t) ReqButton].TimeOn = 0;
+    Button[(uint8_t) ReqButton].WaitForRelease = ReqWaitForRelease;
+    ReturnValue = 1;
+  }
+	
+  if ((ReqWaitForRelease==0)&&(ReturnValue == 1))
+  {
+    if (Button[(uint8_t) ReqButton].WaitForReleaseOld == 0) //User can hold the button (Delay 10)
     {
-      gMachineType[i].Parameters[gParameterNumber].Value = gParameterValue;    
-      EE_WriteVariable(gParameterNumber+100*i, gParameterValue);
+      Button[(uint8_t) ReqButton].WaitForReleaseOld = 1;
+      Button[(uint8_t) ReqButton].DelayCounter = USR_REPEATDELAYFIRST;
+    }
+    else
+    {
+      if (Button[(uint8_t) ReqButton].DelayCounter > 0)
+      {
+        Button[(uint8_t) ReqButton].DelayCounter --;
+        ReturnValue = 0;
+      }
+      else
+      {
+        ReturnValue = 1;
+				Button[(uint8_t) ReqButton].DelayCounter = USR_REPEATDELAYSECOND;
+      }
     }
   }
-  else
-  {
-    gMachineType[gMachine/100].Parameters[gParameterNumber].Value = gParameterValue;
-    EE_WriteVariable(gParameterNumber+gMachine, gParameterValue);
-  }
-	//Make sure after chaning machine type new parameters and name are used
-  if (gParameterNumber == MACHINETYPE)
-  {
-    gMachine = gParameterValue ; 
-  }
+  return ReturnValue;
 }
 //-----------------------------------------------------------------------------
-//! \brief      Saves the last error
-//! \details    Stores the last error in the error array
-//! \param[in]  uint16_t newError
-//! \param[in]  uint8_t newShow (0 = not show error number, 1 = show error number)
-void USR_SaveError(uint16_t newError, uint8_t newShow)
+//! \brief      Gets the button waitforrelease flag of the requested button
+//! \details    Returns the WaitForRelease parameter of the requested button
+//! \param[in]  enuButtons ReqButton      --> Requested button 
+//! \param[out] uint8_t ReturnValue       --> 0 = WaitForRelease flag is on
+//!                                           1 = WaitForRelease flag is off
+uint8_t USR_ButtonWaitForRelease (enuButtons ReqButton)
 {
-  char strResult[20];
-  uint16_t StoredError;
+  return Button[(uint8_t) ReqButton].WaitForRelease;
+}
+//-----------------------------------------------------------------------------
+//! \brief      Draws the logo on the screen
+//! \details    Draws reed machines logoin te screen buffer
+//! \param[in]  SSD1306_COLOR color -> Logo color (Black or white)
+void USR_DrawLogo (uint8_t newX, uint8_t newY, SSD1306_COLOR color)
+{
+  uint8_t i,j,k;
+  uint8_t EndColumn;
+  uint32_t b;
 
-  EE_ReadVariable(Errors[0], &StoredError); //Read the error in that place
-
-  if (StoredError!=newError) // if error is the same as the stored one, no need to write again.
+  ssd1306_SetCursor(newX, newY);
+  
+  for (i = 0; i < 43; i++)
   {
-    EE_WriteVariable(Errors[0], newError);
-    Errors[Errors[0]-1000] = newError;
-  }
-  Errors[0]++;
-  if (Errors[0]==1100) Errors[0]=1001;
-  EE_WriteVariable(1000, Errors[0]);
-  if (newShow)
-  {
-    sprintf(strResult, ": %u",newError);
-    ssd1306_WriteStringEightBitFont(30,0,strResult, Font_6x7, White);
+    for (k = 0; k<3; k++)
+    {
+      b = Logo37x43[i*4+k];
+      if (k==2)
+        EndColumn = 5;
+      else
+        EndColumn = 16;
+      for (j = 0; j < EndColumn; j++)
+      {
+        if ((b << j) & 0x8000)
+        {
+          ssd1306_DrawPixel(SSD1306.CurrentX + j + 16*k, (SSD1306.CurrentY + i), (SSD1306_COLOR) color);
+        }
+        else
+        {
+          ssd1306_DrawPixel(SSD1306.CurrentX + j +16*k, (SSD1306.CurrentY + i), (SSD1306_COLOR)!color);
+        }
+      }
+    }
   }
 }
-
 //-----------------------------------------------------------------------------
-//! \brief      Calculates the new cursor position
-//! \details    Calculates the new cursor position
+//! \brief      Clears the position of the index
+//! \details    Clears the position in um
+//! \param      None
+void USR_ClearPosition (void)
+{
+  ssd1306_WriteStringEightBitFont(64, 22,"              ",Font_6x7, White);
+}
+//-----------------------------------------------------------------------------
+//! \brief      Clears the screen
+//! \details    Clears the screen buffer by filling with black
+//! \param      uint8_t Mode: 0 = All, 1 = Title, 2 = Screen
+void USR_ClearScreen (uint8_t ShowTitle)
+{
+  if (ShowTitle == 0)
+    ssd1306_DrawRectangle(Black,0,0,128,64,0);
+  else if (ShowTitle == 1)
+    ssd1306_DrawRectangle(Black,0,0,128,11,0);
+  else if (ShowTitle == 2)
+  {
+    ssd1306_DrawRectangle(Black,0,12,128,52,0);
+    ssd1306_DrawRectangle(White,0,10,128,1,0);
+    ssd1306_DrawRectangle(White,0,54,128,1,0);
+  }
+  ssd1306_UpdateScreen();
+}
+//-----------------------------------------------------------------------------
+//! \brief      Handles the down button
+//! \details    Calculates the new value based on extremes and cursorposition
 //! \param      None  
-void USR_CursorRight(void)
+void USR_CursorDown(void)
 {
-  CursorPosition += 6;
-  if (gParameterDecimals == 0)
+  int16_t NewValue;
+  if (CursorPosition == 36) NewValue = 1;
+  if (CursorPosition == 30) NewValue = 10;
+  if (CursorPosition == 18) NewValue = 100;
+  if (CursorPosition == 12) NewValue = 1000;
+  if (gParameterValue - NewValue >= gMachineType[gMachine/100].Parameters[gParameterNumber].Min)
   {
-    if (CursorPosition == 24) CursorPosition = 18;
+    gParameterValue -= NewValue ;
+    USR_ShowScreen (2); 
   }
-  else if (gParameterDecimals == 1)
-  {
-    if ((CursorPosition == 24) || (CursorPosition > 30)) CursorPosition = 30;
-  }
-  else
-  {
-    if (CursorPosition == 24) CursorPosition = 30;
-    if (CursorPosition > 36) CursorPosition = 36;
-  }
-  USR_ShowScreen (2); 
 }
 //-----------------------------------------------------------------------------
 //! \brief      Calculates the new cursor position
@@ -191,6 +189,29 @@ void USR_CursorLeft(void)
   USR_ShowScreen (2); 
 }
 //-----------------------------------------------------------------------------
+//! \brief      Calculates the new cursor position
+//! \details    Calculates the new cursor position
+//! \param      None  
+void USR_CursorRight(void)
+{
+  CursorPosition += 6;
+  if (gParameterDecimals == 0)
+  {
+    if (CursorPosition == 24) CursorPosition = 18;
+  }
+  else if (gParameterDecimals == 1)
+  {
+    if ((CursorPosition == 24) || (CursorPosition > 30)) CursorPosition = 30;
+  }
+  else
+  {
+    if (CursorPosition == 24) CursorPosition = 30;
+    if (CursorPosition > 36) CursorPosition = 36;
+  }
+  USR_ShowScreen (2); 
+}
+
+//-----------------------------------------------------------------------------
 //! \brief      Handles the up button
 //! \details    Calculates the new value based on extremes and cursorposition
 //! \param      None  
@@ -208,21 +229,103 @@ void USR_CursorUp(void)
   }
 }
 //-----------------------------------------------------------------------------
-//! \brief      Handles the down button
-//! \details    Calculates the new value based on extremes and cursorposition
-//! \param      None  
-void USR_CursorDown(void)
+//! \brief      Fills the values for entering values and starts the screen
+//! \details    Sets the max and min values, value, and curserlocation
+//! \param[in]  int16_t NewNumber
+void USR_EnterValue(int16_t NewNumber)
 {
-  int16_t NewValue;
-  if (CursorPosition == 36) NewValue = 1;
-  if (CursorPosition == 30) NewValue = 10;
-  if (CursorPosition == 18) NewValue = 100;
-  if (CursorPosition == 12) NewValue = 1000;
-  if (gParameterValue - NewValue >= gMachineType[gMachine/100].Parameters[gParameterNumber].Min)
+  if (NewNumber > 100) NewNumber = gParameterNumber - 80;//Parameter 1-20 user parameter, Parameter 21 - 120 service parameter
+  gParameterNumber = NewNumber; //Store the current parameter number
+  gParameterValue = gMachineType[gMachine/100].Parameters[NewNumber].Value; //Get the current parameter value
+  gParameterDecimals = gMachineType[gMachine/100].Parameters[NewNumber].Decimals;
+  gParameterDigits = gMachineType[gMachine/100].Parameters[NewNumber].Digits - gMachineType[gMachine/100].Parameters[NewNumber].Decimals;
+  CursorPosition = 24 - (gParameterDigits *6);
+  if (CursorPosition == 24) CursorPosition = 30;
+  USR_ClearScreen(2);
+  USR_ShowScreen (2); 
+}
+//-----------------------------------------------------------------------------
+//! \brief      Handles the button TimeOn and WaitForRelease counter
+//! \details    Increases the TimeOn parameter of each button if this button is
+//!             pressed, the WaitForRelease flag is 0 and the TimeOn parameter
+//!             is smaller than or equal to USR_PRESSTIMEMAX. If this button is 
+//!             not pressed, the WaitForRelease flag and the TimeOn parameter 
+//!             are reset to 0.
+
+//!             0 = Menu, 1 = Left, 2 = Up, 3 = Down, 4 = Ok, 5 = Right
+//!             Common1 --> Left, Down, Right
+//!             Common2 --> Menu, Up, Ok
+//! \param      None
+void USR_HandleButtons (void)
+{
+  static uint16_t TickTime = 0; 
+  static uint8_t Pushed[6];
+  TickTime++;
+  if (TickTime == 1)
   {
-    gParameterValue -= NewValue ;
-    USR_ShowScreen (2); 
+    BtnCommon1_Low();
   }
+  else if (TickTime == 5)
+  {
+    Pushed[1] = BtnMenuLeft_Pushed() ;
+    Pushed[3] = BtnUpDown_Pushed();
+    Pushed[5] = BtnOkRight_Pushed();
+  }
+  else if (TickTime == 6)
+  {
+    BtnCommon2_Low();
+  }
+  else if (TickTime == 10)
+  {
+    Pushed[0] = BtnMenuLeft_Pushed();
+    Pushed[2] = BtnUpDown_Pushed();
+    Pushed[4] = BtnOkRight_Pushed();
+  }
+  else if (TickTime > 10)
+  {
+    TickTime = 0;
+    //Handle the buttons
+    for(uint8_t i=0;i<NROFBUTTONS;i++)
+    {
+      if (Pushed[i]== 1) //Button is pushed
+      {
+        gCounter.User = 0;
+        ssd1306_SetContrast(HIGHCONTRAST);
+        if ((Button[i].TimeOn <= USR_PRESSTIMEMAX) && (Button[i].WaitForRelease == 0))
+        {
+          Button[i].TimeOn += 10;
+        }
+      }
+      else
+      {
+        Button[i].WaitForRelease = 0;
+        if (Button[i].TimeOff < 65520) Button[i].TimeOff += 10;
+        Button[i].TimeOn = 0;
+        Button[i].WaitForReleaseOld = 0;
+        Button[i].DelayCounter = USR_REPEATDELAYFIRST;
+      }
+    }
+  }
+}
+//-----------------------------------------------------------------------------
+//! \brief      Increases the counters and saves them to EEPROM
+//! \details    Stores the counter in the current machine
+//! \param      None  
+void USR_IncreaseCounters(void)
+{
+	uint16_t CounterLSB;
+	uint16_t CounterMSB;
+  gCounter.MasterCounter ++;
+	CounterLSB = (uint16_t) gCounter.MasterCounter ;
+	CounterMSB = gCounter.MasterCounter / 0x10000;
+	EE_WriteVariable(2000 + gMachine, CounterLSB);
+	EE_WriteVariable(2001 + gMachine, CounterMSB);
+  gCounter.ServiceCounter ++;
+	CounterLSB = (uint16_t) gCounter.ServiceCounter ;
+	CounterMSB = gCounter.ServiceCounter / 0x10000;
+	EE_WriteVariable(2002 + gMachine, CounterLSB);
+	EE_WriteVariable(2003 + gMachine, CounterMSB);
+  
 }
 //-----------------------------------------------------------------------------
 //! \brief      Initiates the OLED display
@@ -256,28 +359,187 @@ void USR_Init(void)
     {
         Error_Handler();
     }
-    HAL_Delay(100);
+    HAL_Delay(300);
     ssd1306_Fill();//ssd1306_Fill(Black);
     ssd1306_UpdateScreen();
     HAL_Delay(100);
 }
 //-----------------------------------------------------------------------------
-//! \brief      Displays the instrument
-//! \details    Displays instrument name at right bottom
-//! \params     None
-void USR_WriteInstrumentName (void)
+//! \brief      Resets the service counter and saves them to EEPROM
+//! \details    Resets only service counter. Master counter remains
+//! \param      None  
+void USR_ResetServiceCounter(void)
 {
-  ssd1306_WriteStringEightBitFont(127 - strlen(gMachineType[gMachine/100].Name)*Font_6x7.FontWidth, 57,gMachineType[gMachine/100].Name, Font_6x7, White);
+	gCounter.ServiceCounter = 0;
+  gCounter.ServiceCounter = 0;
+  EE_WriteVariable(2002 + gMachine, 0);        
+  EE_WriteVariable(2003 + gMachine, 0);
 }
-
 //-----------------------------------------------------------------------------
-//! \brief      Displays possible keys left bottom
-//! \details    Displays keys that can be used by the user
-//! \param[in]  char* newKeys
-void USR_WriteKeys (char* newKeys)
+//! \brief      Saves the last error
+//! \details    Stores the last error in the error array
+//! \param[in]  uint16_t newError
+//! \param[in]  uint8_t newShow (0 = not show error number, 1 = show error number)
+void USR_SaveError(uint16_t newError, uint8_t newShow)
 {
-  ssd1306_WriteStringEightBitFont(0,57,"          ", Font_6x7, White);
-  ssd1306_WriteStringEightBitFont(0,57,newKeys, Font_6x7, White);
+  char strResult[20];
+  uint16_t StoredError;
+
+  EE_ReadVariable(Errors[0], &StoredError); //Read the error in that place
+
+  if (StoredError!=newError) // if error is the same as the stored one, no need to write again.
+  {
+    EE_WriteVariable(Errors[0], newError);
+    Errors[Errors[0]-1000] = newError;
+  }
+  Errors[0]++;
+  if (Errors[0]==1100) Errors[0]=1001;
+  EE_WriteVariable(1000, Errors[0]);
+  if (newShow)
+  {
+    sprintf(strResult, ": %u",newError);
+    ssd1306_WriteStringEightBitFont(30,0,strResult, Font_6x7, White);
+  }
+}
+//-----------------------------------------------------------------------------
+//! \brief      Saves the modified parameter
+//! \details    Stores the saved parameter in the parameter array
+//! \param      None  
+void USR_SaveParameter(void)
+{
+  
+  if (gMachineType[gMachine/100].Parameters[gParameterNumber].Global == 1)
+  {
+    for (uint8_t i = 0; i < NROFMACHINETYPES; i++)
+    {
+      gMachineType[i].Parameters[gParameterNumber].Value = gParameterValue;    
+      EE_WriteVariable(gParameterNumber+100*i, gParameterValue);
+    }
+  }
+  else
+  {
+    gMachineType[gMachine/100].Parameters[gParameterNumber].Value = gParameterValue;
+    EE_WriteVariable(gParameterNumber+gMachine, gParameterValue);
+  }
+	//Make sure after chaning machine type new parameters and name are used
+  if (gParameterNumber == MACHINETYPE)
+  {
+    gMachine = gParameterValue ; 
+  }
+}
+//-----------------------------------------------------------------------------
+//! \brief      Fills error message line 0 to 2
+//! \details    Fills gUSR_Errormessage
+//! \param[in]  char* newMessage0, newMessage1, newMessage2, newMessage3
+void USR_SetMessage (char* newMessage0, char* newMessage1, char* newMessage2, char* newMessage3, char* newMessage4, char* newMessage5,uint8_t newScreen)
+{
+  uint8_t Different = 0;
+	if (strcmp(USR_Message[0], newMessage0))
+  {
+    strcpy (USR_Message[0], newMessage0);
+    Different = 1;
+  }
+  if (strcmp(USR_Message[1], newMessage1))
+  {
+    strcpy (USR_Message[1], newMessage1);
+    Different = 1;
+  }
+  if (strcmp(USR_Message[2], newMessage2))
+  {
+    strcpy (USR_Message[2], newMessage2);
+    Different = 1;
+  }
+  if (strcmp(USR_Message[3], newMessage3))
+  {
+    strcpy (USR_Message[3], newMessage3);
+    Different = 1;
+  }
+  if (strcmp(USR_Message[4], newMessage4))
+  {
+    strcpy (USR_Message[4], newMessage4);
+    Different = 1;
+  }
+  if (strcmp(USR_Message[5], newMessage5))
+  {
+    strcpy (USR_Message[5], newMessage5);
+    Different = 1;
+  }
+	//Show screen only if the information is different or if the screen now shown is not 3 or 4.
+  if (((newScreen) && (Different)) || (gCurrentScreen >= 10)) USR_ShowScreen(newScreen);
+}
+//-----------------------------------------------------------------------------
+//! \brief      Shows the battery percentage and symbol
+//! \details    Calculates the percentage of the battery and displays the
+//!             correct battery indicator
+//! \param[in]  newPercentage   Battery percentage
+void USR_ShowBattery (uint8_t PercentageNew)
+{
+    static uint8_t Bars = 0;
+    static int8_t BatteryPercentage=-1;//Initially -1
+    static uint8_t BatteryPercentageOld=0;
+    static uint8_t CntBatteryPercentage;
+    static uint16_t BatteryPercentageAverage;
+    uint8_t XPos = 84;
+    char Percentage[4];
+
+    if (gCurrentScreen == 1) return;  
+    CntBatteryPercentage++;
+    BatteryPercentageAverage += PercentageNew;
+    if (CntBatteryPercentage >= 10)
+    {
+      BatteryPercentageOld = BatteryPercentage;
+      CntBatteryPercentage = 0;
+      BatteryPercentage= BatteryPercentageAverage/10;
+      BatteryPercentageAverage = 0;
+    }
+    if ((BatteryPercentage > BatteryPercentageOld)&& (NotPluggedIn()))
+    {
+      BatteryPercentage = BatteryPercentageOld;
+      return; //Prevent jittering of percentages
+    }
+    if (StandBy()) // full battery
+    {
+      Bars = 3;
+      sprintf(Percentage,"    %s","/");
+    }
+    else if (PWR_Charging() == 1) //Charging
+    {
+      Bars++;
+      if (Bars == 4) Bars = 0;
+      sprintf(Percentage,"    %s","/");
+    }
+    else //Not plugged in show percentage
+    {
+      if (BatteryPercentage<=0)
+      {
+        Bars = 0;
+      }    
+      else if (BatteryPercentage >= 66)
+        Bars = 3;
+      else if (BatteryPercentage < 33)
+        Bars = 1;
+      else
+        Bars = 2; 
+      if (BatteryPercentage == -1)
+      {
+        sprintf(Percentage,"    %s"," ");
+      }
+      else
+      {
+        if ((BatteryPercentage < 100)&&(BatteryPercentage > 9)) 
+          sprintf(Percentage,"  %u%%",BatteryPercentage);
+        else if (BatteryPercentage < 10) 
+          sprintf(Percentage,"   %u%%",BatteryPercentage);
+        else
+          sprintf(Percentage," %u%%",BatteryPercentage);
+      }
+    }
+    
+    ssd1306_DrawRectangle(Black,78, 0,24,7,0);
+    
+    ssd1306_WriteStringEightBitFont(XPos, 0,Percentage, Font_6x7, White);
+    ssd1306_DrawBattery(White,Bars,115,0);
+    ssd1306_UpdateScreen();
 }
 //-----------------------------------------------------------------------------
 //! \brief      Displays the position of the index
@@ -289,15 +551,6 @@ void USR_ShowPosition (int32_t newPosition)
   sprintf(strValue,"%d UM    ",newPosition);
   ssd1306_WriteStringEightBitFont(64, 22,strValue,Font_6x7, White);
 }
-//-----------------------------------------------------------------------------
-//! \brief      Clears the position of the index
-//! \details    Clears the position in um
-//! \param      None
-void USR_ClearPosition (void)
-{
-  ssd1306_WriteStringEightBitFont(64, 22,"              ",Font_6x7, White);
-}
-
 //-----------------------------------------------------------------------------
 //! \brief      Displays screens
 //! \details    Displays the corresponding screen on the OLED display
@@ -892,252 +1145,30 @@ void USR_ShowScreen(uint32_t NewScreen)
     ssd1306_UpdateScreen();
 }
 //-----------------------------------------------------------------------------
-//! \brief      Shows the battery percentage and symbol
-//! \details    Calculates the percentage of the battery and displays the
-//!             correct battery indicator
-//! \param[in]  newPercentage   Battery percentage
-void USR_ShowBattery (uint8_t PercentageNew)
+//! \brief      Displays the instrument
+//! \details    Displays instrument name at right bottom
+//! \params     None
+void USR_WriteInstrumentName (void)
 {
-    static uint8_t Bars = 0;
-    static int8_t BatteryPercentage=-1;//Initially -1
-    static uint8_t BatteryPercentageOld=0;
-    static uint8_t CntBatteryPercentage;
-    static uint16_t BatteryPercentageAverage;
-    uint8_t XPos = 84;
-    char Percentage[4];
+  ssd1306_WriteStringEightBitFont(127 - strlen(gMachineType[gMachine/100].Name)*Font_6x7.FontWidth, 57,gMachineType[gMachine/100].Name, Font_6x7, White);
+}
 
-    if (gCurrentScreen == 1) return;  
-    CntBatteryPercentage++;
-    BatteryPercentageAverage += PercentageNew;
-    if (CntBatteryPercentage >= 10)
-    {
-      BatteryPercentageOld = BatteryPercentage;
-      CntBatteryPercentage = 0;
-      BatteryPercentage= BatteryPercentageAverage/10;
-      BatteryPercentageAverage = 0;
-    }
-    if ((BatteryPercentage > BatteryPercentageOld)&& (NotPluggedIn()))
-    {
-      BatteryPercentage = BatteryPercentageOld;
-      return; //Prevent jittering of percentages
-    }
-    if (StandBy()) // full battery
-    {
-      Bars = 3;
-      sprintf(Percentage,"    %s","/");
-    }
-    else if (PWR_Charging() == 1) //Charging
-    {
-      Bars++;
-      if (Bars == 4) Bars = 0;
-      sprintf(Percentage,"    %s","/");
-    }
-    else //Not plugged in show percentage
-    {
-      if (BatteryPercentage==-1)
-      {
-        Bars = 0;
-      }    
-      else if (BatteryPercentage >= 66)
-        Bars = 3;
-      else if (BatteryPercentage < 33)
-        Bars = 1;
-      else
-        Bars = 2; 
-      if (BatteryPercentage == -1)
-      {
-        sprintf(Percentage,"    %s"," ");
-      }
-      else
-      {
-        if ((BatteryPercentage < 100)&&(BatteryPercentage > 9)) 
-          sprintf(Percentage,"  %u%%",BatteryPercentage);
-        else if (BatteryPercentage < 10) 
-          sprintf(Percentage,"   %u%%",BatteryPercentage);
-        else
-          sprintf(Percentage," %u%%",BatteryPercentage);
-      }
-    }
-    
-    ssd1306_DrawRectangle(Black,78, 0,24,7,0);
-    
-    ssd1306_WriteStringEightBitFont(XPos, 0,Percentage, Font_6x7, White);
-    ssd1306_DrawBattery(White,Bars,115,0);
-    ssd1306_UpdateScreen();
-}
 //-----------------------------------------------------------------------------
-//! \brief      Clears the screen
-//! \details    Clears the screen buffer by filling with black
-//! \param      uint8_t Mode: 0 = All, 1 = Title, 2 = Screen
-void USR_ClearScreen (uint8_t ShowTitle)
+//! \brief      Displays possible keys left bottom
+//! \details    Displays keys that can be used by the user
+//! \param[in]  char* newKeys
+void USR_WriteKeys (char* newKeys)
 {
-  if (ShowTitle == 0)
-    ssd1306_DrawRectangle(Black,0,0,128,64,0);
-  else if (ShowTitle == 1)
-    ssd1306_DrawRectangle(Black,0,0,128,11,0);
-  else if (ShowTitle == 2)
-  {
-    ssd1306_DrawRectangle(Black,0,12,128,52,0);
-    ssd1306_DrawRectangle(White,0,10,128,1,0);
-    ssd1306_DrawRectangle(White,0,54,128,1,0);
-  }
-  ssd1306_UpdateScreen();
+  ssd1306_WriteStringEightBitFont(0,57,"          ", Font_6x7, White);
+  ssd1306_WriteStringEightBitFont(0,57,newKeys, Font_6x7, White);
 }
-//-----------------------------------------------------------------------------
-//! \brief      Handles the button TimeOn and WaitForRelease counter
-//! \details    Increases the TimeOn parameter of each button if this button is
-//!             pressed, the WaitForRelease flag is 0 and the TimeOn parameter
-//!             is smaller than or equal to USR_PRESSTIMEMAX. If this button is 
-//!             not pressed, the WaitForRelease flag and the TimeOn parameter 
-//!             are reset to 0.
 
-//!             0 = Menu, 1 = Left, 2 = Up, 3 = Down, 4 = Ok, 5 = Right
-//!             Common1 --> Left, Down, Right
-//!             Common2 --> Menu, Up, Ok
-//! \param      None
-void USR_HandleButtons (void)
-{
-  static uint16_t TickTime = 0; 
-  static uint8_t Pushed[6];
-  TickTime++;
-  if (TickTime == 1)
-  {
-    BtnCommon1_Low();
-  }
-  else if (TickTime == 5)
-  {
-    Pushed[1] = BtnMenuLeft_Pushed() ;
-    Pushed[3] = BtnUpDown_Pushed();
-    Pushed[5] = BtnOkRight_Pushed();
-  }
-  else if (TickTime == 6)
-  {
-    BtnCommon2_Low();
-  }
-  else if (TickTime == 10)
-  {
-    Pushed[0] = BtnMenuLeft_Pushed();
-    Pushed[2] = BtnUpDown_Pushed();
-    Pushed[4] = BtnOkRight_Pushed();
-  }
-  else if (TickTime > 10)
-  {
-    TickTime = 0;
-    //Handle the buttons
-    for(uint8_t i=0;i<NROFBUTTONS;i++)
-    {
-      if (Pushed[i]== 1) //Button is pushed
-      {
-        gCounter.User = 0;
-        ssd1306_SetContrast(HIGHCONTRAST);
-        if ((Button[i].TimeOn <= USR_PRESSTIMEMAX) && (Button[i].WaitForRelease == 0))
-        {
-          Button[i].TimeOn += 10;
-        }
-      }
-      else
-      {
-        Button[i].WaitForRelease = 0;
-        if (Button[i].TimeOff < 65520) Button[i].TimeOff += 10;
-        Button[i].TimeOn = 0;
-        Button[i].WaitForReleaseOld = 0;
-        Button[i].DelayCounter = USR_REPEATDELAYFIRST;
-      }
-    }
-  }
-}
-//-----------------------------------------------------------------------------
-//! \brief      Gets the button status of the requested button
-//! \details    Returns 1 if the TimeOn parameter of the requested button
-//!             equals or is larger than the required time, otherwise returns 0.
-//!             Sets the WaitForRelease flag if this is requested by the
-//!             ReqWaitForRelease flag
-//! \param[in]  enuButtons ReqButton      --> Requested button 
-//! \param[in]  uint16_t ReqTime          --> The minimum time the button needs
-//!                                           to be pressed by the user
-//! \param[in]  uint8_t ReqWaitForRelease --> 0 = Don't wait for button to be
-//!                                               released
-//!                                           1 = wait for button to be released
-//! \param[out] uint8_t ReturnValue       --> 0 = Not pressed or not long enough
-//!                                           1 = Pressed for ReqTime or more ms
-uint8_t USR_ButtonPressed (enuButtons ReqButton, uint16_t ReqTime, uint8_t ReqWaitForRelease)
-{
-  uint8_t ReturnValue = 0;
-  if (Button[(uint8_t) ReqButton].TimeOn >= ReqTime)
-  {
-    Button[(uint8_t) ReqButton].TimeOn = 0;
-    Button[(uint8_t) ReqButton].WaitForRelease = ReqWaitForRelease;
-    ReturnValue = 1;
-  }
-	
-  if ((ReqWaitForRelease==0)&&(ReturnValue == 1))
-  {
-    if (Button[(uint8_t) ReqButton].WaitForReleaseOld == 0) //User can hold the button (Delay 10)
-    {
-      Button[(uint8_t) ReqButton].WaitForReleaseOld = 1;
-      Button[(uint8_t) ReqButton].DelayCounter = USR_REPEATDELAYFIRST;
-    }
-    else
-    {
-      if (Button[(uint8_t) ReqButton].DelayCounter > 0)
-      {
-        Button[(uint8_t) ReqButton].DelayCounter --;
-        ReturnValue = 0;
-      }
-      else
-      {
-        ReturnValue = 1;
-				Button[(uint8_t) ReqButton].DelayCounter = USR_REPEATDELAYSECOND;
-      }
-    }
-  }
-  return ReturnValue;
-}
-//-----------------------------------------------------------------------------
-//! \brief      Gets the button waitforrelease flag of the requested button
-//! \details    Returns the WaitForRelease parameter of the requested button
-//! \param[in]  enuButtons ReqButton      --> Requested button 
-//! \param[out] uint8_t ReturnValue       --> 0 = WaitForRelease flag is on
-//!                                           1 = WaitForRelease flag is off
-uint8_t USR_ButtonWaitForRelease (enuButtons ReqButton)
-{
-  return Button[(uint8_t) ReqButton].WaitForRelease;
-}
-//-----------------------------------------------------------------------------
-//! \brief      Draws the logo on the screen
-//! \details    Draws reed machines logoin te screen buffer
-//! \param[in]  SSD1306_COLOR color -> Logo color (Black or white)
-void USR_DrawLogo (uint8_t newX, uint8_t newY, SSD1306_COLOR color)
-{
-  uint8_t i,j,k;
-  uint8_t EndColumn;
-  uint32_t b;
 
-  ssd1306_SetCursor(newX, newY);
-  
-  for (i = 0; i < 43; i++)
-  {
-    for (k = 0; k<3; k++)
-    {
-      b = Logo37x43[i*4+k];
-      if (k==2)
-        EndColumn = 5;
-      else
-        EndColumn = 16;
-      for (j = 0; j < EndColumn; j++)
-      {
-        if ((b << j) & 0x8000)
-        {
-          ssd1306_DrawPixel(SSD1306.CurrentX + j + 16*k, (SSD1306.CurrentY + i), (SSD1306_COLOR) color);
-        }
-        else
-        {
-          ssd1306_DrawPixel(SSD1306.CurrentX + j +16*k, (SSD1306.CurrentY + i), (SSD1306_COLOR)!color);
-        }
-      }
-    }
-  }
-}
+
+
+
+
+
 
 
 //-----------------------------------------------------------------------------

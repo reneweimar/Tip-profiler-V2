@@ -60,11 +60,16 @@ extern uint8_t IDX_HomeFlag;
 //-----------------------------------------------------------------------------
 //IDX_functions
 //---------------------- SYSTEM ------------------------
-extern void IDX_Init(void);
+//Local functions
+static void IDX_HandlePosPID (void);
+static void IDX_HandleSpeedPID (void);
+void IDX_SetPWM (enuStatus newStatus, uint8_t newSpeed);
+void IDX_SetStatus (enuType newType, enuStatus newStatus);
+//Exported functions
 extern void IDX_HandleMotor (void);
-extern enuStatus IDX_Set(enuStatus newStatus, int32_t newPosition);
 extern void IDX_HandleTasks(void);
+extern void IDX_Init(void);
+extern enuStatus IDX_Set(enuStatus newStatus, int32_t newPosition);
 extern void IDX_SetPosition (int32_t newPosition);
-
 #endif  // _IDX_FUNCTIONS_H
 

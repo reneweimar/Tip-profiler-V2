@@ -38,13 +38,10 @@ extern "C" {
 /* defines ------------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-//! \brief  Index motor structure
+//! \brief  DC motor structure
 typedef struct
 {
   enuStatus MainStatus;
-  enuStatus MainStatusOld;
-  enuStatus SubStatus;
-  enuStatus SubStatusOld;
   uint8_t PositionControl;
   uint8_t SpeedControl;
   uint8_t IsHomed;
@@ -62,11 +59,9 @@ typedef struct
   int16_t GetSpeed;
   int32_t SetPosition;
   int32_t GetPosition;
-  int32_t SetUm;
   int32_t GetUm;
   int16_t MaxSpeed;
   int32_t Encoder;
-  int32_t EncoderOld;
   int32_t Control;
   int32_t PosControl;
   float ErrorPOld;

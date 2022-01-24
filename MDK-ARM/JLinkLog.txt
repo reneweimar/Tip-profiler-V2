@@ -1,79 +1,89 @@
-T6AD8 077:870.028   SEGGER J-Link V7.20b Log File
-T6AD8 077:870.076   DLL Compiled: May 21 2021 17:05:23
-T6AD8 077:870.086   Logging started @ 2021-11-15 08:53
-T6AD8 077:870.093 - 890.425ms
-T6AD8 077:870.106 JLINK_SetWarnOutHandler(...)
-T6AD8 077:870.114 - 0.011ms
-T6AD8 077:870.125 JLINK_OpenEx(...)
-T6AD8 077:872.243   Firmware: J-Link V9 compiled Jun  2 2222 22:22:22
-T6AD8 077:873.153   Firmware: J-Link V9 compiled Jun  2 2222 22:22:22
-T6AD8 077:873.311   Decompressing FW timestamp took 132 us
-T6AD8 077:887.012   Hardware: V9.40
-T6AD8 077:887.040   S/N: 81480416
-T6AD8 077:887.051   OEM: SEGGER
-T6AD8 077:887.062   Feature(s): GDB, RDI, FlashBP, FlashDL, JFlash, RDDI
-T6AD8 077:889.710   TELNET listener socket opened on port 19021
-T6AD8 077:893.061   WEBSRV Starting webserver
-T6AD8 077:893.219   WEBSRV Webserver running on local port 19080
-T6AD8 077:893.235 - 23.114ms returns "O.K."
-T6AD8 077:893.262 JLINK_GetEmuCaps()
-T6AD8 077:893.271 - 0.012ms returns 0xB9FF7BBF
-T6AD8 077:893.284 JLINK_TIF_GetAvailable(...)
-T6AD8 077:893.772 - 0.498ms
-T6AD8 077:893.796 JLINK_SetErrorOutHandler(...)
-T6AD8 077:893.805 - 0.012ms
-T6AD8 077:894.773 JLINK_ExecCommand("ProjectFile = "D:\RMB Holland bv\Products\Reed machines\Software\Tip-profiler-V2\MDK-ARM\JLinkSettings.ini"", ...). 
-T6AD8 077:895.612 - 0.847ms returns 0x00
-T6AD8 077:895.691 JLINK_ExecCommand("Device = STM32F103RC", ...). 
-T6AD8 077:895.990   Device "STM32F103RC" selected.
-T6AD8 077:896.265 - 0.569ms returns 0x00
-T6AD8 077:896.292 JLINK_GetHardwareVersion()
-T6AD8 077:896.300 - 0.011ms returns 94000
-T6AD8 077:896.311 JLINK_GetDLLVersion()
-T6AD8 077:896.319 - 0.011ms returns 72002
-T6AD8 077:896.330 JLINK_GetOEMString(...)
-T6AD8 077:896.341 JLINK_GetFirmwareString(...)
-T6AD8 077:896.348 - 0.011ms
-T6AD8 077:896.449 JLINK_GetDLLVersion()
-T6AD8 077:896.459 - 0.013ms returns 72002
-T6AD8 077:896.470 JLINK_GetCompileDateTime()
-T6AD8 077:896.477 - 0.011ms
-T6AD8 077:896.516 JLINK_GetFirmwareString(...)
-T6AD8 077:896.525 - 0.012ms
-T6AD8 077:896.562 JLINK_GetHardwareVersion()
-T6AD8 077:896.571 - 0.012ms returns 94000
-T6AD8 077:896.611 JLINK_GetSN()
-T6AD8 077:896.620 - 0.012ms returns 81480416
-T6AD8 077:896.657 JLINK_GetOEMString(...)
-T6AD8 077:896.727 JLINK_TIF_Select(JLINKARM_TIF_SWD)
-T6AD8 077:898.583 - 1.867ms returns 0x00
-T6AD8 077:898.608 JLINK_HasError()
-T6AD8 077:898.621 JLINK_SetSpeed(500)
-T6AD8 077:898.918 - 0.306ms
-T6AD8 077:898.940 JLINK_GetId()
-T6AD8 077:899.868   InitTarget() start
-T6AD8 077:899.891    J-Link Script File: Executing InitTarget()
-T6AD8 077:930.855   InitTarget() end
-T6AD8 077:935.379   Found SW-DP with ID 0x1BA01477
-T6AD8 077:943.755   Old FW that does not support reading DPIDR via DAP jobs
-T6AD8 077:949.834   DPv0 detected
-T6AD8 077:949.887   Scanning AP map to find all available APs
-T6AD8 077:954.641   AP[1]: Stopped AP scan as end of AP map has been reached
-T6AD8 077:954.698   AP[0]: AHB-AP (IDR: 0x14770011)
-T6AD8 077:954.738   Iterating through AP map to find AHB-AP to use
-T6AD8 077:962.112   AP[0]: Core found
-T6AD8 077:962.161   AP[0]: AHB-AP ROM base: 0xE00FF000
-T6AD8 077:965.886   CPUID register: 0x411FC231. Implementer code: 0x41 (ARM)
-T6AD8 077:965.939   Found Cortex-M3 r1p1, Little endian.
-T6AD8 081:516.574   
-  ***** Error: 
-T6AD8 081:516.609   Could not read CPU capabilities.
-T6AD8 081:519.216   Looking for J-Link GUI Server exe at: d:\Keil_v5\ARM\Segger\JLinkGUIServer.exe
-T6AD8 081:519.300   Looking for J-Link GUI Server exe at: C:\Program Files (x86)\SEGGER\JLink\JLinkGUIServer.exe
-T6AD8 081:519.342   Forking J-Link GUI Server: C:\Program Files (x86)\SEGGER\JLink\JLinkGUIServer.exe
-T6AD8 081:522.402   J-Link GUI Server info: "J-Link GUI server V7.20b "
-T6AD8 097:520.421 - 19621.503ms returns 0x00000000
-T6AD8 100:805.940 JLINK_Close()
-T6AD8 100:850.924 - 45.030ms
-T6AD8 100:850.980   
-T6AD8 100:850.992   Closed
+T34B0 032:273.463   SEGGER J-Link V7.20b Log File
+T34B0 032:273.523   DLL Compiled: May 21 2021 17:05:23
+T34B0 032:273.536   Logging started @ 2022-01-22 06:11
+T34B0 032:273.547 - 24.665ms
+T34B0 032:273.566 JLINK_SetWarnOutHandler(...)
+T34B0 032:273.575 - 0.012ms
+T34B0 032:273.585 JLINK_OpenEx(...)
+T34B0 032:274.747   Firmware: J-Link V11 compiled Dec  9 2021 14:14:49
+T34B0 032:275.145   Firmware: J-Link V11 compiled Dec  9 2021 14:14:49
+T34B0 032:275.312   Decompressing FW timestamp took 133 us
+T34B0 032:277.722   Hardware: V11.00
+T34B0 032:277.742   S/N: 260106173
+T34B0 032:277.754   OEM: SEGGER
+T34B0 032:277.765   Feature(s): FlashBP, GDB, FlashDL, JFlash, RDI
+T34B0 032:279.802   TELNET listener socket opened on port 19021
+T34B0 032:284.612   WEBSRV Starting webserver
+T34B0 032:284.857   WEBSRV Webserver running on local port 19080
+T34B0 032:284.881 - 11.302ms returns "O.K."
+T34B0 032:284.907 JLINK_GetEmuCaps()
+T34B0 032:284.920 - 0.018ms returns 0xB9FF7BBF
+T34B0 032:284.937 JLINK_TIF_GetAvailable(...)
+T34B0 032:285.127 - 0.200ms
+T34B0 032:285.152 JLINK_SetErrorOutHandler(...)
+T34B0 032:285.164 - 0.018ms
+T34B0 032:285.184 JLINK_ExecCommand("ProjectFile = "D:\RMB Holland bv\Products\Reed machines\Software\Tip-profiler-V2\MDK-ARM\JLinkSettings.ini"", ...). 
+T34B0 032:286.413 - 1.241ms returns 0x00
+T34B0 032:286.449 JLINK_ExecCommand("Device = STM32F103RC", ...). 
+T34B0 032:286.789   Device "STM32F103RC" selected.
+T34B0 032:287.172 - 0.711ms returns 0x00
+T34B0 032:287.395 JLINK_GetHardwareVersion()
+T34B0 032:287.413 - 0.024ms returns 110000
+T34B0 032:287.431 JLINK_GetDLLVersion()
+T34B0 032:287.444 - 0.018ms returns 72002
+T34B0 032:287.456 JLINK_GetOEMString(...)
+T34B0 032:287.469 JLINK_GetFirmwareString(...)
+T34B0 032:287.478 - 0.013ms
+T34B0 032:287.495 JLINK_GetDLLVersion()
+T34B0 032:287.504 - 0.012ms returns 72002
+T34B0 032:287.514 JLINK_GetCompileDateTime()
+T34B0 032:287.521 - 0.010ms
+T34B0 032:287.532 JLINK_GetFirmwareString(...)
+T34B0 032:287.539 - 0.010ms
+T34B0 032:287.549 JLINK_GetHardwareVersion()
+T34B0 032:287.556 - 0.010ms returns 110000
+T34B0 032:287.566 JLINK_GetSN()
+T34B0 032:287.574 - 0.011ms returns 260106173
+T34B0 032:287.584 JLINK_GetOEMString(...)
+T34B0 032:287.597 JLINK_TIF_Select(JLINKARM_TIF_SWD)
+T34B0 032:288.507 - 0.921ms returns 0x00
+T34B0 032:288.528 JLINK_HasError()
+T34B0 032:288.540 JLINK_SetSpeed(1000)
+T34B0 032:288.714 - 0.183ms
+T34B0 032:289.102 JLINK_HasError()
+T34B0 032:289.120 JLINK_SetResetType(JLINKARM_RESET_TYPE_NORMAL)
+T34B0 032:289.128 - 0.011ms returns JLINKARM_RESET_TYPE_NORMAL
+T34B0 032:289.138 JLINK_Reset()
+T34B0 032:289.385   InitTarget() start
+T34B0 032:289.403    J-Link Script File: Executing InitTarget()
+T34B0 032:290.981   Can not attach to CPU. Trying connect under reset.
+T34B0 032:342.972   Connecting to CPU via connect under reset failed.
+T34B0 032:393.453   InitTarget() end
+T34B0 032:455.315   InitTarget() start
+T34B0 032:455.338    J-Link Script File: Executing InitTarget()
+T34B0 032:456.992   Can not attach to CPU. Trying connect under reset.
+T34B0 032:509.624   Connecting to CPU via connect under reset failed.
+T34B0 032:560.036   InitTarget() end
+T34B0 032:560.058 - 270.923ms
+T34B0 032:560.076 JLINK_GetId()
+T34B0 032:560.304   InitTarget() start
+T34B0 032:560.323    J-Link Script File: Executing InitTarget()
+T34B0 032:561.971   Can not attach to CPU. Trying connect under reset.
+T34B0 032:614.262   Connecting to CPU via connect under reset failed.
+T34B0 032:664.689   InitTarget() end
+T34B0 032:726.903   InitTarget() start
+T34B0 032:726.936    J-Link Script File: Executing InitTarget()
+T34B0 035:728.353   Can not attach to CPU. Trying connect under reset.
+T34B0 035:779.124   Connecting to CPU via connect under reset failed.
+T34B0 035:829.802   InitTarget() end
+T34B0 035:829.835 - 3269.765ms returns 0x00000000
+T34B0 035:829.861 JLINK_GetId()
+T34B0 035:829.873 - 0.018ms returns 0x00000000
+T4624 035:830.010   
+  ***** Error: Connection to emulator lost!
+T34B0 035:834.501 JLINK_GetFirmwareString(...)
+T34B0 035:834.567 - 0.072ms
+T34B0 038:271.162 JLINK_Close()
+T34B0 038:296.341 - 25.202ms
+T34B0 038:296.369   
+T34B0 038:296.376   Closed

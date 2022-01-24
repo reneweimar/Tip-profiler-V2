@@ -48,13 +48,15 @@ extern uint16_t gSTR_ErrorNumber;
 //-----------------------------------------------------------------------------
 //STR_functions
 //---------------------- SYSTEM ------------------------
-extern void STR_HandleTasks(void);
-extern enuStatus STR_Set(enuStatus newStatus, int32_t newSpeed);
-extern void STR_Init(void);
+//Local functions
+static void STR_HandleSpeedPID (void) ;
+void STR_SetPWM (enuStatus newStatus, uint8_t newSpeed, uint8_t FastDecay);
+//Exported functions
 extern void STR_HandleMotor (void);
-extern void STR_SetPWM (enuStatus newStatus, uint8_t newSpeed, uint8_t FastDecay);
+extern void STR_HandleTasks(void);
+extern void STR_Init(void);
+extern enuStatus STR_Set(enuStatus newStatus, int32_t newSpeed);
 extern void STR_SetStatus (enuType newType, enuStatus newStatus);
 extern void STR_Stop(void);
-
 #endif  // _STR_FUNCTIONS_H
 

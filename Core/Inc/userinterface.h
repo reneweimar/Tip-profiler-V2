@@ -70,26 +70,30 @@ extern uint32_t gLastScrapeScreenEndless;
 //-----------------------------------------------------------------------------
 //USR_functions
 //---------------------- SYSTEM ------------------------
-extern void USR_DrawLogo (uint8_t newX, uint8_t newY,SSD1306_COLOR color);
-extern void USR_ShowPosition (int32_t newPosition);
-extern void USR_ClearPosition (void);
-extern void USR_SetMessage (char* newMessage0, char* newMessage1, char* newMessage2, char* newMessage3, char* newMessage4, char* newMessage5);
-extern void USR_SaveError(uint16_t newError, uint8_t newShow);
-extern void USR_EnterValue(int16_t NewNumber);
-extern void USR_IncreaseCounters(void);
-extern void USR_ResetServiceCounter(void);
-extern void USR_SaveParameter(void);
-extern void USR_CursorRight(void);
-extern void USR_CursorLeft(void);
-extern void USR_CursorUp(void);
-extern void USR_CursorDown(void);
-extern uint8_t USR_ButtonWaitForRelease (enuButtons ReqButton);
-extern void USR_Init(void);
-extern void USR_ShowScreen(uint32_t NewScreen);
-extern void USR_ShowBattery (uint8_t PercentageNew);
-extern void USR_ClearScreen (uint8_t ShowTitle);
-extern void USR_HandleButtons (void);
+//Local functions
+void USR_WriteInstrumentName (void);
+void USR_WriteKeys (char* newKeys);
+//Exported functions
 extern uint8_t USR_ButtonPressed (enuButtons ReqButton, uint16_t ReqTime, uint8_t ReqWaitForRelease);
+extern uint8_t USR_ButtonWaitForRelease (enuButtons ReqButton);
+extern void USR_DrawLogo (uint8_t newX, uint8_t newY,SSD1306_COLOR color);
+extern void USR_ClearPosition (void);
+extern void USR_ClearScreen (uint8_t ShowTitle);
+extern void USR_CursorDown(void);
+extern void USR_CursorLeft(void);
+extern void USR_CursorRight(void);
+extern void USR_CursorUp(void);
+extern void USR_EnterValue(int16_t NewNumber);
+extern void USR_HandleButtons (void);
+extern void USR_IncreaseCounters(void);
+extern void USR_Init(void);
+extern void USR_ResetServiceCounter(void);
+extern void USR_SaveError(uint16_t newError, uint8_t newShow);
+extern void USR_SaveParameter(void);
+extern void USR_SetMessage (char* newMessage0, char* newMessage1, char* newMessage2, char* newMessage3, char* newMessage4, char* newMessage5,uint8_t newScreen);
+extern void USR_ShowBattery (uint8_t PercentageNew);
+extern void USR_ShowPosition (int32_t newPosition);
+extern void USR_ShowScreen(uint32_t NewScreen);
 //-----------------------------------------------------------------------------
 #endif  // _USR_FUNCTIONS_H
 
