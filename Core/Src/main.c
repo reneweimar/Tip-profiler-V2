@@ -118,7 +118,7 @@ HAL_Init();
   EE_Init();
   //TODO CLI_Init();
   HAL_TIM_Encoder_Start(&htim8,TIM_CHANNEL_ALL); 
-  TIM8->CNT = 32767;
+  TIM8->CNT = 32767; //Encoder 0 value
   HAL_ADC_Start_DMA(&hadc1,(uint32_t*) &ADC_Converted_Values,1);
   HAL_TIM_Base_Start (&htim6);
   gInitialized = 1;
@@ -132,7 +132,6 @@ HAL_Init();
     {
       STR_HomeFlag = 0;
       gSTR_Motor.Encoder = 0;
-      gSTR_Motor.EncoderOld = 0;
       gSTR_Motor.IsHomed = 1;
       if (gWRK_Status.MainStatus == SCRAPEREED)
       {

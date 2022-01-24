@@ -1,10 +1,10 @@
----- WRK_ShowError Matches (9 in 1 files) ----
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):void WRK_ShowError (uint16_t newError)
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    WRK_ShowError(gSTR_ErrorNumber )
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    WRK_ShowError(gIDX_ErrorNumber);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            WRK_ShowError(31001);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            WRK_ShowError(31002);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            WRK_ShowError(31003);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            WRK_ShowError(31004);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    WRK_ShowError(gSTR_ErrorNumber)
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    WRK_ShowError (gIDX_ErrorNumber);
+---- BattPercentage Matches (9 in 3 files) ----
+Power.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      if ((BattFullAndPluggedIn == 1) && (BattPercentage==100))//Battery is full
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):uint8_t BattPercentage = 50;
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        else if (BattPercentage == 0)
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        BattPercentage = 0;  
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        BattPercentage = 100;  
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        BattPercentage = (uint8_t) (((BatteryVoltage - BATTVOLTAGEMIN)/(BATTVOLTAGEMAX-BATTVOLTAGEMIN))* 100 );
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      USR_ShowBattery(BattPercentage);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  //if ((BattPercentage == 0) && (gScrape.Endless = 1)) //Stop automatic scraping in case battery is empty
+Work.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):extern uint8_t BattPercentage;

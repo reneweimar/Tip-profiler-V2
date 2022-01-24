@@ -57,6 +57,7 @@ typedef enum
     WAITFORHOMESENSORON2,
     WAITFORINDEXHOME,
     WAITFORINDEXSTART,
+    WAITFORPLUGIN,
     WAITFORPOSITION,
     WAITFORPOWERSENSOR,
     WAITFORSCRAPEREADY,
@@ -175,8 +176,7 @@ typedef enum
   LeftSidePaused = 11,
   NoSideStep = 12,
   NoSideStepPauseRequested = 13,
-  NoSideStepPaused = 14
-   
+  NoSideStepPaused = 14,
 } enuScrapeStatus;
 
 //! \brief scrape Storage structure
@@ -226,11 +226,27 @@ extern stcCounter gCounter;
 //-----------------------------------------------------------------------------
 //WRK_functions
 //---------------------- SYSTEM ------------------------
-extern void WRK_SetScrapeStatus (enuScrapeStatus newStatus);
-extern void WRK_HandleTickTime (void);
+//Local functions
+void WRK_ShowError (uint16_t newError);
+uint8_t WRK_CheckConditions(void);
+void WRK_HandleActive(void);
+void WRK_HandleBatteryStatus (void);
+void WRK_HandleCommand(uint32_t newCommand);
+void WRK_HandleContrast(void);
+void WRK_HandleEnterValue(void);
+void WRK_HandleExecuteCommand(void);
+void WRK_HandleResetFactory(void);
+void WRK_HandleInitialize(void);
+void WRK_HandleScrapeReed (void);
+void WRK_HandleSensors(void);
+void WRK_SetStatus (enuType newType, enuStatus newStatus);
+void WRK_ShowError (uint16_t newError);
+//Exported functions
 extern void WRK_HandleSequence(void);
-extern void WRK_ResetFactory(void);
+extern void WRK_HandleTickTime (void);
 extern void WRK_Init(void);
+extern void WRK_ResetFactory(void);
+extern void WRK_SetScrapeStatus (enuScrapeStatus newStatus);
 //-----------------------------------------------------------------------------
 #endif  // _WRK_FUNCTIONS_H
 
