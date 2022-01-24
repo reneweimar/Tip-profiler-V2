@@ -2,8 +2,8 @@
 //! \file       work.h
 //! \author     R. Weimar
 //! \brief      Contains routines for the general sequence
-//! \details    
-//! \Attention  
+//! \details
+//! \Attention
 //-----------------------------------------------------------------------------
 #ifndef _WRK_FUNCTIONS_H
 #define _WRK_FUNCTIONS_H
@@ -13,7 +13,7 @@
 #define SPLASHSCREENTIME        3000
 #define VERSIONMAJOR            1
 #define VERSIONMINOR            1
-#define VERSIONTWEAK            23
+#define VERSIONTWEAK            24
 #define LOWPOWERTIME            10000
 #define NOBATTERYCONTRAST       25
 #define LOWCONTRAST             75
@@ -31,7 +31,7 @@
 
 //-----------------------------------------------------------------------------
 //! \brief  Status enumeration
-typedef enum 
+typedef enum
 {
     UNDEFINED=0,
     ACTIVE,
@@ -76,8 +76,8 @@ typedef enum //Numbering cannot be changed!!!!
   SCRAPESPEED = 2,
   SIDESTEPSMALL = 3,
   SIDESTEPBIG = 4,
-  SCREENSAVER = 5,  
-  MACHINETYPE = 6,  
+  SCREENSAVER = 5,
+  MACHINETYPE = 6,
   SIDESTEPOFFSET = 7,
   SCRAPESPEEDMIN = 8,
   SCRAPESPEEDMAX = 9,
@@ -161,7 +161,7 @@ typedef struct
 } stcCounter;
 //-----------------------------------------------------------------------------
 //! \brief  Scrape step enumeration
-typedef enum 
+typedef enum
 {
   RightSideNormalStep = 0,
   RightSideLastStep = 1,
