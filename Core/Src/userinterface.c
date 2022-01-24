@@ -290,7 +290,7 @@ void USR_HandleButtons (void)
       if (Pushed[i]== 1) //Button is pushed
       {
         gCounter.User = 0;
-        ssd1306_SetContrast(HIGHCONTRAST);
+        WRK_UpdateContrast = HIGHCONTRAST;
         if ((Button[i].TimeOn <= USR_PRESSTIMEMAX) && (Button[i].WaitForRelease == 0))
         {
           Button[i].TimeOn += 10;

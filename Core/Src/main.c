@@ -71,6 +71,7 @@ void SystemClock_Config(void);
   * @brief  The application entry point.
   * @retval int
   */
+  uint8_t G;
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -128,6 +129,11 @@ HAL_Init();
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    if (WRK_UpdateContrast)
+    {
+      ssd1306_SetContrast(WRK_UpdateContrast);
+      WRK_UpdateContrast=0;
+    }
     if (STR_HomeFlag == 1)
     {
       STR_HomeFlag = 0;

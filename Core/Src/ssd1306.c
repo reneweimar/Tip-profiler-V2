@@ -134,7 +134,6 @@ uint8_t ssd1306_Init(void)
 
   SSD1306.Initialized = 1;
 
-
   /* Return OK */
   return 1;
 }
@@ -864,13 +863,14 @@ void ssd1306_DrawBattery (SSD1306_COLOR color, uint8_t newBars, uint8_t newX, ui
 //! \param[in]  uint8_t NewContrast
 void ssd1306_SetContrast(uint8_t NewContrast)
 {
-  //uint8_t status = 0;
-  static uint8_t OldContrast;
-  if (HAL_I2C_GetState(&SSD1306_I2C_PORT) != HAL_I2C_STATE_READY) return;
-  if (OldContrast!=NewContrast)
+  static uint8_t OldContrast = 255;
+
+  if ((OldContrast!=NewContrast) && (SSD1306.Initialized))
   {
-    ssd1306_WriteCommand(0x81);   // set contrast control register
-  	ssd1306_WriteCommand(NewContrast);
+    ssd1306_ContUpdateDisable();
+    ssd1306_WriteCommand(SETCONTRAST);
+    ssd1306_WriteCommand(NewContrast);
+    ssd1306_ContUpdateEnable();
     OldContrast = NewContrast;
   }
 }
@@ -1083,6 +1083,7 @@ void ssd1306_ContUpdateDisable(void)
 		while(ssd1306_updatestatus) { };
   }
 }
+
 
 void HAL_I2C_MemTxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
