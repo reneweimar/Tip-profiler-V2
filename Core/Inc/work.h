@@ -15,7 +15,8 @@
 #define VERSIONMINOR            1
 #define VERSIONTWEAK            23
 #define LOWPOWERTIME            10000
-#define LOWCONTRAST             100
+#define NOBATTERYCONTRAST       25
+#define LOWCONTRAST             75
 #define HIGHCONTRAST            255
 #define NROFMACHINETYPES        4
 #define NROFPARAMETERS          20
@@ -216,6 +217,7 @@ extern uint8_t gIDX_StatusFlag;
 extern uint8_t gSTR_NextSideStep;
 extern int8_t ErrorDisplayPage;
 extern uint16_t Errors[NROFERRORS];
+extern uint8_t WRK_UpdateContrast;
 extern enuParameters gParameters;
 extern StcMainMenu MainMenu[NROFMAINMENUITEMS];
 extern stcScrape gScrape;

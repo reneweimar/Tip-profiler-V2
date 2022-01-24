@@ -41,6 +41,8 @@ uint16_t LastScreen = 0;
 uint16_t LastNormalScreen = 0;
 //! Global Flag battery empty
 uint8_t StoppedBecauseBatteryEmpty;
+//! \Global Contrast handler
+uint8_t WRK_UpdateContrast;
 //! \Global Main Menu container
 StcMainMenu MainMenu[NROFMAINMENUITEMS]=
 {
@@ -82,7 +84,7 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
     {"SCRAPE SPEED      ",50,200,50,"RPS",2,1,1,0},
     {"SIDE STEP SMALL   ",5,95,20,"MM",3,2,1,0},
     {"SIDE STEP BIG     ",20,100,40,"MM",3,2,1,0},
-    {"SCREEN SAVER      ",0,100,0,"-",1,0,0,1},
+    {"SCREEN SAVER      ",0,100,100,"-",1,0,0,1},
     {"MACHINE TYPE      ",0,100,0,"-",1,0,0,1},
     {"SIDE STEP OFFSET  ",-100,100,0,"MM",3,2,0,0},
     {"SCRAPE SPEED MIN  ",10,100,10,"RPS",2,1,0,0},
@@ -100,7 +102,7 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
     {"SCRAPE SPEED      ",50,200,50,"RPS",2,1,1,0},
     {"SIDE STEP SMALL   ",5,60,30,"MM",3,2,1,0},
     {"SIDE STEP BIG     ",30,100,60,"MM",3,2,1,0},
-    {"SCREEN SAVER      ",0,100,0,"-",1,0,0,1},
+    {"SCREEN SAVER      ",0,100,100,"-",1,0,0,1},
     {"MACHINE TYPE      ",0,100,0,"-",1,0,0,1},
     {"SIDE STEP OFFSET  ",-100,100,0,"MM",3,2,0,0},
     {"SCRAPE SPEED MIN  ",10,100,10,"RPS",2,1,0,0},
@@ -118,7 +120,7 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
     {"SCRAPE SPEED      ",50,200,50,"RPS",2,1,1,0},
     {"SIDE STEP SMALL   ",5,60,40,"MM",3,2,1,0},
     {"SIDE STEP BIG     ",40,100,60,"MM",3,2,1,0},
-    {"SCREEN SAVER      ",0,100,0,"-",1,0,0,1},
+    {"SCREEN SAVER      ",0,100,100,"-",1,0,0,1},
     {"MACHINE TYPE      ",0,100,0,"-",1,0,0,1},
     {"SIDE STEP OFFSET  ",-100,100,0,"MM",3,2,0,0},
     {"SCRAPE SPEED MIN  ",10,100,10,"RPS",2,1,0,0},
@@ -136,7 +138,7 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
     {"SCRAPE SPEED      ",50,200,50,"RPS",2,1,1,0},
     {"SIDE STEP SMALL   ",5,60,40,"MM",3,2,1,0},
     {"SIDE STEP BIG     ",40,100,60,"MM",3,2,1,0},
-    {"SCREEN SAVER      ",0,100,0,"-",1,0,0,1},
+    {"SCREEN SAVER      ",0,100,100,"-",1,0,0,1},
     {"MACHINE TYPE      ",0,100,0,"-",1,0,0,1},
     {"SIDE STEP OFFSET  ",-100,100,0,"MM",3,2,0,0},
     {"SCRAPE SPEED MIN  ",10,100,10,"RPS",2,1,0,0},
@@ -536,19 +538,42 @@ void WRK_HandleCommand(uint32_t newCommand)
 //! \param      None
 void WRK_HandleContrast(void)
 {
-  if (PluggedIn())
+  if ((PluggedIn()) || (SCREENSAVERON == 0))
+  {
+    gCounter.User = 0;
+    WRK_UpdateContrast = HIGHCONTRAST;
+  }
+  else if (BattPercentage == 0)
+  {
+    WRK_UpdateContrast = NOBATTERYCONTRAST;  
+  }
+  else if (SCREENSAVERON)
+  {
+    if (gCounter.User < 0xffffffff) gCounter.User += 100;
+    if (gCounter.User > LOWPOWERTIME) WRK_UpdateContrast = LOWCONTRAST;
+  }
+/*  if (PluggedIn())
   {
     gCounter.User = 0;
     ssd1306_SetContrast(HIGHCONTRAST);
   }
-  else 
+  else if (BattPercentage == 0)
+  {
+    ssd1306_SetContrast(NOBATTERYCONTRAST);  
+  }
+  else
   {
     if (gCounter.User < 0xffffffff) gCounter.User += 100;
     if ((gCounter.User > LOWPOWERTIME)&&(SCREENSAVERON)) 
     {
       ssd1306_SetContrast(LOWCONTRAST);
     }
+    else if (SCREENSAVERON)
+    {
+      ssd1306_SetContrast(HIGHCONTRAST);
+    }
   }
+  */
 }
 //-----------------------------------------------------------------------------
 //! \brief      Handles the routine for entering a value
