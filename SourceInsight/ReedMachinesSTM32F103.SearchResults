@@ -1,5 +1,9 @@
----- gCounter.User Matches (5 in 2 files) ----
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        gCounter.User = 0;
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    gCounter.User = 0;
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    if (gCounter.User < 0xffffffff) gCounter.User += 100;
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    if ((gCounter.User > LOWPOWERTIME)&&(SCREENSAVERON)) 
+---- IDX_SHOWREALPOSITION Matches (8 in 3 files) ----
+Indexmotor.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):#define IDX_SHOWREALPOSITION 1
+Main.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):#ifdef IDX_SHOWREALPOSITION
+Main.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):#ifdef IDX_SHOWREALPOSITION
+Main.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):#ifdef IDX_SHOWREALPOSITION
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):#ifdef IDX_SHOWREALPOSITION
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):#ifdef IDX_SHOWREALPOSITION
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):#ifdef IDX_SHOWREALPOSITION
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):#ifdef IDX_SHOWREALPOSITION
