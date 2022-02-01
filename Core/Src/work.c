@@ -483,6 +483,7 @@ void WRK_HandleCommand(uint32_t newCommand)
     case 1010: //Cancel, go back
 		case 2010: //Cancel, go back
 	  case 3010: //Cancel, go back
+		case 2030: //Cancel, go back
     {
       USR_ShowScreen (gCurrentScreen / 100); 
       WRK_SetStatus(MainStatus,ACTIVE);
@@ -504,6 +505,8 @@ void WRK_HandleCommand(uint32_t newCommand)
       WRK_SetStatus(SubStatus, WAITFORINDEXHOME);
 			break;
 		}
+		
+			
 		case 2031: //Second time OK -> Goto START and menu up
 		{
       USR_ShowScreen (gCurrentScreen + 1);   
@@ -921,9 +924,9 @@ void WRK_HandleScrapeReed (void)
       if (IDX_Set(GOTOPOSITION, gScrape.StartPosition )==READY)
       {
 #ifdef IDX_SHOWREALPOSITION
-          USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+          USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
 #else
-          USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+          USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float)gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
 #endif
         IDX_Set(UNDEFINED,0);
         WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
@@ -1096,10 +1099,11 @@ void WRK_HandleScrapeReed (void)
           else
           {
 #ifdef IDX_SHOWREALPOSITION
-            USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+                      USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
 #else
-            USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+                      USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float)gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
 #endif
+
             WRK_SetScrapeStatus (RightSideNormalStep);
             WRK_SetStatus(SubStatus, WAITFORPOSITION);
           }
@@ -1127,10 +1131,11 @@ void WRK_HandleScrapeReed (void)
           WRK_SetScrapeStatus(gScrape.StatusPause);//(RightSideNormalStep);
           USR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK",4);
 #ifdef IDX_SHOWREALPOSITION
-          USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+                    USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
 #else
-          USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+                    USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float)gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
 #endif
+
           WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
           break;
         }
@@ -1139,10 +1144,11 @@ void WRK_HandleScrapeReed (void)
           WRK_SetScrapeStatus(gScrape.StatusPause);//(LeftSideNormalStep)
           USR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK",4);
 #ifdef IDX_SHOWREALPOSITION
-          USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+                    USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
 #else
-          USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / gIDX_Motor.UmPerPulse * gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+                    USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float)gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
 #endif
+
           WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
           break;
         }
@@ -1174,7 +1180,7 @@ void WRK_HandleSensors(void)
 }
 //-----------------------------------------------------------------------------
 //! \brief      Handles the work sequence
-//! \details    Handles actions to form the emain sequence 
+//! \details    Handles actions to form the main sequence 
 //! \param      None
 void WRK_HandleSequence(void)
 {
@@ -1336,7 +1342,7 @@ void WRK_Init(void)
       gParameterMaxUser = i;
     }
   }
-  for (uint8_t i=1; i<gCommandMaxService ;i++) //Always assume at least 1 User parameter
+  for (uint8_t i=1; i<gCommandMaxService + 1 ;i++) //Always assume at least 1 User parameter
   {
     if (gCommands[i].UserAccess == 1)
     {

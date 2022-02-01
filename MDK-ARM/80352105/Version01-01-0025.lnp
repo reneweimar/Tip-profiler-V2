@@ -36,7 +36,7 @@
 ".\80352105\stm32f1xx_hal_tim_ex.o"
 ".\80352105\stm32f1xx_hal_uart.o"
 ".\80352105\system_stm32f1xx.o"
---library_type=microlib --strict --scatter ".\80352105\Version01-01-0023.sct"
+--library_type=microlib --strict --scatter ".\80352105\Version01-01-0025.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
---list "Version01-01-0023.map" -o .\80352105\Version01-01-0023.axf
+--list "Version01-01-0025.map" -o .\80352105\Version01-01-0025.axf

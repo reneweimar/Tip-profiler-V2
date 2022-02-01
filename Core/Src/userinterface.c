@@ -908,10 +908,10 @@ void USR_ShowScreen(uint32_t NewScreen)
           else
               ssd1306_WriteStringEightBitFont(0, 16 + (12 * i),"                    ", Font_6x7, White);
         }
-        if (gServiceMenu)
+        //if (gServiceMenu)
           USR_WriteKeys("&$,*");
-        else
-          USR_WriteKeys("&$*");
+        //else
+        //  USR_WriteKeys("&$*");
 
         if (gServiceMenu)
         {
@@ -961,7 +961,7 @@ void USR_ShowScreen(uint32_t NewScreen)
           else
               ssd1306_WriteStringEightBitFont(0, 16 + (12 * i),"                    ", Font_6x7, White);
         }
-        USR_WriteKeys("&$*");
+        USR_WriteKeys("&$,*");
 
         if (gServiceMenu)
         {
@@ -987,7 +987,7 @@ void USR_ShowScreen(uint32_t NewScreen)
         ssd1306_WriteStringEightBitFont(0, 28,"CHANGES! PRESS OK TO ", Font_6x7, White);
 
         ssd1306_WriteStringEightBitFont(0, 40,"RESET OR * TO CANCEL ", Font_6x7, White);
-        USR_WriteKeys("#OK");
+        USR_WriteKeys("*OK");
         break;
       }
       case 1020201: //Set stroke length: Press OK for goto HOME position
