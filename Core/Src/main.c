@@ -115,7 +115,7 @@ HAL_Init();
   IDX_Init();
   STR_Init();
   PWR_Init();
-  //EE_Init();
+  EE_Init();
   WRK_Init();
   //TODO CLI_Init();
   HAL_TIM_Encoder_Start(&htim8,TIM_CHANNEL_ALL); 

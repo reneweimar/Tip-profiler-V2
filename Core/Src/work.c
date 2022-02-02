@@ -1295,14 +1295,13 @@ void WRK_Init(void)
 		VirtaddVarCounter ++;
   }
   //Add the virtual names for the counters for each machine type
-    for (uint8_t j = 0; j<NROFCOUNTERS;j++)
-    {
-      VirtAddVarTab[VirtaddVarCounter] = 2000 + j * 2;     //LSB
-			VirtaddVarCounter++;
-      VirtAddVarTab[VirtaddVarCounter] = 2000 + j * 2 + 1; //MSB
-			VirtaddVarCounter++;
-    }
-    EE_Init();
+  for (uint8_t j = 0; j<NROFCOUNTERS;j++)
+  {
+    VirtAddVarTab[VirtaddVarCounter] = 2000 + j * 2;     //LSB
+		VirtaddVarCounter++;
+    VirtAddVarTab[VirtaddVarCounter] = 2000 + j * 2 + 1; //MSB
+		VirtaddVarCounter++;
+  }
         
   if (EE_ReadVariable(6, &gMachine)!=0) 
 	{
