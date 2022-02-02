@@ -1302,8 +1302,12 @@ void WRK_Init(void)
       VirtAddVarTab[VirtaddVarCounter] = 2000 + j * 2 + 1; //MSB
 			VirtaddVarCounter++;
     }
+    EE_Init();
         
-  EE_ReadVariable(6, &gMachine);
+  if (EE_ReadVariable(6, &gMachine)!=0) 
+	{
+		gMachine = 0;
+	}
   
   uint8_t NotEmpty = 0;
 
@@ -1311,7 +1315,10 @@ void WRK_Init(void)
 	{
 		for (uint8_t i=0; i<gParameterMaxService ;i++) //Check eeprom memory
 		{
-			EE_ReadVariable(i + j * 100, &ParameterTemp[i]);
+			if (EE_ReadVariable(i + j * 100, &ParameterTemp[i]) != 0)
+			{
+				ParameterTemp[i] = 0;
+			}
 			if ((ParameterTemp[i]>0) && (i != 6)) NotEmpty = 1;
 		}
 		if (NotEmpty == 1) //Copy new values over gParameter
@@ -1354,16 +1361,30 @@ void WRK_Init(void)
   //EE_ReadVariable 1001 - 1099 are the errors
   for (uint8_t i = 0; i<NROFERRORS; i++)
   {
-    EE_ReadVariable(i + 1000, &Errors[i]);
+    if (EE_ReadVariable(i + 1000, &Errors[i])!=0)
+		{
+			Errors[i] = 0;
+		}
   }
   //Read counters
-	EE_ReadVariable( 2000, &Counter);
+	if (EE_ReadVariable( 2000, &Counter)!=0)
+	{
+		Counter = 0;
+	}
 	gCounter.MasterCounter = Counter;
-	EE_ReadVariable( 2001, &Counter);
+	if (EE_ReadVariable( 2001, &Counter)!=0)
+		{
+		Counter = 0;
+	}
 	gCounter.MasterCounter += Counter * 0x10000;
-	EE_ReadVariable( 2002, &Counter);
+	if (EE_ReadVariable( 2002, &Counter)!=0)
+		{
+		Counter = 0;
+	}
 	gCounter.ServiceCounter = Counter;
-	EE_ReadVariable( 2003, &Counter);
+	if (EE_ReadVariable( 2003, &Counter)!=0){
+		Counter = 0;
+	}
 	gCounter.ServiceCounter += Counter * 0x10000;
   //Check first initialization
   if (Errors[0]==0) Errors[0]=1001; //First available place to store the next error
