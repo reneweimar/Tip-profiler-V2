@@ -139,17 +139,6 @@ HAL_Init();
       STR_HomeFlag = 0;
       gSTR_Motor.Encoder = 0;
       gSTR_Motor.IsHomed = 1;
-      if (gWRK_Status.MainStatus == SCRAPEREED)
-      {
-        //gScrape.NextScrape = 1;
-        //gScrape.NextSideStep = 1;
-      }
-      else
-      {
-        //gScrape.NextScrape = 0;
-        //gScrape.NextSideStep = 0;
-      }
-     
       if ((gScrape.Status == RightSideLastScrape)||(gScrape.Status == LeftSideLastScrape)) gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
       if (gSTR_Status.MainStatus == HOME)
       {
@@ -177,7 +166,7 @@ HAL_Init();
     }
     if (((gWRK_Status.MainStatus == SCRAPEREED) || (gWRK_Status.MainStatus == SCRAPENOSIDESTEPS)) && ((gWRK_Status.SubStatus == WAITFORSTROKEMOTORSTOP) || (gWRK_Status.SubStatus == WAITFORUSER)))
     {
-      if (gSTR_Motor.Encoder == 300)
+      if (gSTR_Motor.Encoder == 300)//Start position is reached
       {
         if (STR_StartFlag == 0)
         {
