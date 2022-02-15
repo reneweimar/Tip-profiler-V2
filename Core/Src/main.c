@@ -149,7 +149,7 @@ HAL_Init();
         gScrape.NextScrape = 0;
         gScrape.NextSideStep = 0;
       }
-      if ((gScrape.Status == RightSideLastStep)||(gScrape.Status == LeftSideLastStep)) gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
+      if ((gScrape.Status == RightSideLastStep)||(gScrape.Status == LeftSideLastStep) ||(gScrape.Status == RightSideLastScrape)||(gScrape.Status == LeftSideLastScrape)) gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
       if (gSTR_Status.MainStatus == HOME)
       {
         if (gSTR_Motor.GetSpeed == 0) //Encoder signal missing but motor aparently turning

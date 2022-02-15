@@ -1,4 +1,4 @@
-////-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 //! \file       work.h
 //! \author     R. Weimar
 //! \brief      Contains routines for the general sequence
@@ -13,7 +13,7 @@
 #define SPLASHSCREENTIME        3000
 #define VERSIONMAJOR            1
 #define VERSIONMINOR            1
-#define VERSIONTWEAK            26
+#define VERSIONTWEAK            27
 #define LOWPOWERTIME            10000
 #define NOBATTERYCONTRAST       25
 #define LOWCONTRAST             75

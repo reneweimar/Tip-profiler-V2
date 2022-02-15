@@ -1,9 +1,4 @@
----- IDX_SHOWREALPOSITION Matches (8 in 3 files) ----
-Indexmotor.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):#define IDX_SHOWREALPOSITION 1
-Main.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):#ifdef IDX_SHOWREALPOSITION
-Main.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):#ifdef IDX_SHOWREALPOSITION
-Main.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):#ifdef IDX_SHOWREALPOSITION
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):#ifdef IDX_SHOWREALPOSITION
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):#ifdef IDX_SHOWREALPOSITION
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):#ifdef IDX_SHOWREALPOSITION
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):#ifdef IDX_SHOWREALPOSITION
+---- 13001 Matches (3 in 2 files) ----
+Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      gIDX_ErrorNumber = 13001;
+Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      gIDX_ErrorNumber = 13001;
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  if (newError == 13001) //Index motor not turning or encoder not detected
