@@ -21,6 +21,8 @@ uint16_t gSTR_PulseTime;
 int32_t STR_Speed;
 //! \Stroke motor home flag
 uint8_t STR_HomeFlag;
+//! \Stroke motor START flag
+uint8_t STR_StartFlag;
 //! \Global error number for correct display of error number
 uint16_t gSTR_ErrorNumber;
 

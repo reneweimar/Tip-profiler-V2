@@ -1,4 +1,3 @@
----- 13001 Matches (3 in 2 files) ----
-Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      gIDX_ErrorNumber = 13001;
-Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      gIDX_ErrorNumber = 13001;
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  if (newError == 13001) //Index motor not turning or encoder not detected
+---- gScrape.NextSideStep = 1; Matches (2 in 1 files) ----
+Main.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        //gScrape.NextSideStep = 1;
+Main.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        gScrape.NextSideStep = 1;

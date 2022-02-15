@@ -44,6 +44,7 @@ extern stcDCMotor gSTR_Motor;
 extern enuSTR_Unit gSTR_Status;
 extern uint16_t gSTR_PulseTime;
 extern uint8_t STR_HomeFlag;
+extern uint8_t STR_StartFlag;
 extern uint16_t gSTR_ErrorNumber;
 //-----------------------------------------------------------------------------
 //STR_functions
