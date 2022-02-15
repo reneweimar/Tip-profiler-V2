@@ -21,6 +21,8 @@ uint16_t gSTR_PulseTime;
 int32_t STR_Speed;
 //! \Stroke motor home flag
 uint8_t STR_HomeFlag;
+//! \Stroke motor START flag
+uint8_t STR_StartFlag;
 //! \Global error number for correct display of error number
 uint16_t gSTR_ErrorNumber;
 
@@ -190,7 +192,7 @@ void STR_HandleTasks(void)
             else
             {
               TimeOut += 100;
-              if (TimeOut > 1000)
+              if (TimeOut > 1500)
               {
                 gSTR_ErrorNumber = 23003;
                 gSTR_Motor.MainStatus = INACTIVE;
@@ -208,12 +210,21 @@ void STR_HandleTasks(void)
               STR_SetStatus(MainStatus,UNITERROR);
             }
   					//TODO timeout
-            else if ((gSTR_Motor.Encoder == Encoder) && (STR_HomeOn()))
+            else if (gSTR_Motor.Encoder == Encoder) //Motor is stopped 
             {
-    					gSTR_Motor.Encoder = 0;
-              gSTR_Motor.IsHomed = 1;
-              gSTR_Motor.IsInStartPosition = 0;
-              STR_SetStatus(SubStatus, HOME);
+              if (STR_HomeOn()) //Home sensor is on
+              {
+      					gSTR_Motor.Encoder = 0;
+                gSTR_Motor.IsHomed = 1;
+                gSTR_Motor.IsInStartPosition = 0;
+                STR_SetStatus(SubStatus, HOME);
+              }
+              else // home sensor not on (anymore), retry
+              {
+                //Error message?? gSTR_ErrorNumber = 23003;
+                PWR_SensorsOn();
+                STR_SetStatus(SubStatus,WAITFORPOWERSENSOR);
+              }
             }
             else 
             {
@@ -275,7 +286,7 @@ void STR_HandleTasks(void)
         case WAITFORHOMESENSORON:
         {
           TimeOut += 100;
-          if (TimeOut > 2000)
+          if (TimeOut > 3000)
           {
             gSTR_ErrorNumber = 23003;
             gSTR_Motor.MainStatus = INACTIVE;

@@ -281,9 +281,9 @@ void IDX_HandleTasks(void)
           IDX_HomeFlag = 0;
           IDXHomeAccuracy = 300;
           gIDX_Motor.MaxSpeed = 10000;
-          gIDX_Motor.PosP = 30; 
-          gIDX_Motor.PosI = 0.005;
-          gIDX_Motor.PosD = 2000;
+          //gIDX_Motor.PosP = 30; 
+          //gIDX_Motor.PosI = 0.005;
+          //gIDX_Motor.PosD = 2000;
           gIDX_Motor.IsHomed = 0;
           CheckStoppedCounter = 0;
           IDX_SetStatus(SubStatus,WAITFORPOWERSENSOR);

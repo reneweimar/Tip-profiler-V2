@@ -1,9 +1,3 @@
----- IDX_SHOWREALPOSITION Matches (8 in 3 files) ----
-Indexmotor.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):#define IDX_SHOWREALPOSITION 1
-Main.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):#ifdef IDX_SHOWREALPOSITION
-Main.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):#ifdef IDX_SHOWREALPOSITION
-Main.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):#ifdef IDX_SHOWREALPOSITION
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):#ifdef IDX_SHOWREALPOSITION
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):#ifdef IDX_SHOWREALPOSITION
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):#ifdef IDX_SHOWREALPOSITION
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):#ifdef IDX_SHOWREALPOSITION
+---- gScrape.NextSideStep = 1; Matches (2 in 1 files) ----
+Main.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        //gScrape.NextSideStep = 1;
+Main.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        gScrape.NextSideStep = 1;
