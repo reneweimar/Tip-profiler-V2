@@ -94,7 +94,8 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
     {"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0},
     {"SIDE ST SMALL FACT",0,500,30,"MM",3,2,0,0},
     {"SIDE ST BIG FACT  ",0,500,30,"MM",3,2,0,0},
-    {"SIDE ST RATIO     ",1,2,1756,"MM",4,3,0,0},
+    {"SIDE ST RATIO     ",1,2000,1756,"-",4,3,0,0},
+    {"SIDE ST REDUCTION ",1,300,30,"-",3,0,0,0},
 	},
 	{ //BASSOON
     {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0},
@@ -112,7 +113,8 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
     {"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0},
     {"SIDE ST SMALL FACT",0,500,40,"MM",3,2,0,0},
     {"SIDE ST BIG FACT  ",0,500,40,"MM",3,2,0,0},   
-    {"SIDE ST RATIO     ",1,2,1838,"MM",4,3,0,0},
+    {"SIDE ST RATIO     ",1,2000,1756,"-",4,3,0,0},
+    {"SIDE ST REDUCTION ",1,300,30,"-",3,0,0,0},
 	},
 	{ //KLARINET
     {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0},
@@ -130,7 +132,8 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
     {"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0},
     {"SIDE ST SMALL FACT",0,500,40,"MM",3,2,0,0},
     {"SIDE ST BIG FACT  ",0,500,40,"MM",3,2,0,0},
-    {"SIDE ST RATIO     ",1,2,1838,"MM",4,3,0,0},
+    {"SIDE ST RATIO     ",1,2000,1756,"-",4,3,0,0},
+    {"SIDE ST REDUCTION ",1,300,30,"-",3,0,0,0},
 	},
   { //BAGPIPE
     {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0},
@@ -148,7 +151,8 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
     {"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0},
     {"SIDE ST SMALL FACT",0,500,40,"MM",3,2,0,0},
     {"SIDE ST BIG FACT  ",0,500,40,"MM",3,2,0,0},
-    {"SIDE ST RATIO     ",1,2,1838,"MM",4,3,0,0},
+    {"SIDE ST RATIO     ",1,2000,1756,"-",4,3,0,0},
+    {"SIDE ST REDUCTION ",1,300,30,"-",3,0,0,0},
   },
 };
 //! \Global Service flag
@@ -156,7 +160,7 @@ uint8_t gServiceMenu;
 //! \Global User parameter max flag
 uint8_t gParameterMaxUser;
 //! \Global Service parameter max flag
-uint16_t gParameterMaxService = 15; //15 is last parameter
+uint16_t gParameterMaxService = 16; //15 is last parameter
 //! \Global virtual tab for eeprom simulation 0-99 for machine0, 100-199 for machine1, etc
 uint16_t VirtAddVarTab[NB_OF_VAR];
 //! \Global virtual tab for eeprom simulation 0-99 for machine0, 100-199 for machine1, etc
