@@ -13,7 +13,7 @@
 #define SPLASHSCREENTIME        3000
 #define VERSIONMAJOR            1
 #define VERSIONMINOR            1
-#define VERSIONTWEAK            27
+#define VERSIONTWEAK            28
 #define LOWPOWERTIME            10000
 #define NOBATTERYCONTRAST       25
 #define LOWCONTRAST             75
@@ -87,6 +87,7 @@ typedef enum //Numbering cannot be changed!!!!
   SIDESTSMALLFACT = 13,
   SIDESTBIGFACT = 14,
   SIDESTRATIO = 15,
+  SIDESTREDUCTION = 16
 } enuParameters;
 
 typedef enum
@@ -238,6 +239,7 @@ void WRK_HandleContrast(void);
 void WRK_HandleEnterValue(void);
 void WRK_HandleExecuteCommand(void);
 void WRK_HandleResetFactory(void);
+void WRK_HandleResetUnitErrors(void);
 void WRK_HandleInitialize(void);
 void WRK_HandleScrapeReed (void);
 void WRK_HandleSensors(void);

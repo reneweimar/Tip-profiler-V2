@@ -71,5 +71,6 @@ extern void IDX_HandleTasks(void);
 extern void IDX_Init(void);
 extern enuStatus IDX_Set(enuStatus newStatus, int32_t newPosition);
 extern void IDX_SetPosition (int32_t newPosition);
+extern void IDX_Stop(void);
 #endif  // _IDX_FUNCTIONS_H
 

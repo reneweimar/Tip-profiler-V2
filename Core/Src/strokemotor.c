@@ -94,7 +94,6 @@ void STR_HandleMotor (void)
     STR_Stop();
   }
 }
-
 //-----------------------------------------------------------------------------
 //! \brief      Controls the stroke motor speed PID
 //! \details    Calculates the PID value for the speed control

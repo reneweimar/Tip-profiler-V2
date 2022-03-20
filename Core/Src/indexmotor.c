@@ -418,6 +418,9 @@ void IDX_Init(void)
 //! \param [out] enuStatus IDX_Motor.SubStatus or READY
 enuStatus IDX_Set(enuStatus newStatus, int32_t newPosition)
 {
+  //Original code was for reduction 30. Reduction 150 will result in * 150 / 30 = * 5
+  newPosition *= gMachineType[gMachine/100].Parameters[SIDESTREDUCTION].Value; 
+  newPosition /= 30;
   if (gIDX_Status.MainStatus == newStatus) //Task already running
   {
     IDX_Position = newPosition;
@@ -501,6 +504,26 @@ void IDX_SetPosition (int32_t newPosition)
   PWR_SensorsOn();
   gIDX_Motor.SetPosition = newPosition;
 }
+
+//-----------------------------------------------------------------------------
+//! \brief       Stops the index motor as fast as possible
+//! \details     Sets the PWM to 0 and motor to INACTIVE
+//! \params      None
+void IDX_Stop(void)
+{
+    IDX_SetPWM(CW,0);
+    gIDX_Motor.MainStatus = INACTIVE;
+    gIDX_Motor.ErrorI = 0;
+    gIDX_Motor.PosErrorD = 0;
+    gIDX_Motor.PosErrorI = 0;
+    gIDX_Motor.PosPID = 0;
+    gIDX_Motor.Control = 0;
+    IDX_CCW() = 0;
+    IDX_CW() = 0;
+    gIDX_Motor.PosControl = 0;
+    gIDX_Motor.SetSpeed = 0;
+}
+
   
 //-----------------------------------------------------------------------------
 

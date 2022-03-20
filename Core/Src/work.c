@@ -94,7 +94,8 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
     {"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0},
     {"SIDE ST SMALL FACT",0,500,30,"MM",3,2,0,0},
     {"SIDE ST BIG FACT  ",0,500,30,"MM",3,2,0,0},
-    {"SIDE ST RATIO     ",1,2,1756,"MM",4,3,0,0},
+    {"SIDE ST RATIO     ",1,2000,1756,"-",4,3,0,0},
+    {"SIDE ST REDUCTION ",1,300,30,"-",3,0,0,0},
 	},
 	{ //BASSOON
     {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0},
@@ -112,7 +113,8 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
     {"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0},
     {"SIDE ST SMALL FACT",0,500,40,"MM",3,2,0,0},
     {"SIDE ST BIG FACT  ",0,500,40,"MM",3,2,0,0},   
-    {"SIDE ST RATIO     ",1,2,1838,"MM",4,3,0,0},
+    {"SIDE ST RATIO     ",1,2000,1756,"-",4,3,0,0},
+    {"SIDE ST REDUCTION ",1,300,30,"-",3,0,0,0},
 	},
 	{ //KLARINET
     {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0},
@@ -130,7 +132,8 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
     {"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0},
     {"SIDE ST SMALL FACT",0,500,40,"MM",3,2,0,0},
     {"SIDE ST BIG FACT  ",0,500,40,"MM",3,2,0,0},
-    {"SIDE ST RATIO     ",1,2,1838,"MM",4,3,0,0},
+    {"SIDE ST RATIO     ",1,2000,1756,"-",4,3,0,0},
+    {"SIDE ST REDUCTION ",1,300,30,"-",3,0,0,0},
 	},
   { //BAGPIPE
     {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0},
@@ -148,7 +151,8 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
     {"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0},
     {"SIDE ST SMALL FACT",0,500,40,"MM",3,2,0,0},
     {"SIDE ST BIG FACT  ",0,500,40,"MM",3,2,0,0},
-    {"SIDE ST RATIO     ",1,2,1838,"MM",4,3,0,0},
+    {"SIDE ST RATIO     ",1,2000,1756,"-",4,3,0,0},
+    {"SIDE ST REDUCTION ",1,300,30,"-",3,0,0,0},
   },
 };
 //! \Global Service flag
@@ -156,7 +160,7 @@ uint8_t gServiceMenu;
 //! \Global User parameter max flag
 uint8_t gParameterMaxUser;
 //! \Global Service parameter max flag
-uint16_t gParameterMaxService = 15; //15 is last parameter
+uint16_t gParameterMaxService = 16; //15 is last parameter
 //! \Global virtual tab for eeprom simulation 0-99 for machine0, 100-199 for machine1, etc
 uint16_t VirtAddVarTab[NB_OF_VAR];
 //! \Global virtual tab for eeprom simulation 0-99 for machine0, 100-199 for machine1, etc
@@ -364,28 +368,25 @@ void WRK_HandleActive(void)
         //From here all screens that are affected by the battery empty warning
         else if (gCurrentScreen == 10) //Find HOME screen
         {
+          WRK_HandleResetUnitErrors();
           gReturnScreen = 20;
           gReturnFromErrorScreen = 10;
-          gSTR_ErrorNumber = 0;
-          gIDX_ErrorNumber = 0;
           USR_SetMessage("","","     PLEASE WAIT","","","",4);
           WRK_SetStatus(MainStatus,INITIALIZE);
           WRK_SetStatus(SubStatus,WAITFORINDEXHOME);  
         }
         else if (gCurrentScreen == 20) //Goto START screen
         {
+          WRK_HandleResetUnitErrors();
           gReturnScreen = gLastScrapeScreen;
           gReturnFromErrorScreen = 20;
-          gSTR_ErrorNumber = 0;
-          gIDX_ErrorNumber = 0;
           USR_SetMessage("","","     PLEASE WAIT","","","",4);
           WRK_SetStatus(MainStatus,INITIALIZE);
           WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);  
         }
         else if ((gCurrentScreen == 30)||(gCurrentScreen == 40)) //Start Scrape process with big side step (40 = endless)
         {
-          gSTR_ErrorNumber = 0;
-          gIDX_ErrorNumber = 0;
+          WRK_HandleResetUnitErrors();
           if (gCurrentScreen == 40) gScrape.Endless = 1;
           gReturnScreen = gCurrentScreen;
           gReturnFromErrorScreen = gCurrentScreen;
@@ -396,8 +397,7 @@ void WRK_HandleActive(void)
         }
         else if ((gCurrentScreen == 31)||(gCurrentScreen == 41)) //Start Scrape process with small side step (41 is endless)
         {
-          gSTR_ErrorNumber = 0;
-          gIDX_ErrorNumber = 0;
+          WRK_HandleResetUnitErrors();
           if (gCurrentScreen == 41) gScrape.Endless = 1;
           gReturnScreen = gCurrentScreen;
           gReturnFromErrorScreen = gCurrentScreen;
@@ -408,8 +408,7 @@ void WRK_HandleActive(void)
         }
         else if (gCurrentScreen == 32) //Start Scrape process only outer sections
         {
-          gSTR_ErrorNumber = 0;
-          gIDX_ErrorNumber = 0;
+          WRK_HandleResetUnitErrors();
           gReturnScreen = gCurrentScreen;
           gReturnFromErrorScreen = gCurrentScreen;
           gScrape.SideStep = gMachineType[gMachine/100].Parameters[SIDESTEPSMALL].Value * 84 / 15 * 1000 / gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value; //Pulses -> Value * 10 * 840 / 1500
@@ -419,8 +418,7 @@ void WRK_HandleActive(void)
         }
         else if (gCurrentScreen == 33) //Start Scrape process only inner sections
         {
-          gSTR_ErrorNumber = 0;
-          gIDX_ErrorNumber = 0;
+          WRK_HandleResetUnitErrors();
           gReturnScreen = gCurrentScreen;
           gReturnFromErrorScreen = gCurrentScreen;
           gScrape.SideStep = gMachineType[gMachine/100].Parameters[SIDESTEPSMALL].Value * 84 / 15 * 1000 / gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value; //Pulses -> Value * 10 * 840 / 1500
@@ -430,8 +428,7 @@ void WRK_HandleActive(void)
         }
         else if (gCurrentScreen == 42) //Start Scrape process without side steps
         {
-          gSTR_ErrorNumber = 0;
-          gIDX_ErrorNumber = 0;
+          WRK_HandleResetUnitErrors();
           gScrape.SideStep = 0;
           gReturnScreen = gCurrentScreen;
           gReturnFromErrorScreen = gCurrentScreen;
@@ -739,7 +736,7 @@ void WRK_HandleInitialize(void)
   if (gSTR_Status.MainStatus == UNITERROR) 
   {
     STR_Stop();
-    IDX_Set(STOP,0);
+    IDX_Stop();//IDX_Set(STOP,0);
     WRK_ShowError(gSTR_ErrorNumber);
     WRK_SetStatus(MainStatus, ACTIVE);
     WRK_SetStatus(SubStatus, WAITFORUSER); 
@@ -748,7 +745,7 @@ void WRK_HandleInitialize(void)
   if (gIDX_Status.MainStatus == UNITERROR) 
   {
     STR_Stop();
-    IDX_Set(STOP,0);
+    IDX_Stop();//IDX_Set(STOP,0);
     WRK_ShowError (gIDX_ErrorNumber);
     WRK_SetStatus(MainStatus, ACTIVE);
     WRK_SetStatus(SubStatus, WAITFORUSER); 
@@ -841,6 +838,24 @@ void WRK_HandleResetFactory(void)
     }
   }
 }
+//-----------------------------------------------------------------------------
+//! \brief      Resets unit error in index and stroke motor
+//! \details    Only resets if the unit is in error
+//! \param      None
+void WRK_HandleResetUnitErrors(void)
+{
+  if (gSTR_Status.MainStatus == UNITERROR) 
+  {
+    STR_Set(UNDEFINED,0);
+  }
+  if (gIDX_Status.MainStatus == UNITERROR)
+  {
+    IDX_Set(UNDEFINED,0);
+  }
+  gSTR_ErrorNumber = 0;
+  gIDX_ErrorNumber = 0;
+}
+
 //-----------------------------------------------------------------------------
 //! \brief      Handles the scraping of the reed
 //! \details    Handles actions to perform the actual scraping
