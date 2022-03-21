@@ -1,12 +1,1 @@
----- showerror Matches (11 in 2 files) ----
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            WRK_ShowError(31001);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            WRK_ShowError(31002);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            WRK_ShowError(31003);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            WRK_ShowError(31004);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    WRK_ShowError(gSTR_ErrorNumber);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    WRK_ShowError (gIDX_ErrorNumber);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    WRK_ShowError(gSTR_ErrorNumber);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    WRK_ShowError(gIDX_ErrorNumber);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):void WRK_ShowError (uint16_t newError)
-Work.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):void WRK_ShowError (uint16_t newError);
-Work.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):void WRK_ShowError (uint16_t newError);
+---- 299 Matches (0 in 0 files) ----

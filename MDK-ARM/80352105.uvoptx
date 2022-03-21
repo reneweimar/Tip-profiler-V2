@@ -163,7 +163,7 @@
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>gSTR_Motor</ItemText>
+          <ItemText>gSTR_Motor,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
