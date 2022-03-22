@@ -69,6 +69,7 @@ void IDX_SetStatus (enuType newType, enuStatus newStatus);
 extern void IDX_HandleMotor (void);
 extern void IDX_HandleTasks(void);
 extern void IDX_Init(void);
+extern void IDX_ResetEncoder(void);
 extern enuStatus IDX_Set(enuStatus newStatus, int32_t newPosition);
 extern void IDX_SetPosition (int32_t newPosition);
 extern void IDX_Stop(void);

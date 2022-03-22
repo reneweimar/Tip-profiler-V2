@@ -426,9 +426,21 @@ void IDX_Init(void)
   gIDX_Motor.Ratio = 30;
   gIDX_Motor.PulsesPerRevolution = 28; //(PPR = 7 * 4)
 }
+
+//-----------------------------------------------------------------------------
+//! \brief       Resets the index motor position to 0
+//! \details     Also resets the new and old encoder value to zero
+//! \params      None
+void IDX_ResetEncoder(void)
+{
+  TIM8->CNT = 0;
+  gIDX_Motor.EncoderNew = 0;
+  gIDX_Motor.EncoderOld = 0;
+  gIDX_Motor.EncoderOverFlow = 0;
+}
 //-----------------------------------------------------------------------------
 //! \brief       Sets the index motor status
-//! \details     Sets status and the position
+//! \details     Sets status and the position with the offset
 //! \param [in]  enuStatus newStatus
 //! \param [in]  int32_t newPosition in pulses
 //! \param [out] enuStatus IDX_Motor.SubStatus or READY
@@ -437,6 +449,7 @@ enuStatus IDX_Set(enuStatus newStatus, int32_t newPosition)
   //Original code was for reduction 30. Reduction 150 will result in * 150 / 30 = * 5
   newPosition *= gMachineType[gMachine/100].Parameters[SIDESTREDUCTION].Value; 
   newPosition /= 30;
+  //To add the offset (gMachineType[gMachine/100].Parameters[SIDESTEPOFFSET].Value * 560 / 100);
   if (gIDX_Status.MainStatus == newStatus) //Task already running
   {
     IDX_Position = newPosition;

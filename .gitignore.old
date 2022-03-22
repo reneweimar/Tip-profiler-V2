@@ -1,17 +1,13 @@
-#exclude output path
-output/
-
-#temporary Excel files
-~*.xlsm
+# Prerequisites
+*.d
 
 # Object and HEX files
 *.axf
 *.b[0-3][0-9]
-*.hex
 *.d
+*.hex
 *.crf
 *.elf
-*.hex
 *.h86
 *.lib
 *.obj
@@ -67,11 +63,61 @@ JLinkLog.txt
 
 #must include release bin files
 !bin/*.*
-!bin/HW19/*.*
-!bin/HW20/*.*
-!bin/HW21/*.*
-!bin/HW22/*.*
 
-*.scvd
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
 
-MDK-ARM/
+# Linker output
+*.ilk
+*.map
+*.exp
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# SourceInsight files
+*.IAB
+*.IAD
+*.PFI
+*.PO
+*.PR
+*.PRI
+*.PS
+*.WK3
+
+# Compiled files
+*.crf
+*.htm
+*.rene
+*.uvoptx
+*.dep
+
