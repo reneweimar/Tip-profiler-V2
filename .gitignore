@@ -1,8 +1,3 @@
-#exclude output path
-output/
-
-#temporary Excel files
-~*.xlsm
 
 # Object and HEX files
 *.axf
@@ -64,15 +59,7 @@ JLinkLog.txt
 *.iex
 *.lst
 
-#SourceInsight
-*.IAB
-*.IAD
-*.PFI
-*.PO
-*.PR
-*.PRI
-*.PS
-*.WK3
+
 
 #must include release bin files
 !bin/*.*
