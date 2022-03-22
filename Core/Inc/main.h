@@ -62,6 +62,9 @@ typedef struct
   int32_t GetUm;
   int16_t MaxSpeed;
   int32_t Encoder;
+  uint16_t EncoderOld;
+  uint16_t EncoderNew;
+  int32_t EncoderOverFlow;
   int32_t Control;
   int32_t PosControl;
   float ErrorPOld;

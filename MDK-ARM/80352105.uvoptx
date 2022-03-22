@@ -158,7 +158,7 @@
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>gIDX_Motor</ItemText>
+          <ItemText>gIDX_Motor,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
@@ -194,6 +194,21 @@
           <count>7</count>
           <WinNumber>1</WinNumber>
           <ItemText>gCurrentScreen,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>8</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>TIM8,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>9</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>gMachineType</ItemText>
+        </Ww>
+        <Ww>
+          <count>10</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>gIDX_ErrorNumber,0x0A</ItemText>
         </Ww>
       </WatchWindow1>
       <MemoryWindow1>
