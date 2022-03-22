@@ -1,6 +1,69 @@
 # Prerequisites
 *.d
 
+# Object and HEX files
+*.axf
+*.b[0-3][0-9]
+*.d
+*.hex
+*.crf
+*.elf
+*.h86
+*.lib
+*.obj
+*.o
+*.sbr
+
+# Build files
+*.bat
+*._ia
+*.__i
+*._ii
+
+#Listing files
+*.lst
+
+# Debugger files
+*.ini
+JLinkLog.txt
+
+# Other files
+*.build_log.htm
+*.cdb
+*.dep
+*.ic
+*.lin
+*.lnp
+*.orc
+*.pack
+*.pdsc
+*.plg
+*.sct
+*.sfd
+*.sfr
+
+# User-specific uVision files
+*.opt
+*.uvopt
+*.uvoptx
+*.uvgui
+*.uvgui.*
+*.uvguix.*
+*.lst
+
+# Miscellaneous
+*.tra
+*.bin
+*.fed
+*.l1p
+*.l2p
+*.iex
+*.lst
+
+
+#must include release bin files
+!bin/*.*
+
 # Object files
 *.o
 *.ko
@@ -58,11 +121,3 @@
 *.uvoptx
 *.dep
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
