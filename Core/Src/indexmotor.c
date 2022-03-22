@@ -53,7 +53,17 @@ void IDX_HandleMotor (void)
   {
     TimeOut = 0;
   }
-  gIDX_Motor.GetPosition = TIM8->CNT - 32767;
+  gIDX_Motor.EncoderNew = TIM8->CNT;
+  uint16_t NewFlag = gIDX_Motor.EncoderNew & 0xc000;
+  uint16_t OldFlag = gIDX_Motor.EncoderOld & 0xc000;
+  if(NewFlag == 0 && OldFlag == 0xC000) gIDX_Motor.EncoderOverFlow += 65536;
+  if(NewFlag == 0xC000 && OldFlag == 0) gIDX_Motor.EncoderOverFlow -= 65536;
+  gIDX_Motor.Encoder = gIDX_Motor.EncoderNew + gIDX_Motor.EncoderOverFlow;
+  gIDX_Motor.EncoderOld = gIDX_Motor.EncoderNew;
+
+  
+  //gIDX_Motor.GetPosition = TIM8->CNT - 32767;
+  gIDX_Motor.GetPosition = gIDX_Motor.Encoder;
   if ((abs(gIDX_Motor.GetPosition) < IDX_ACCURACY) && (gIDX_Motor.IsHomed == 1))
   {
     gIDX_Motor.IsInStartPosition = 1;
@@ -293,7 +303,9 @@ void IDX_HandleTasks(void)
         {
           if (IDX_HomeOn()) //Homesensor is on, so move left (flag is in between sensor)
           {
-            TIM8->CNT = 52767;
+            //TIM8->CNT = 52767;
+            TIM8->CNT = 20000;//GetPosition set to 20000
+            gIDX_Motor.EncoderOverFlow = 0;
             gIDX_Motor.SetPosition = -500;
             gIDX_Motor.MainStatus = ACTIVE;
             gIDX_ResetPosition = 1;
@@ -301,7 +313,9 @@ void IDX_HandleTasks(void)
           }
           else //Homesensor is off, so move right (flag is not in between sensor)
           {
-            TIM8->CNT = 12767;
+            //TIM8->CNT = 12767;
+            TIM8->CNT = 45536; //Get position set to -20000
+            gIDX_Motor.EncoderOverFlow = -65536;
             gIDX_Motor.SetPosition = 500;
             gIDX_Motor.MainStatus = ACTIVE;
             gIDX_ResetPosition = 1;
@@ -318,7 +332,9 @@ void IDX_HandleTasks(void)
             {
               if (gIDX_Status.SubStatus == WAITFORHOMESENSORON2)
               {
-                TIM8->CNT = 52767;
+                //TIM8->CNT = 52767;
+                TIM8->CNT = 20000;//GetPosition set to 20000
+                gIDX_Motor.EncoderOverFlow = 0;
                 gIDX_Motor.SetPosition = -500;
                 gIDX_Motor.MainStatus = ACTIVE;
                 gIDX_ResetPosition = 1;
