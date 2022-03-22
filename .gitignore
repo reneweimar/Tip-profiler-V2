@@ -64,13 +64,18 @@ JLinkLog.txt
 *.iex
 *.lst
 
+#SourceInsight
+*.IAB
+*.IAD
+*.PFI
+*.PO
+*.PR
+*.PRI
+*.PS
+*.WK3
 
 #must include release bin files
 !bin/*.*
-!bin/HW19/*.*
-!bin/HW20/*.*
-!bin/HW21/*.*
-!bin/HW22/*.*
 
 *.scvd
 
