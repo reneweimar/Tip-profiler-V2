@@ -8,9 +8,9 @@
 #ifndef _STR_FUNCTIONS_H
 #define _STR_FUNCTIONS_H
 //-----------------------------------------------------------------------------
-#define STR_GOTOSTARTSPEED 1250 //Was 1500
-#define STR_HOMESPEED 1250 //Was 1500, but caused overshoot
-#define STARTPOSITION 300
+#define STR_GOTOSTARTSPEED 1000 //Was 1500
+#define STR_HOMESPEED 1000 //Was 1500, but caused overshoot
+#define STARTPOSITION 300 // At low speed a little before, at high speed a little behind dead center
 #define STROKEMOTORTIMEOUT 5000
 #define IntEncoder_Pin GPIO_PIN_1
 #define IntEncoder_GPIO_Port GPIOA

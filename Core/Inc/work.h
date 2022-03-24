@@ -13,7 +13,7 @@
 #define SPLASHSCREENTIME        3000
 #define VERSIONMAJOR            1
 #define VERSIONMINOR            1
-#define VERSIONTWEAK            28
+#define VERSIONTWEAK            29
 #define LOWPOWERTIME            10000
 #define NOBATTERYCONTRAST       25
 #define LOWCONTRAST             75
@@ -247,6 +247,9 @@ void WRK_SetStatus (enuType newType, enuStatus newStatus);
 void WRK_ShowError (uint16_t newError);
 //Exported functions
 extern void WRK_HandleSequence(void);
+extern void WRK_HandleSideStep(void);
+extern void WRK_HandleSTREncoder(void);
+extern void WRK_HandleSTRHomeFlag (void);
 extern void WRK_HandleTickTime (void);
 extern void WRK_Init(void);
 extern void WRK_ResetFactory(void);

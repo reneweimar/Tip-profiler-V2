@@ -1,68 +1,69 @@
-# Prerequisites
+
+# Object and HEX files
+*.axf
+*.b[0-3][0-9]
+*.hex
 *.d
-
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
-
-# Linker output
-*.ilk
-*.map
-*.exp
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
-
-# SourceInsight files
-*.IAB
-*.IAD
-*.PFI
-*.PO
-*.PR
-*.PRI
-*.PS
-*.WK3
-
-# Compiled files
 *.crf
-*.htm
-*.rene
-*.uvoptx
-*.dep
+*.elf
+*.hex
+*.h86
+*.lib
+*.obj
+*.o
+*.sbr
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
+# Build files
+*.bat
+*._ia
+*.__i
+*._ii
+
+#Listing files
+*.lst
+
+# Debugger files
+*.ini
+JLinkLog.txt
+
+# Other files
+*.build_log.htm
+*.cdb
+*.dep
+*.ic
+*.lin
+*.lnp
+*.orc
+*.pack
+*.pdsc
+*.plg
+*.sct
+*.sfd
+*.sfr
+
+# User-specific uVision files
+*.opt
+*.uvopt
+*.uvoptx
+*.uvgui
+*.uvgui.*
+*.uvguix.*
+*.lst
+
+# Miscellaneous
+*.tra
+*.bin
+*.fed
+*.l1p
+*.l2p
+*.iex
+*.lst
+
+
+
+#must include release bin files
+!bin/*.*
+
+*.scvd
+
+MDK-ARM/

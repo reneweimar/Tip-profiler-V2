@@ -1,12 +1,17 @@
----- showerror Matches (11 in 2 files) ----
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            WRK_ShowError(31001);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            WRK_ShowError(31002);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            WRK_ShowError(31003);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            WRK_ShowError(31004);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    WRK_ShowError(gSTR_ErrorNumber);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    WRK_ShowError (gIDX_ErrorNumber);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    WRK_ShowError(gSTR_ErrorNumber);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    WRK_ShowError(gIDX_ErrorNumber);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):void WRK_ShowError (uint16_t newError)
-Work.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):void WRK_ShowError (uint16_t newError);
-Work.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):void WRK_ShowError (uint16_t newError);
+---- gIDX_Motor.UmPerPulse Matches (16 in 2 files) ----
+Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  gIDX_Motor.GetUm = (int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse);
+Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  gIDX_Motor.UmPerPulse = 0.56 / gIDX_Motor.Factor;
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float) gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float) gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float) gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float)gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):                      USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):                      USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float)gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):                    USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):                    USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float)gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):                    USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):                    USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float)gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));

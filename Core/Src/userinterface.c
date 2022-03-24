@@ -158,6 +158,7 @@ void USR_CursorDown(void)
   if (CursorPosition == 30) NewValue = 10;
   if (CursorPosition == 18) NewValue = 100;
   if (CursorPosition == 12) NewValue = 1000;
+  if (CursorPosition == 6) NewValue = 10000;
   if (gParameterValue - NewValue >= gMachineType[gMachine/100].Parameters[gParameterNumber].Min)
   {
     gParameterValue -= NewValue ;
@@ -184,8 +185,8 @@ void USR_CursorLeft(void)
   }
   else if ((CursorPosition == 12) && (gParameterDigits == 1))
     CursorPosition = 18;
-  else if (CursorPosition < 12)
-    CursorPosition = 12;
+  else if (CursorPosition < 6)
+    CursorPosition = 6;
   USR_ShowScreen (2); 
 }
 //-----------------------------------------------------------------------------
@@ -222,6 +223,7 @@ void USR_CursorUp(void)
   if (CursorPosition == 30) NewValue = 10;
   if (CursorPosition == 18) NewValue = 100;
   if (CursorPosition == 12) NewValue = 1000;
+  if (CursorPosition == 6) NewValue = 10000;
   if (gParameterValue + NewValue <= gMachineType[gMachine/100].Parameters[gParameterNumber].Max)
   {
     gParameterValue += NewValue ;
@@ -558,8 +560,9 @@ void USR_ShowPosition (int32_t newPosition)
 void USR_ShowScreen(uint32_t NewScreen)
 {
     char strValue[50];
-    int16_t Dig3, Dig2, Dig1, Dig0;  
+    int16_t Dig4, Dig3, Dig2, Dig1, Dig0;  
     uint16_t TopPage;
+    char txtSign[2];
     gCurrentScreen = NewScreen;
     USR_ClearScreen(2);
     if (((gCurrentScreen >= 10) && (gCurrentScreen < 19)) || ((gCurrentScreen >= 50) && (gCurrentScreen < 59))) gCurrentScreen = 10;
@@ -603,47 +606,58 @@ void USR_ShowScreen(uint32_t NewScreen)
       {
         ssd1306_WriteStringEightBitFont(0,0,"ENTER VALUE    ", Font_6x7, White);
         ssd1306_WriteStringEightBitFont(12, 16,gMachineType[gMachine/100].Parameters[gParameterNumber].Name, Font_6x7, White);
-        Dig3 = gParameterValue / 1000;
-        Dig2 = (gParameterValue - (Dig3*1000)) / 100;
-        Dig1 = (gParameterValue - (Dig3*1000) - (Dig2*100)) / 10;
-        Dig0 = gParameterValue - (Dig3*1000) - (Dig2*100) - (Dig1 * 10);
-        //gParameterDigits can be 1 or 2
+        Dig4 = gParameterValue / 10000;
+        Dig3 = (gParameterValue - (Dig4*10000)) / 1000;
+        Dig2 = (gParameterValue - (Dig4*10000) - (Dig3*1000)) / 100;
+        Dig1 = (gParameterValue - (Dig4*10000) - (Dig3*1000) - (Dig2*100)) / 10;
+        Dig0 = gParameterValue - (Dig4*10000) - (Dig3*1000) - (Dig2*100) - (Dig1 * 10);
+        //gParameterDigits can be 1 or 2 or 3
         //gParameterDecimals can be 0,1,2 or 3
         if (gParameterValue < 0) //Negative
         {
-          if (gParameterDecimals == 0)
+          strcpy (txtSign,"-");
+        }
+        else
+        {
+          strcpy (txtSign," ");  
+        }
+        if (gParameterDecimals == 0)
+        {
+          if (gParameterDigits <= 1)
+            sprintf(strValue, "%s  %u    %s", txtSign,abs(Dig2),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
+          else if (gParameterDigits == 2)
+            sprintf(strValue, "%s %u%u    %s", txtSign, abs(Dig3), abs(Dig2),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
+          else if (gParameterDigits == 3)
+            sprintf(strValue, "%s%u%u%u    %s", txtSign, abs(Dig4), abs(Dig3), abs (Dig2),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
+        }
+        else if (gParameterDecimals == 1)
+        {
+          if (gParameterDigits <= 1)
+            sprintf(strValue, "%s  %u.%u  %s", txtSign, abs(Dig2), abs(Dig1),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
+          else if (gParameterDigits == 2)
+            sprintf(strValue, "%s %u%u.%u  %s", txtSign, abs(Dig3), abs(Dig2), abs(Dig1),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
+          else if (gParameterDigits == 3)
+            sprintf(strValue, "%s%u%u%u.%u  %s", txtSign, abs(Dig4), abs(Dig3), abs (Dig2), abs (Dig1),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
+        }
+        else
+        {
+          if (gParameterDigits <= 1)
           {
-            if (gParameterDigits <= 1)
-              sprintf(strValue, "-  %u    %s", abs(Dig2),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
-            else
-              sprintf(strValue, "- %u%u    %s", abs(Dig3), abs(Dig2),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
+						if (gParameterDecimals <= 2)
+						{
+							sprintf(strValue, "%s  %u.%u%u %s", txtSign, abs(Dig2), abs(Dig1), abs(Dig0),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
+						}
+						else  //3 decimals
+						{
+							sprintf(strValue, "%s  %u.%u%u%u %s", txtSign, abs(Dig3), abs(Dig2), abs(Dig1), abs(Dig0),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
+						}
           }
-          else if (gParameterDecimals == 1)
+          else if (gParameterDigits == 2)
           {
-            if (gParameterDigits <= 1)
-              sprintf(strValue, "-  %u.%u  %s", abs(Dig2), abs(Dig1),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
-            else
-              sprintf(strValue, "- %u%u.%u  %s", abs(Dig3), abs(Dig2), abs(Dig1),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
-          }
-          else
-          {
-            if (gParameterDigits <= 1)
-            {
-							if (gParameterDecimals <= 2)
-							{
-								sprintf(strValue, "-  %u.%u%u %s", abs(Dig2), abs(Dig1), abs(Dig0),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
-							}
-							else  //3 decimals
-							{
-								sprintf(strValue, "-  %u.%u%u%u %s", abs(Dig3), abs(Dig2), abs(Dig1), abs(Dig0),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
-							}
-            }
-            else
-            {
-              sprintf(strValue, "- %u%u.%u%u %s", abs(Dig3), abs(Dig2), abs(Dig1), abs(Dig0),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
-            }
+            sprintf(strValue, "%s %u%u.%u%u %s", txtSign, abs(Dig3), abs(Dig2), abs(Dig1), abs(Dig0),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
           }
         }
+      /*}
         else
         {
           if (gParameterDecimals == 0)
@@ -676,7 +690,7 @@ void USR_ShowScreen(uint32_t NewScreen)
             else 
               sprintf(strValue, "%u%u.%u%u %s", abs(Dig3), abs(Dig2), abs(Dig1), abs(Dig0),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
           }
-        }
+        }*/
         ssd1306_WriteStringEightBitFont(12, 28,strValue, Font_6x7, White);
         ssd1306_WriteStringEightBitFont(CursorPosition, 40,"  $  ", Font_6x7, White);
         ssd1306_WriteStringEightBitFont(0, 57,"                     ", Font_6x7, White);
@@ -884,6 +898,7 @@ void USR_ShowScreen(uint32_t NewScreen)
       case 10114:
       case 10115:
       case 10116:
+      case 10117:
       {
         //Find the top of the page
         TopPage = gCurrentScreen - gCurrentScreen%3;   //10102 -> 10102 - 1 = 10101, 10104 -> 10104 - 0 = 10104
