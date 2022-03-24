@@ -13,8 +13,8 @@
 //-----------------------------------------------------------------------------
 #define IDX_ACCURACY 10 //10 pulses = 17 um
 #define IDX_SHOWREALPOSITION 1
-#define INDEXMOTORTIMEOUT 10000
-#define INDEXMOTORTIMEOUTNORMAL 3000  //RENE
+#define INDEXMOTORTIMEOUT 5000
+#define INDEXMOTORTIMEOUTNORMAL 3000
 #define FaultIdx_Pin GPIO_PIN_15
 #define FaultIdx_GPIO_Port GPIOB
 #define SleepIdx_Pin GPIO_PIN_8

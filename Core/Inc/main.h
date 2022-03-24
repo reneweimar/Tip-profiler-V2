@@ -78,6 +78,7 @@ typedef struct
 	float PID;
 	float PosPID;
   float UmPerPulse;
+  float Factor;
   int16_t GetSpeedOld;
 } stcDCMotor;
 

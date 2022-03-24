@@ -41,7 +41,7 @@ void IDX_HandleMotor (void)
 
   if (((gIDX_Motor.GetSpeed < 0)&&(gIDX_Motor.Control > 0)) || ((gIDX_Motor.GetSpeed > 0)&&(gIDX_Motor.Control < 0))) //Motor turning wrong direction
   {
-    if (TimeOut ++ > 10)
+    if (TimeOut ++ > 100)
     {
       gIDX_Motor.TimeOut = 0;
       gIDX_ErrorNumber = 13002;
@@ -255,9 +255,9 @@ void IDX_HandleTasks(void)
       {
         case UNDEFINED:
         {
-          gIDX_Motor.PosP = 20;  
-          gIDX_Motor.PosI = 0.001;
-          gIDX_Motor.PosD = 500;
+          gIDX_Motor.PosP = 2;//20;  
+          gIDX_Motor.PosI = 0;//.001;
+          gIDX_Motor.PosD = 200;//500;
           gIDX_Motor.MainStatus = ACTIVE;
           PWR_SensorsOn();
           gIDX_Motor.SetPosition = IDX_Position;
@@ -412,19 +412,25 @@ void IDX_Init(void)
   HAL_TIM_Base_Start(&htim1);
   HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_1);
   HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_2);
-  gIDX_Motor.UmPerPulse = 0.56;
+  
   gIDX_Motor.P = 0.1;
   gIDX_Motor.I = 0;
   gIDX_Motor.D = 0;
-  gIDX_Motor.PosP = 20;
+  /*gIDX_Motor.PosP = 20;
   gIDX_Motor.PosI = 0.001;
   gIDX_Motor.PosD = 500;
+  */
+  gIDX_Motor.PosP = 2;//20;  
+  gIDX_Motor.PosI = 0;//.001;
+  gIDX_Motor.PosD = 200;//500;
   gIDX_Motor.MaxSpeed = 10000;
   gIDX_Motor.SpeedControl = 0;
   gIDX_Motor.PositionControl = 1;
   gIDX_Motor.MainStatus=INACTIVE;
-  gIDX_Motor.Ratio = 30;
   gIDX_Motor.PulsesPerRevolution = 28; //(PPR = 7 * 4)
+  gIDX_Motor.Ratio = gMachineType[gMachine/100].Parameters[SIDESTREDUCTION].Value/100; 
+  gIDX_Motor.Factor = (float) gMachineType[gMachine/100].Parameters[SIDESTREDUCTION].Value / 3000;
+  gIDX_Motor.UmPerPulse = 0.56 * gIDX_Motor.Factor;
 }
 
 //-----------------------------------------------------------------------------
@@ -438,6 +444,7 @@ void IDX_ResetEncoder(void)
   gIDX_Motor.EncoderOld = 0;
   gIDX_Motor.EncoderOverFlow = 0;
 }
+int32_t test;
 //-----------------------------------------------------------------------------
 //! \brief       Sets the index motor status
 //! \details     Sets status and the position with the offset
@@ -446,9 +453,8 @@ void IDX_ResetEncoder(void)
 //! \param [out] enuStatus IDX_Motor.SubStatus or READY
 enuStatus IDX_Set(enuStatus newStatus, int32_t newPosition)
 {
-  //Original code was for reduction 30. Reduction 150 will result in * 150 / 30 = * 5
-  newPosition *= gMachineType[gMachine/100].Parameters[SIDESTREDUCTION].Value; 
-  newPosition /= 30;
+  //Original code was for reduction 30. Reduction factor to be considered
+  newPosition = (int32_t) (newPosition * gIDX_Motor.Factor);
   //To add the offset (gMachineType[gMachine/100].Parameters[SIDESTEPOFFSET].Value * 560 / 100);
   if (gIDX_Status.MainStatus == newStatus) //Task already running
   {
