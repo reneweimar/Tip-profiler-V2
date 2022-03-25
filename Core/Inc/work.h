@@ -128,6 +128,12 @@ typedef struct
   uint8_t Decimals;
   uint8_t UserAccess;
   uint8_t Global;
+  uint8_t Options;
+  int16_t Option1;
+  int16_t Option2;
+  int16_t Option3;
+  int16_t Option4;
+  int16_t Option5;
 } StcParameters;
 //-----------------------------------------------------------------------------
 //! \brief  Commands storage structure

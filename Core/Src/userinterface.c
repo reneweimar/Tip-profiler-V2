@@ -154,15 +154,44 @@ void USR_ClearScreen (uint8_t ShowTitle)
 void USR_CursorDown(void)
 {
   int16_t NewValue;
-  if (CursorPosition == 36) NewValue = 1;
-  if (CursorPosition == 30) NewValue = 10;
-  if (CursorPosition == 18) NewValue = 100;
-  if (CursorPosition == 12) NewValue = 1000;
-  if (CursorPosition == 6) NewValue = 10000;
-  if (gParameterValue - NewValue >= gMachineType[gMachine/100].Parameters[gParameterNumber].Min)
+  int16_t Options[5];
+  int8_t NewOption;
+  if (gMachineType[gMachine/100].Parameters[gParameterNumber].Options == 0) //Normal editing value
   {
-    gParameterValue -= NewValue ;
-    USR_ShowScreen (2); 
+    if (CursorPosition == 36) NewValue = 1;
+    if (CursorPosition == 30) NewValue = 10;
+    if (CursorPosition == 18) NewValue = 100;
+    if (CursorPosition == 12) NewValue = 1000;
+    if (CursorPosition == 6) NewValue = 10000;
+    if (gParameterValue - NewValue >= gMachineType[gMachine/100].Parameters[gParameterNumber].Min)
+    {
+      gParameterValue -= NewValue ;
+      USR_ShowScreen (2); 
+    }
+  }
+  else //Select a value from the option
+  {
+    Options[0] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option1;
+    Options[1] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option2;
+    Options[2] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option3;
+    Options[3] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option4;
+    Options[4] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option5;
+
+    for (uint8_t i=0; i < 5; i++)
+    {
+
+      if (gParameterValue == Options[i])
+      {
+        NewOption = i; //Option2 -> Option1
+        if (NewOption == 0)
+        {
+          NewOption = gMachineType[gMachine/100].Parameters[gParameterNumber].Options;
+        }
+				gParameterValue = Options[NewOption-1];
+				USR_ShowScreen (2); 
+        return; //Cancel evaluation of the rest
+      }
+    }
   }
 }
 //-----------------------------------------------------------------------------
@@ -219,15 +248,44 @@ void USR_CursorRight(void)
 void USR_CursorUp(void)
 {
   int16_t NewValue;
-  if (CursorPosition == 36) NewValue = 1;
-  if (CursorPosition == 30) NewValue = 10;
-  if (CursorPosition == 18) NewValue = 100;
-  if (CursorPosition == 12) NewValue = 1000;
-  if (CursorPosition == 6) NewValue = 10000;
-  if (gParameterValue + NewValue <= gMachineType[gMachine/100].Parameters[gParameterNumber].Max)
+  int16_t Options[5];
+  int8_t NewOption;
+  if (gMachineType[gMachine/100].Parameters[gParameterNumber].Options == 0) //Normal editing value
   {
-    gParameterValue += NewValue ;
-    USR_ShowScreen (2); 
+    if (CursorPosition == 36) NewValue = 1;
+    if (CursorPosition == 30) NewValue = 10;
+    if (CursorPosition == 18) NewValue = 100;
+    if (CursorPosition == 12) NewValue = 1000;
+    if (CursorPosition == 6) NewValue = 10000;
+    if (gParameterValue + NewValue <= gMachineType[gMachine/100].Parameters[gParameterNumber].Max)
+    {
+      gParameterValue += NewValue ;
+      USR_ShowScreen (2); 
+    }
+  }
+  else //Select a value from the option
+  {
+    Options[0] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option1;
+    Options[1] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option2;
+    Options[2] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option3;
+    Options[3] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option4;
+    Options[4] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option5;
+
+    for (uint8_t i=0; i < 5; i++)
+    {
+
+      if (gParameterValue == Options[i])
+      {
+        NewOption = i+2; //Option1 -> Option2
+        if (NewOption > gMachineType[gMachine/100].Parameters[gParameterNumber].Options)
+        {
+          NewOption = 1;
+        }
+				gParameterValue = Options[NewOption-1];
+				USR_ShowScreen (2); 
+        return; //Cancel evaluation of the rest
+      }
+    }
   }
 }
 //-----------------------------------------------------------------------------
@@ -604,7 +662,10 @@ void USR_ShowScreen(uint32_t NewScreen)
       }
       case 2: //Enter value
       {
-        ssd1306_WriteStringEightBitFont(0,0,"ENTER VALUE    ", Font_6x7, White);
+        if (gMachineType[gMachine/100].Parameters[gParameterNumber].Options == 0) //Enter value
+          ssd1306_WriteStringEightBitFont(0,0,"ENTER VALUE    ", Font_6x7, White);
+        else //Select value
+          ssd1306_WriteStringEightBitFont(0,0,"SELECT VALUE   ", Font_6x7, White);
         ssd1306_WriteStringEightBitFont(12, 16,gMachineType[gMachine/100].Parameters[gParameterNumber].Name, Font_6x7, White);
         Dig4 = gParameterValue / 10000;
         Dig3 = (gParameterValue - (Dig4*10000)) / 1000;
@@ -694,7 +755,10 @@ void USR_ShowScreen(uint32_t NewScreen)
         ssd1306_WriteStringEightBitFont(12, 28,strValue, Font_6x7, White);
         ssd1306_WriteStringEightBitFont(CursorPosition, 40,"  $  ", Font_6x7, White);
         ssd1306_WriteStringEightBitFont(0, 57,"                     ", Font_6x7, White);
-        ssd1306_WriteStringEightBitFont(0, 57,"#,$&*OK", Font_6x7, White);
+        if (gMachineType[gMachine/100].Parameters[gParameterNumber].Options == 0) //Enter value
+          ssd1306_WriteStringEightBitFont(0, 57,"#,$&*OK", Font_6x7, White);
+        else
+          ssd1306_WriteStringEightBitFont(0, 57,"$&*OK  ", Font_6x7, White);
         break;
       }
       case 3: //Error screen

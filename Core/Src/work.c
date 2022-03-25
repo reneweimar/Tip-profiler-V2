@@ -79,80 +79,83 @@ uint16_t gCommandMaxService = sizeof(gCommands)/sizeof(gCommands[0])-1;
 StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
 { //OBOE
 	{ 
-    {"SCRAPE WIDTH      ",0,1160,780,"MM",3,1,1,0},
-    {"SCRAPE WIDTH INNER",0,200,390,"MM",3,1,1,0},
-    {"SCRAPE SPEED      ",50,200,50,"RPS",2,1,1,0},
-    {"SIDE STEP SMALL   ",5,95,20,"MM",3,2,1,0},
-    {"SIDE STEP BIG     ",20,100,40,"MM",3,2,1,0},
-    {"SCREEN SAVER      ",0,100,100,"-",1,0,0,1},
-    {"MACHINE TYPE      ",0,100,0,"-",1,0,0,1},
-    {"SIDE STEP OFFSET  ",-100,100,0,"MM",3,2,0,0},
-    {"SCRAPE SPEED MIN  ",10,100,10,"RPS",2,1,0,0},
-    {"SCRAPE SPEED MAX  ",10,200,200,"RPS",2,1,0,0},
-    {"SCRAPE WIDTH MAX  ",0,2500,1160,"MM",3,1,0,0},
-    {"SCRAPE WIDTH FACT ",0,2500,780,"MM",3,1,0,0},
-    {"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0},
-    {"SIDE ST SMALL FACT",0,500,30,"MM",3,2,0,0},
-    {"SIDE ST BIG FACT  ",0,500,30,"MM",3,2,0,0},
-    {"SIDE ST RATIO     ",1,2000,1756,"-",4,3,0,0},
-    {"SIDE ST REDUCTION ",1,30000,3000,"-",3,0,0,0},
+    {"SCRAPE WIDTH      ",0,1160,780,"MM",3,1,1,0,0,0,0,0,0,0},
+    {"SCRAPE WIDTH INNER",0,200,390,"MM",3,1,1,0,0,0,0,0,0,0},
+    {"SCRAPE SPEED      ",50,200,50,"RPS",2,1,1,0,0,0,0,0,0,0},
+    {"SIDE STEP SMALL   ",5,95,20,"MM",3,2,1,0,0,0,0,0,0,0},
+    {"SIDE STEP BIG     ",20,100,40,"MM",3,2,1,0,0,0,0,0,0,0},
+    {"SCREEN SAVER      ",0,100,0,"-",1,0,0,1,1,1,1,1,1,1},
+    {"MACHINE TYPE      ",0,100,0,"-",1,0,0,1,1,1,1,1,1,1},
+    {"SIDE STEP OFFSET  ",-100,100,0,"MM",3,2,0,0,0,0,0,0,0,0},
+    {"SCRAPE SPEED MIN  ",10,100,10,"RPS",2,1,0,0,0,0,0,0,0,0},
+    {"SCRAPE SPEED MAX  ",10,200,200,"RPS",2,1,0,0,0,0,0,0,0,0},
+    {"SCRAPE WIDTH MAX  ",0,2500,1160,"MM",3,1,0,0,0,0,0,0,0,0},
+    {"SCRAPE WIDTH FACT ",0,2500,780,"MM",3,1,0,0,0,0,0,0,0,0},
+    {"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0,0,0,0,0,0,0},
+    {"SIDE ST SMALL FACT",0,500,30,"MM",3,2,0,0,0,0,0,0,0,0},
+    {"SIDE ST BIG FACT  ",0,500,30,"MM",3,2,0,0,0,0,0,0,0,0},
+    {"SIDE ST RATIO     ",0,0,1756,"-",4,3,0,1,2,1756,1838,0,0,0},
+    {"SIDE ST REDUCTION ",0,0,15000,"-",3,0,0,1,2,3000,15000,0,0,0},
+    {"",0,0,0,"",0,0,0,0,0,0,0,0,0,0},
+    {"",0,0,0,"",0,0,0,0,0,0,0,0,0,0},
+    {"",0,0,0,"",0,0,0,0,0,0,0,0,0,0}
 	},
-	{ //BASSOON
-    {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0},
-    {"SCRAPE WIDTH INNER",0,200,830,"MM",3,1,1,0},
-    {"SCRAPE SPEED      ",50,200,50,"RPS",2,1,1,0},
-    {"SIDE STEP SMALL   ",5,60,30,"MM",3,2,1,0},
-    {"SIDE STEP BIG     ",30,100,60,"MM",3,2,1,0},
-    {"SCREEN SAVER      ",0,100,100,"-",1,0,0,1},
-    {"MACHINE TYPE      ",0,100,0,"-",1,0,0,1},
-    {"SIDE STEP OFFSET  ",-100,100,0,"MM",3,2,0,0},
-    {"SCRAPE SPEED MIN  ",10,100,10,"RPS",2,1,0,0},
-    {"SCRAPE SPEED MAX  ",10,200,200,"RPS",2,1,0,0},
-    {"SCRAPE WIDTH MAX  ",0,2500,2400,"MM",3,1,0,0},
-    {"SCRAPE WIDTH FACT ",0,2500,1160,"MM",3,1,0,0},
-    {"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0},
-    {"SIDE ST SMALL FACT",0,500,40,"MM",3,2,0,0},
-    {"SIDE ST BIG FACT  ",0,500,40,"MM",3,2,0,0},   
-    {"SIDE ST RATIO     ",1,2000,1756,"-",4,3,0,0},
-    {"SIDE ST REDUCTION ",1,30000,3000,"-",3,0,0,0},
+	{ //BASSOON  
+    {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0,0,0,0,0,0,0},
+    {"SCRAPE WIDTH INNER",0,200,830,"MM",3,1,1,0,0,0,0,0,0,0},
+    {"SCRAPE SPEED      ",50,200,50,"RPS",1,1,1,0,0,0,0,0,0,0},
+    {"SIDE STEP SMALL   ",5,60,30,"MM",3,2,1,0,0,0,0,0,0,0},
+    {"SIDE STEP BIG     ",30,100,60,"MM",3,2,1,0,0,0,0,0,0,0},
+    {"SCREEN SAVER      ",0,100,0,"-",1,0,0,1,1,1,1,1,1,1},
+    {"MACHINE TYPE      ",0,100,0,"-",1,0,0,1,1,1,1,1,1,1},
+    {"SIDE STEP OFFSET  ",-100,100,0,"MM",3,2,0,0,0,0,0,0,0,0},
+    {"SCRAPE SPEED MIN  ",10,100,10,"RPS",2,1,0,0,0,0,0,0,0,0},
+    {"SCRAPE SPEED MAX  ",10,200,200,"RPS",2,1,0,0,0,0,0,0,0,0},
+    {"SCRAPE WIDTH MAX  ",0,2500,2400,"MM",3,1,0,0,0,0,0,0,0,0},
+    {"SCRAPE WIDTH FACT ",0,2500,1160,"MM",3,1,0,0,0,0,0,0,0,0},
+    {"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0,0,0,0,0,0,0},
+    {"SIDE ST SMALL FACT",0,500,40,"MM",3,2,0,0,0,0,0,0,0,0},
+    {"SIDE ST BIG FACT  ",0,500,40,"MM",3,2,0,0,0,0,0,0,0,0},
+    {"SIDE ST RATIO     ",0,0,1838,"MM",4,3,0,1,2,1756,1838,0,0,0},
+    {"SIDE ST REDUCTION",0,0,15000,"-",3,0,0,1,2,3000,15000,0,0,0},    
 	},
 	{ //KLARINET
-    {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0},
-    {"SCRAPE WIDTH INNER",0,200,830,"MM",3,1,1,0},
-    {"SCRAPE SPEED      ",50,200,50,"RPS",2,1,1,0},
-    {"SIDE STEP SMALL   ",5,60,40,"MM",3,2,1,0},
-    {"SIDE STEP BIG     ",40,100,60,"MM",3,2,1,0},
-    {"SCREEN SAVER      ",0,100,100,"-",1,0,0,1},
-    {"MACHINE TYPE      ",0,100,0,"-",1,0,0,1},
-    {"SIDE STEP OFFSET  ",-100,100,0,"MM",3,2,0,0},
-    {"SCRAPE SPEED MIN  ",10,100,10,"RPS",2,1,0,0},
-    {"SCRAPE SPEED MAX  ",10,200,200,"RPS",2,1,0,0},
-    {"SCRAPE WIDTH MAX  ",0,2500,2400,"MM",3,1,0,0},
-    {"SCRAPE WIDTH FACT ",0,2500,1160,"MM",3,1,0,0},
-    {"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0},
-    {"SIDE ST SMALL FACT",0,500,40,"MM",3,2,0,0},
-    {"SIDE ST BIG FACT  ",0,500,40,"MM",3,2,0,0},
-    {"SIDE ST RATIO     ",1,2000,1756,"-",4,3,0,0},
-    {"SIDE ST REDUCTION ",1,30000,3000,"-",3,0,0,0},
+    {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0,0,0,0,0,0,0},
+    {"SCRAPE WIDTH INNER",0,200,830,"MM",3,1,1,0,0,0,0,0,0,0},
+    {"SCRAPE SPEED      ",50,200,50,"RPS",1,1,1,0,0,0,0,0,0,0},
+    {"SIDE STEP SMALL   ",5,60,30,"MM",3,2,1,0,0,0,0,0,0,0},
+    {"SIDE STEP BIG     ",30,100,60,"MM",3,2,1,0,0,0,0,0,0,0},
+    {"SCREEN SAVER      ",0,100,0,"-",1,0,0,1,1,1,1,1,1,1},
+    {"MACHINE TYPE      ",0,100,0,"-",1,0,0,1,1,1,1,1,1,1},
+    {"SIDE STEP OFFSET  ",-100,100,0,"MM",3,2,0,0,0,0,0,0,0,0},
+    {"SCRAPE SPEED MIN  ",10,100,10,"RPS",2,1,0,0,0,0,0,0,0,0},
+    {"SCRAPE SPEED MAX  ",10,200,200,"RPS",2,1,0,0,0,0,0,0,0,0},
+    {"SCRAPE WIDTH MAX  ",0,2500,2400,"MM",3,1,0,0,0,0,0,0,0,0},
+    {"SCRAPE WIDTH FACT ",0,2500,1160,"MM",3,1,0,0,0,0,0,0,0,0},
+    {"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0,0,0,0,0,0,0},
+    {"SIDE ST SMALL FACT",0,500,40,"MM",3,2,0,0,0,0,0,0,0,0},
+    {"SIDE ST BIG FACT  ",0,500,40,"MM",3,2,0,0,0,0,0,0,0,0},
+    {"SIDE ST RATIO     ",0,0,1838,"MM",4,3,0,1,2,1756,1838,0,0,0},
+    {"SIDE ST REDUCTION",0,0,15000,"-",3,0,0,1,2,3000,15000,0,0,0},
 	},
   { //BAGPIPE
-    {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0},
-    {"SCRAPE WIDTH INNER",0,200,830,"MM",3,1,1,0},
-    {"SCRAPE SPEED      ",50,200,50,"RPS",2,1,1,0},
-    {"SIDE STEP SMALL   ",5,60,40,"MM",3,2,1,0},
-    {"SIDE STEP BIG     ",40,100,60,"MM",3,2,1,0},
-    {"SCREEN SAVER      ",0,100,100,"-",1,0,0,1},
-    {"MACHINE TYPE      ",0,100,0,"-",1,0,0,1},
-    {"SIDE STEP OFFSET  ",-100,100,0,"MM",3,2,0,0},
-    {"SCRAPE SPEED MIN  ",10,100,10,"RPS",2,1,0,0},
-    {"SCRAPE SPEED MAX  ",10,200,200,"RPS",2,1,0,0},
-    {"SCRAPE WIDTH MAX  ",0,2500,2400,"MM",3,1,0,0},
-    {"SCRAPE WIDTH FACT ",0,2500,1160,"MM",3,1,0,0},
-    {"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0},
-    {"SIDE ST SMALL FACT",0,500,40,"MM",3,2,0,0},
-    {"SIDE ST BIG FACT  ",0,500,40,"MM",3,2,0,0},
-    {"SIDE ST RATIO     ",1,2000,1756,"-",4,3,0,0},
-    {"SIDE ST REDUCTION ",1,30000,3000,"-",3,0,0,0},
+    {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0,0,0,0,0,0,0},
+    {"SCRAPE WIDTH INNER",0,200,830,"MM",3,1,1,0,0,0,0,0,0,0},
+    {"SCRAPE SPEED      ",50,200,50,"RPS",1,1,1,0,0,0,0,0,0,0},
+    {"SIDE STEP SMALL   ",5,60,30,"MM",3,2,1,0,0,0,0,0,0,0},
+    {"SIDE STEP BIG     ",30,100,60,"MM",3,2,1,0,0,0,0,0,0,0},
+    {"SCREEN SAVER      ",0,100,0,"-",1,0,0,1,1,1,1,1,1,1},
+    {"MACHINE TYPE      ",0,100,0,"-",1,0,0,1,1,1,1,1,1,1},
+    {"SIDE STEP OFFSET  ",-100,100,0,"MM",3,2,0,0,0,0,0,0,0,0},
+    {"SCRAPE SPEED MIN  ",10,100,10,"RPS",2,1,0,0,0,0,0,0,0,0},
+    {"SCRAPE SPEED MAX  ",10,200,200,"RPS",2,1,0,0,0,0,0,0,0,0},
+    {"SCRAPE WIDTH MAX  ",0,2500,2400,"MM",3,1,0,0,0,0,0,0,0,0},
+    {"SCRAPE WIDTH FACT ",0,2500,1160,"MM",3,1,0,0,0,0,0,0,0,0},
+    {"SCRAPE SPEED FACT ",0,200,200,"RPS",1,1,0,0,0,0,0,0,0,0},
+    {"SIDE ST SMALL FACT",0,500,40,"MM",3,2,0,0,0,0,0,0,0,0},
+    {"SIDE ST BIG FACT  ",0,500,40,"MM",3,2,0,0,0,0,0,0,0,0},
+    {"SIDE ST RATIO     ",0,0,1838,"MM",4,3,0,1,2,1756,1838,0,0,0},
+    {"SIDE ST REDUCTION",0,0,15000,"-",3,0,0,1,2,3000,15000,0,0,0},
   },
 };
 //! \Global Service flag
@@ -596,7 +599,7 @@ void WRK_HandleContrast(void)
     if (gCounter.User < 0xffffffff) gCounter.User += 100;
     if (gCounter.User > LOWPOWERTIME) WRK_UpdateContrast = LOWCONTRAST;
   }
-/*  if (PluggedIn())
+  if (PluggedIn())
   {
     gCounter.User = 0;
     ssd1306_SetContrast(HIGHCONTRAST);
@@ -617,7 +620,7 @@ void WRK_HandleContrast(void)
       ssd1306_SetContrast(HIGHCONTRAST);
     }
   }
-  */
+  
 }
 //-----------------------------------------------------------------------------
 //! \brief      Handles the routine for entering a value
@@ -715,11 +718,11 @@ void WRK_HandleEnterValue(void)
         WRK_SetStatus(MainStatus,ACTIVE);
         WRK_SetStatus(SubStatus,WAITFORUSER);
       }
-      else if (USR_ButtonPressed(BtnLeft, USR_SHORTPRESSTIME,1)==1) //Move cursor left if allowed
+      else if ((USR_ButtonPressed(BtnLeft, USR_SHORTPRESSTIME,1)==1)&&(gMachineType[gMachine/100].Parameters[gParameterNumber].Options == 0)) //Move cursor right if allowed
       {
         USR_CursorLeft();
       }
-      else if (USR_ButtonPressed(BtnRight, USR_SHORTPRESSTIME,1)==1) //Move cursor left if allowed
+      else if ((USR_ButtonPressed(BtnRight, USR_SHORTPRESSTIME,1)==1)&&(gMachineType[gMachine/100].Parameters[gParameterNumber].Options == 0)) //Move cursor left if allowed
       {
         USR_CursorRight();
       }
@@ -1521,7 +1524,7 @@ void WRK_Init(void)
 		VirtaddVarCounter++;
   }
         
-  if (EE_ReadVariable(6, &gMachine)!=0) 
+  if (EE_ReadVariable(6, &gMachine)!=0)//variable does not exist
 	{
 		gMachine = 0;
 	}
@@ -1558,7 +1561,7 @@ void WRK_Init(void)
     gMachineType[gMachine/100].Parameters[SCRAPEWIDTHINNER].Max = gMachineType[gMachine/100].Parameters[SCRAPEWIDTH].Max - SCRAPEWIDTHDIFFERENCE;
   if ((gMachineType[gMachine/100].Parameters[SIDESTEPSMALL].Max > gMachineType[gMachine/100].Parameters[SIDESTEPBIG].Max - SIDESTEPDIFFERENCE))
     gMachineType[gMachine/100].Parameters[SIDESTEPSMALL].Max = gMachineType[gMachine/100].Parameters[SIDESTEPBIG].Max - SIDESTEPDIFFERENCE;
-
+  
   for (uint8_t i=1; i<=gParameterMaxService ;i++) //Always assume at least 1 User parameter
   {
     if (gMachineType[gMachine/100].Parameters[i].UserAccess == 1)
