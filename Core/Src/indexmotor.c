@@ -255,9 +255,18 @@ void IDX_HandleTasks(void)
       {
         case UNDEFINED:
         {
-          gIDX_Motor.PosP = 2;//20;  
-          gIDX_Motor.PosI = 0;//.001;
-          gIDX_Motor.PosD = 200;//500;
+          if (gMachineType[gMachine/100].Parameters[SIDESTREDUCTION].Value == 15000)
+          {
+            gIDX_Motor.PosP = 2;
+            gIDX_Motor.PosI = 0;
+            gIDX_Motor.PosD = 200;
+          }
+          else
+          {
+            gIDX_Motor.PosP = 20;
+            gIDX_Motor.PosI = 0.001;
+            gIDX_Motor.PosD = 500;
+          }
           gIDX_Motor.MainStatus = ACTIVE;
           PWR_SensorsOn();
           gIDX_Motor.SetPosition = IDX_Position;
@@ -291,9 +300,19 @@ void IDX_HandleTasks(void)
           IDX_HomeFlag = 0;
           IDXHomeAccuracy = 300;
           gIDX_Motor.MaxSpeed = 10000;
-          //gIDX_Motor.PosP = 30; 
-          //gIDX_Motor.PosI = 0.005;
-          //gIDX_Motor.PosD = 2000;
+          if (gMachineType[gMachine/100].Parameters[SIDESTREDUCTION].Value == 15000)
+          {
+            gIDX_Motor.PosP = 2;
+            gIDX_Motor.PosI = 0;
+            gIDX_Motor.PosD = 200;
+          }
+          else
+          {
+            gIDX_Motor.PosP = 30; 
+            gIDX_Motor.PosI = 0.005;
+            gIDX_Motor.PosD = 2000;
+
+          }
           gIDX_Motor.IsHomed = 0;
           CheckStoppedCounter = 0;
           IDX_SetStatus(SubStatus,WAITFORPOWERSENSOR);
@@ -416,13 +435,18 @@ void IDX_Init(void)
   gIDX_Motor.P = 0.1;
   gIDX_Motor.I = 0;
   gIDX_Motor.D = 0;
-  /*gIDX_Motor.PosP = 20;
-  gIDX_Motor.PosI = 0.001;
-  gIDX_Motor.PosD = 500;
-  */
-  gIDX_Motor.PosP = 2;//20;  
-  gIDX_Motor.PosI = 0;//.001;
-  gIDX_Motor.PosD = 200;//500;
+  if (gMachineType[gMachine/100].Parameters[SIDESTREDUCTION].Value == 15000)
+  {
+    gIDX_Motor.PosP = 2;
+    gIDX_Motor.PosI = 0;
+    gIDX_Motor.PosD = 200;
+  }
+  else
+  {
+    gIDX_Motor.PosP = 20;
+    gIDX_Motor.PosI = 0.001;
+    gIDX_Motor.PosD = 500;
+  }
   gIDX_Motor.MaxSpeed = 10000;
   gIDX_Motor.SpeedControl = 0;
   gIDX_Motor.PositionControl = 1;
