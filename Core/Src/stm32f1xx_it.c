@@ -214,9 +214,16 @@ void EXTI0_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI0_IRQn 0 */
   IDX_HomeFlag = 1;
+  //if (gIDX_ResetPosition) TIM8->CNT = 32767 - (gMachineType[gMachine/100].Parameters[SIDESTEPOFFSET].Value * 560 / 100); //Positive offset, so home point to left (minus)
   if (gIDX_ResetPosition)
   {
     IDX_ResetEncoder();
+    /*TIM8->CNT = - (gMachineType[gMachine/100].Parameters[SIDESTEPOFFSET].Value * 560 / 100); //Positive offset, so home point to left (minus)
+    if (IDX_HomeOn())
+      gIDX_Motor.EncoderOverFlow = 0;
+    else
+      gIDX_Motor.EncoderOverFlow = -65536;
+      */
   }
   /* USER CODE END EXTI0_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
