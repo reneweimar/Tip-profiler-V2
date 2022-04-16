@@ -96,7 +96,7 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
     {"SIDE ST BIG FACT  ",0,500,30,"MM",3,2,0,0,0,0,0,0,0,0},
     {"SIDE ST RATIO     ",0,0,1756,"-",4,3,0,1,2,1756,1838,0,0,0},
     {"SIDE ST REDUCTION ",0,0,15000,"-",3,0,0,1,2,3000,15000,0,0,0},
-    {"",0,0,0,"",0,0,0,0,0,0,0,0,0,0},
+    {"STROKE REDUCTION  ",0,0,5000,"-",2,0,0,1,2,3000,5000,0,0,0},
     {"",0,0,0,"",0,0,0,0,0,0,0,0,0,0},
     {"",0,0,0,"",0,0,0,0,0,0,0,0,0,0}
 	},
@@ -117,7 +117,8 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
     {"SIDE ST SMALL FACT",0,500,40,"MM",3,2,0,0,0,0,0,0,0,0},
     {"SIDE ST BIG FACT  ",0,500,40,"MM",3,2,0,0,0,0,0,0,0,0},
     {"SIDE ST RATIO     ",0,0,1838,"MM",4,3,0,1,2,1756,1838,0,0,0},
-    {"SIDE ST REDUCTION",0,0,15000,"-",3,0,0,1,2,3000,15000,0,0,0},    
+    {"SIDE ST REDUCTION",0,0,15000,"-",3,0,0,1,2,3000,15000,0,0,0},
+    {"STROKE REDUCTION  ",0,0,5000,"-",2,0,0,1,2,3000,5000,0,0,0},
 	},
 	{ //KLARINET
     {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0,0,0,0,0,0,0},
@@ -137,6 +138,7 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
     {"SIDE ST BIG FACT  ",0,500,40,"MM",3,2,0,0,0,0,0,0,0,0},
     {"SIDE ST RATIO     ",0,0,1838,"MM",4,3,0,1,2,1756,1838,0,0,0},
     {"SIDE ST REDUCTION",0,0,15000,"-",3,0,0,1,2,3000,15000,0,0,0},
+    {"STROKE REDUCTION  ",0,0,5000,"-",2,0,0,1,2,3000,5000,0,0,0},
 	},
   { //BAGPIPE
     {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0,0,0,0,0,0,0},
@@ -156,6 +158,7 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
     {"SIDE ST BIG FACT  ",0,500,40,"MM",3,2,0,0,0,0,0,0,0,0},
     {"SIDE ST RATIO     ",0,0,1838,"MM",4,3,0,1,2,1756,1838,0,0,0},
     {"SIDE ST REDUCTION",0,0,15000,"-",3,0,0,1,2,3000,15000,0,0,0},
+    {"STROKE REDUCTION  ",0,0,5000,"-",2,0,0,1,2,3000,5000,0,0,0},
   },
 };
 //! \Global Service flag
@@ -163,7 +166,7 @@ uint8_t gServiceMenu;
 //! \Global User parameter max flag
 uint8_t gParameterMaxUser;
 //! \Global Service parameter max flag
-uint16_t gParameterMaxService = 16; //16 is last parameter
+uint16_t gParameterMaxService = 17; //16 is last parameter
 //! \Global virtual tab for eeprom simulation 0-99 for machine0, 100-199 for machine1, etc
 uint16_t VirtAddVarTab[NB_OF_VAR];
 //! \Global virtual tab for eeprom simulation 0-99 for machine0, 100-199 for machine1, etc
@@ -1073,7 +1076,7 @@ void WRK_HandleScrapeReed (void)
       else
       {
         StoppedBecauseBatteryEmpty = 0;
-        gScrape.Speed = gMachineType[gMachine/100].Parameters[SCRAPESPEED].Value*30; // Value / 100 * 50 (ratio) * 60 (1 min = 60 s)
+        gScrape.Speed = gMachineType[gMachine/100].Parameters[SCRAPESPEED].Value*gMachineType[gMachine/100].Parameters[STROKEREDUCTION].Value/100*60/100; // Value / 100 * 50 (ratio) * 60 (1 min = 60 s)
         gReturnScreen = gCurrentScreen;
         USR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK",4);
         USR_IncreaseCounters();

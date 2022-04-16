@@ -87,7 +87,8 @@ typedef enum //Numbering cannot be changed!!!!
   SIDESTSMALLFACT = 13,
   SIDESTBIGFACT = 14,
   SIDESTRATIO = 15,
-  SIDESTREDUCTION = 16
+  SIDESTREDUCTION = 16,
+  STROKEREDUCTION = 17
 } enuParameters;
 
 typedef enum

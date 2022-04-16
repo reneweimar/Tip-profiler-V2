@@ -1,4 +1,2 @@
----- defaultsmachine Matches (5 in 1 files) ----
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    memcpy( &gMachineType[i].Parameters, &DefaultsMachine[i], sizeof DefaultsMachine[i]);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    memcpy( &gMachineType[i].Parameters, &DefaultsMachine[i], sizeof DefaultsMachine[i]);
+---- *30 Matches (1 in 1 files) ----
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        gScrape.Speed = gMachineType[gMachine/100].Parameters[SCRAPESPEED].Value*30; // Value / 100 * 50 (ratio) * 60 (1 min = 60 s)
