@@ -27,7 +27,15 @@
 #define SCREENSAVERON           gMachineType[gMachine/100].Parameters[SCREENSAVER].Value==100
 #define SIDESTEPDIFFERENCE      5
 #define SCRAPEWIDTHDIFFERENCE   100
-
+//! \Parmeters
+#define pSCRAPESPEED						gMachineType[gMachine/100].Parameters[SCRAPESPEED].Value
+#define pSCRAPEWIDTH            gMachineType[gMachine/100].Parameters[SCRAPEWIDTH].Value
+#define pSCRAPEWIDTHINNER       gMachineType[gMachine/100].Parameters[SCRAPEWIDTHINNER].Value
+#define pSIDESTEPBIG            gMachineType[gMachine/100].Parameters[SIDESTEPBIG].Value
+#define pSIDESTEPRATIO					gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value
+#define pSIDESTEPREDUCTION      gMachineType[gMachine/100].Parameters[SIDESTREDUCTION].Value
+#define pSIDESTEPSMALL          gMachineType[gMachine/100].Parameters[SIDESTEPSMALL].Value
+#define pSTROKEREDUCTION				gMachineType[gMachine/100].Parameters[STROKEREDUCTION].Value
 
 //-----------------------------------------------------------------------------
 //! \brief  Status enumeration
@@ -87,7 +95,8 @@ typedef enum //Numbering cannot be changed!!!!
   SIDESTSMALLFACT = 13,
   SIDESTBIGFACT = 14,
   SIDESTRATIO = 15,
-  SIDESTREDUCTION = 16
+  SIDESTREDUCTION = 16,
+  STROKEREDUCTION = 17,
 } enuParameters;
 
 typedef enum

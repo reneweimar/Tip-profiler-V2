@@ -255,7 +255,7 @@ void IDX_HandleTasks(void)
       {
         case UNDEFINED:
         {
-          if (gMachineType[gMachine/100].Parameters[SIDESTREDUCTION].Value == 15000)
+          if (pSIDESTEPREDUCTION == 15000)
           {
             gIDX_Motor.PosP = 2;
             gIDX_Motor.PosI = 0;
@@ -300,7 +300,7 @@ void IDX_HandleTasks(void)
           IDX_HomeFlag = 0;
           IDXHomeAccuracy = 300;
           gIDX_Motor.MaxSpeed = 10000;
-          if (gMachineType[gMachine/100].Parameters[SIDESTREDUCTION].Value == 15000)
+          if (pSIDESTEPREDUCTION == 15000)
           {
             gIDX_Motor.PosP = 2;
             gIDX_Motor.PosI = 0;
@@ -435,7 +435,7 @@ void IDX_Init(void)
   gIDX_Motor.P = 0.1;
   gIDX_Motor.I = 0;
   gIDX_Motor.D = 0;
-  if (gMachineType[gMachine/100].Parameters[SIDESTREDUCTION].Value == 15000)
+  if (pSIDESTEPREDUCTION == 15000)
   {
     gIDX_Motor.PosP = 2;
     gIDX_Motor.PosI = 0;
@@ -452,8 +452,8 @@ void IDX_Init(void)
   gIDX_Motor.PositionControl = 1;
   gIDX_Motor.MainStatus=INACTIVE;
   gIDX_Motor.PulsesPerRevolution = 28; //(PPR = 7 * 4)
-  gIDX_Motor.Ratio = gMachineType[gMachine/100].Parameters[SIDESTREDUCTION].Value/100; 
-  gIDX_Motor.Factor = (float) gMachineType[gMachine/100].Parameters[SIDESTREDUCTION].Value / 3000;
+  gIDX_Motor.Ratio = pSIDESTEPREDUCTION/100; 
+  gIDX_Motor.Factor = (float) pSIDESTEPREDUCTION / 3000;
   gIDX_Motor.UmPerPulse = 0.56 * gIDX_Motor.Factor;
 }
 
@@ -477,9 +477,7 @@ int32_t test;
 //! \param [out] enuStatus IDX_Motor.SubStatus or READY
 enuStatus IDX_Set(enuStatus newStatus, int32_t newPosition)
 {
-  //Original code was for reduction 30. Reduction factor to be considered
   newPosition = (int32_t) (newPosition * gIDX_Motor.Factor);
-  //To add the offset (gMachineType[gMachine/100].Parameters[SIDESTEPOFFSET].Value * 560 / 100);
   if (gIDX_Status.MainStatus == newStatus) //Task already running
   {
     IDX_Position = newPosition;
