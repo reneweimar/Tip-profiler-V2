@@ -1,2 +1,8 @@
----- *30 Matches (1 in 1 files) ----
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        gScrape.Speed = gMachineType[gMachine/100].Parameters[SCRAPESPEED].Value*30; // Value / 100 * 50 (ratio) * 60 (1 min = 60 s)
+---- sleepstr Matches (10 in 2 files) ----
+Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  HAL_GPIO_WritePin(SleepStr_GPIO_Port, SleepStr_Pin, GPIO_PIN_RESET);
+Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  GPIO_InitStruct.Pin = SleepStr_Pin;
+Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  HAL_GPIO_Init(SleepStr_GPIO_Port, &GPIO_InitStruct);
+Strokemotor.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):#define SleepStr_Pin GPIO_PIN_5
+Strokemotor.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):#define SleepStr_GPIO_Port GPIOC
+Strokemotor.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):#define STR_Enable() HAL_GPIO_WritePin(SleepStr_GPIO_Port, SleepStr_Pin,GPIO_PIN_SET)
+Strokemotor.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):#define STR_Disable() HAL_GPIO_WritePin(SleepStr_GPIO_Port, SleepStr_Pin,GPIO_PIN_RESET)

@@ -96,7 +96,7 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
     {"SIDE ST BIG FACT  ",0,500,30,"MM",3,2,0,0,0,0,0,0,0,0},
     {"SIDE ST RATIO     ",0,0,1756,"-",4,3,0,1,2,1756,1838,0,0,0},
     {"SIDE ST REDUCTION ",0,0,15000,"-",3,0,0,1,2,3000,15000,0,0,0},
-    {"STROKE REDUCTION  ",0,0,5000,"-",2,0,0,1,2,3000,5000,0,0,0},
+    {"STROKE REDUCTION  ",0,0,3000,"-",2,0,0,1,2,3000,5000,0,0,0},
     {"",0,0,0,"",0,0,0,0,0,0,0,0,0,0},
     {"",0,0,0,"",0,0,0,0,0,0,0,0,0,0}
 	},
@@ -118,7 +118,7 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
     {"SIDE ST BIG FACT  ",0,500,40,"MM",3,2,0,0,0,0,0,0,0,0},
     {"SIDE ST RATIO     ",0,0,1838,"MM",4,3,0,1,2,1756,1838,0,0,0},
     {"SIDE ST REDUCTION",0,0,15000,"-",3,0,0,1,2,3000,15000,0,0,0},
-    {"STROKE REDUCTION  ",0,0,5000,"-",2,0,0,1,2,3000,5000,0,0,0},
+    {"STROKE REDUCTION  ",0,0,3000,"-",2,0,0,1,2,3000,5000,0,0,0},
 	},
 	{ //KLARINET
     {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0,0,0,0,0,0,0},
@@ -138,7 +138,7 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
     {"SIDE ST BIG FACT  ",0,500,40,"MM",3,2,0,0,0,0,0,0,0,0},
     {"SIDE ST RATIO     ",0,0,1838,"MM",4,3,0,1,2,1756,1838,0,0,0},
     {"SIDE ST REDUCTION",0,0,15000,"-",3,0,0,1,2,3000,15000,0,0,0},
-    {"STROKE REDUCTION  ",0,0,5000,"-",2,0,0,1,2,3000,5000,0,0,0},
+    {"STROKE REDUCTION  ",0,0,3000,"-",2,0,0,1,2,3000,5000,0,0,0},
 	},
   { //BAGPIPE
     {"SCRAPE WIDTH      ",0,2400,1660,"MM",3,1,1,0,0,0,0,0,0,0},
@@ -158,7 +158,7 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
     {"SIDE ST BIG FACT  ",0,500,40,"MM",3,2,0,0,0,0,0,0,0,0},
     {"SIDE ST RATIO     ",0,0,1838,"MM",4,3,0,1,2,1756,1838,0,0,0},
     {"SIDE ST REDUCTION",0,0,15000,"-",3,0,0,1,2,3000,15000,0,0,0},
-    {"STROKE REDUCTION  ",0,0,5000,"-",2,0,0,1,2,3000,5000,0,0,0},
+    {"STROKE REDUCTION  ",0,0,3000,"-",2,0,0,1,2,3000,5000,0,0,0},
   },
 };
 //! \Global Service flag
@@ -1417,6 +1417,7 @@ void WRK_HandleSequence(void)
         break;
   }
 }
+int32_t newSetSpeed;
 
 //-----------------------------------------------------------------------------
 //! \brief      Handles the actions when sensing the stroke motor encoder
@@ -1424,15 +1425,23 @@ void WRK_HandleSequence(void)
 //! \param      None
 void WRK_HandleSTREncoder(void)
 {
+  
   if ((gSTR_Status.MainStatus == GOTOSTARTPOSITION) && (gSTR_Status.SubStatus == WAITFORSTROKEMOTORSTART))
   {
     if (gSTR_Motor.Encoder == STARTPOSITION)
     {
       STR_Stop();
     }
-    else if ((gSTR_Motor.Encoder >=200) && (gSTR_Motor.Encoder <=STARTPOSITION))
+    else if ((gSTR_Motor.Encoder >= (4 * gMachineType[gMachine/100].Parameters[STROKEREDUCTION].Value)/100) && (gSTR_Motor.Encoder <=STARTPOSITION))
     {
-      gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED * (325 - gSTR_Motor.Encoder) / 100; 
+      newSetSpeed = (STR_GOTOSTARTSPEED * ((325 * gMachineType[gMachine/100].Parameters[STROKEREDUCTION].Value/5000) - gSTR_Motor.Encoder)) / 100;
+      if (newSetSpeed < STR_GOTOSTARTSPEED)
+        if (newSetSpeed < STR_HOMESPEED) 
+          gSTR_Motor.SetSpeed = STR_HOMESPEED;   
+        else
+          gSTR_Motor.SetSpeed = newSetSpeed; 
+      else
+        gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED; 
     }
   }
 }
