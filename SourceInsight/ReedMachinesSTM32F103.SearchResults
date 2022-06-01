@@ -1,8 +1,7 @@
----- sleepstr Matches (10 in 2 files) ----
-Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  HAL_GPIO_WritePin(SleepStr_GPIO_Port, SleepStr_Pin, GPIO_PIN_RESET);
-Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  GPIO_InitStruct.Pin = SleepStr_Pin;
-Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  HAL_GPIO_Init(SleepStr_GPIO_Port, &GPIO_InitStruct);
-Strokemotor.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):#define SleepStr_Pin GPIO_PIN_5
-Strokemotor.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):#define SleepStr_GPIO_Port GPIOC
-Strokemotor.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):#define STR_Enable() HAL_GPIO_WritePin(SleepStr_GPIO_Port, SleepStr_Pin,GPIO_PIN_SET)
-Strokemotor.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):#define STR_Disable() HAL_GPIO_WritePin(SleepStr_GPIO_Port, SleepStr_Pin,GPIO_PIN_RESET)
+---- gotostartposition Matches (6 in 3 files) ----
+Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    case GOTOSTARTPOSITION:
+Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              STR_SetStatus(SubStatus, GOTOSTARTPOSITION);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      if (STR_Set(GOTOSTARTPOSITION,0)== READY)
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  if ((gSTR_Status.MainStatus == GOTOSTARTPOSITION) && (gSTR_Status.SubStatus == WAITFORSTROKEMOTORSTART))
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  if ((gSTR_Status.MainStatus == GOTOSTARTPOSITION) && (gSTR_Status.SubStatus == WAITFORHOMESENSORON))
+Work.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):    GOTOSTARTPOSITION,
