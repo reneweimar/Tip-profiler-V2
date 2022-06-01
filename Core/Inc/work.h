@@ -13,7 +13,7 @@
 #define SPLASHSCREENTIME        3000
 #define VERSIONMAJOR            1
 #define VERSIONMINOR            1
-#define VERSIONTWEAK            29
+#define VERSIONTWEAK            34
 #define LOWPOWERTIME            10000
 #define NOBATTERYCONTRAST       25
 #define LOWCONTRAST             75
@@ -87,7 +87,8 @@ typedef enum //Numbering cannot be changed!!!!
   SIDESTSMALLFACT = 13,
   SIDESTBIGFACT = 14,
   SIDESTRATIO = 15,
-  SIDESTREDUCTION = 16
+  SIDESTREDUCTION = 16,
+  STROKEREDUCTION = 17
 } enuParameters;
 
 typedef enum

@@ -963,6 +963,7 @@ void USR_ShowScreen(uint32_t NewScreen)
       case 10115:
       case 10116:
       case 10117:
+      case 10118:
       {
         //Find the top of the page
         TopPage = gCurrentScreen - gCurrentScreen%3;   //10102 -> 10102 - 1 = 10101, 10104 -> 10104 - 0 = 10104
