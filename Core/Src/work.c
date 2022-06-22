@@ -298,7 +298,8 @@ void WRK_HandleActive(void)
             else
             {
               gReturnScreen = gCurrentScreen;
-              USR_SetMessage("NOT HOMED!","","START POSITION MENU","","NOT AVAILABLE","OK",4);
+              USR_SetMessage("NOT HOMED!","","START POSITION MENU","","NOT AVAILABLE","OK",4);        
+							//USR_SetMessage("","NOT HOMED!","","START POSITION MENU","","OKK",3);
             }
           }
           else
