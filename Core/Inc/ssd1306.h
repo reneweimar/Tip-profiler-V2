@@ -133,7 +133,9 @@ void ssd1306_DrawCircleQuads(int16_t x0, int16_t y0, int16_t radius, uint8_t qua
 void ssd1306_DrawProgressBar(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t progress);
 */
 char ssd1306_WriteChar(char ch, FontDef Font,SSD1306_COLOR color);
+//char ssd1306_WriteCharTrueTypeFont(char ch, FontDefEightBit Font, SSD1306_COLOR color);
 char ssd1306_WriteString(uint8_t newX, uint8_t newY, char* str, FontDef Font,SSD1306_COLOR color);
+//char ssd1306_WriteStringEightBitFont(uint8_t newX, uint8_t newY,char* str, FontDefEightBit Font, SSD1306_COLOR color);
 char ssd1306_WriteStringEightBitFont(uint8_t newX, uint8_t newY,char* str, FontDefEightBit Font, SSD1306_COLOR color);
 void ssd1306_DrawBattery (SSD1306_COLOR color, uint8_t newBars, uint8_t newX, uint8_t newY);
 void ssd1306_SetContrast(uint8_t NewContrast);

@@ -748,10 +748,13 @@ char ssd1306_WriteChar(char ch, FontDef Font,SSD1306_COLOR color)
 //! \param[in]  FontDefEightBit Font -> Selected font
 //! \param[in]  SSD1306_COLOR color -> Character color (Black or white)
 //! \param[out] char response 0=Failed, other = OK
-char ssd1306_WriteCharEightBitFont(char ch, FontDefEightBit Font, SSD1306_COLOR color)
+uint8_t Height;
+uint8_t Width;
+/*char ssd1306_WriteCharEightBitFont(char ch, FontDefEightBit Font, SSD1306_COLOR color)
 {
     int32_t i, j;
     uint32_t b;
+
     // Translate font to screenbuffer
     for (i = 0; i < Font.FontHeight; i++)
     {
@@ -778,6 +781,72 @@ char ssd1306_WriteCharEightBitFont(char ch, FontDefEightBit Font, SSD1306_COLOR 
     // Return written char for validation
     return ch;
 }
+*/
+
+//-----------------------------------------------------------------------------
+//! \brief      Draw 1 true type char on the screen 
+//! \details    Draw 1 char to the screen buffer set the screenpointer exactly the character width further
+//! \param[in]  char ch -> Character to write
+//! \param[in]  FontDefEightBit Font -> Selected font
+//! \param[in]  SSD1306_COLOR color -> Character color (Black or white)
+//! \param[out] char response 0=Failed, other = OK
+char ssd1306_WriteCharEightBitFont(char ch, FontDefEightBit Font, SSD1306_COLOR color)
+{
+    int32_t i, j;
+    uint32_t b;
+    uint32_t CharacterWidth;
+    Height = Font.FontHeight;
+		Width =Font.FontWidth;
+    //Search for the most left pixel in all rows of the character. 
+    //and calculate the font width. 
+    //If a pixel is on, The font width = Font.FontWidth - j
+    CharacterWidth = 0;
+    for (i = 0; i < Font.FontHeight; i++)
+    {
+			b = Font.data[(ch - 32) * Font.FontHeight + i]; 
+      for (j = 0; j < Font.FontWidth; j++)
+      {
+        if ((b << j) & 1<<(Font.FontWidth - 2)) //Pixel is on
+        {
+            if (Font.FontWidth - j > CharacterWidth)
+            {
+                CharacterWidth = Font.FontWidth - j; //Set CharacterWidth if biggest
+            }
+        }
+      }
+    }
+	if (CharacterWidth == 0) CharacterWidth = Font.FontWidth - 2; //Space
+    if (ch == 33) CharacterWidth = 3;
+    // Translate font to screenbuffer taking into account the CharacterWidth
+    for (i = 0; i < Font.FontHeight; i++)
+    {
+      b = Font.data[(ch - 32) * Font.FontHeight + i]; 
+      for (j = Font.FontWidth - CharacterWidth; j < Font.FontWidth; j++)
+      {
+        if ((SSD1306.CurrentX + j - (Font.FontWidth - CharacterWidth) < SSD1306_WIDTH) && (SSD1306.CurrentY + i < SSD1306_HEIGHT)) //Check if still inside array
+        {
+          if ((b << j) & 1<<(Font.FontWidth - 2))
+          {
+              ssd1306_DrawPixel(SSD1306.CurrentX + j - (Font.FontWidth - CharacterWidth), (SSD1306.CurrentY + i), (SSD1306_COLOR) color);
+          }
+          else
+          {
+              ssd1306_DrawPixel(SSD1306.CurrentX + j - (Font.FontWidth - CharacterWidth), (SSD1306.CurrentY + i), (SSD1306_COLOR) !color);
+          }
+        }
+      }
+
+    }
+    // The current space is now taken. Add CharacterWidth to the X buffer
+    SSD1306.CurrentX += CharacterWidth;
+
+    // Return written char for validation
+    return ch;
+}
+
+
+
+
 
 //-----------------------------------------------------------------------------
 //! \brief      Draw text on the screen 
@@ -787,7 +856,7 @@ char ssd1306_WriteCharEightBitFont(char ch, FontDefEightBit Font, SSD1306_COLOR 
 //! \param[in]  SSD1306_COLOR color -> Character color (Black or white)
 //! \param[out] char response *str -> Last character sent
 
-char ssd1306_WriteStringEightBitFont(uint8_t newX, uint8_t newY,char* str, FontDefEightBit Font, SSD1306_COLOR color)
+/*char ssd1306_WriteStringEightBitFont(uint8_t newX, uint8_t newY,char* str, FontDefEightBit Font, SSD1306_COLOR color)
 {
     ssd1306_SetCursor(newX, newY);
     // Write until null-byte
@@ -805,7 +874,7 @@ char ssd1306_WriteStringEightBitFont(uint8_t newX, uint8_t newY,char* str, FontD
     // Everything ok
     return *str;
 }
-
+*/
 //
 //  Write full string to screenbuffer
 //
@@ -827,6 +896,34 @@ char ssd1306_WriteString(uint8_t newX, uint8_t newY, char* str, FontDef Font,SSD
 
   // Everything ok
   return *str;
+}
+
+//-----------------------------------------------------------------------------
+//! \brief      Draw text with TrueType font on the screen 
+//! \details    Write full string to screenbuffer considering letter widths
+//! \param[in]  char* str -> String to write
+//! \param[in]  FontDefEightBit Font -> Selected font
+//! \param[in]  SSD1306_COLOR color -> Character color (Black or white)
+//! \param[out] char response *str -> Last character sent
+
+char ssd1306_WriteStringEightBitFont(uint8_t newX, uint8_t newY,char* str, FontDefEightBit Font, SSD1306_COLOR color)
+{
+    ssd1306_SetCursor(newX, newY);
+    // Write until null-byte
+    while (*str)
+    {
+        //
+			  if (ssd1306_WriteCharEightBitFont(*str, Font, color) != *str)
+        {
+            // Char could not be written
+            return *str;
+        }
+
+        // Next char
+        str++;
+    }
+    // Everything ok
+    return *str;
 }
 
 //-----------------------------------------------------------------------------

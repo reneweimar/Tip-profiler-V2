@@ -1,4 +1,5 @@
----- not homed Matches (3 in 1 files) ----
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              USR_SetMessage("NOT HOMED!","","START POSITION MENU","","NOT AVAILABLE","OK",4);
+---- not homed Matches (4 in 1 files) ----
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              USR_SetMessage("NOT HOMED!","","START POSITION MENU","","NOT AVAILABLE","OK",4);        
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):							//USR_SetMessage("","NOT HOMED!","","START POSITION MENU","","OKK",3);
 Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              USR_SetMessage("NOT HOMED!","","SCRAPING MENU","","NOT AVAILABLE","OK",4);
 Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_SetMessage("SIDE STEP SET IS","","NOT HOMED","","","OK",3);
