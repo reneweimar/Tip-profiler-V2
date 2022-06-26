@@ -860,6 +860,7 @@ void WRK_HandleInitialize(void)
         }
         else if (gIDX_Motor.IsInStartPosition == 0) 
         {  
+					gScrape.StartPosition = gMachineType[gMachine/100].Parameters[SCRAPEWIDTH].Value * 42 / 15 * 1000 / gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value; //Pulses -> Value * 10 / 2 (Half scrape width) * 840 / 1500 um -> Pulse
           WRK_SetStatus(SubStatus,WAITFORINDEXSTART);
         }
         else

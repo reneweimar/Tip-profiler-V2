@@ -63,9 +63,10 @@ void IDX_HandleMotor (void)
 
   
   //gIDX_Motor.GetPosition = TIM8->CNT - 32767;
+  gIDX_Motor.GetPosition = gIDX_Motor.Encoder;
   /*
   BEFORE START POSITION WAS HOME POSITION
-  gIDX_Motor.GetPosition = gIDX_Motor.Encoder;
+  
   if ((abs(gIDX_Motor.GetPosition) < IDX_ACCURACY) && (gIDX_Motor.IsHomed == 1))
   {
     gIDX_Motor.IsInStartPosition = 1;

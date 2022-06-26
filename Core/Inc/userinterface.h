@@ -17,6 +17,17 @@
 #define USR_REPEATDELAYFIRST 10
 #define USR_REPEATDELAYSECOND 3
 #define NROFBUTTONS 6
+#define TOPLINE_Y 12
+#define BOTTOMLINE_Y 51
+#define LINE1_Y 16
+#define LINE2_Y 22
+#define LINE3_Y 28
+#define LINE4_Y 34
+#define LINE5_Y 40
+#define LINESPACE 6
+
+
+
 #define BtnMenuLeft_Pin GPIO_PIN_10
 #define BtnMenuLeft_GPIO_Port GPIOC
 #define BtnUpDown_Pin GPIO_PIN_5
