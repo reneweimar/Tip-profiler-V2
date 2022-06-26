@@ -1521,10 +1521,10 @@ void WRK_Init(void)
 			VirtaddVarCounter ++;
     }
   }
-  strcpy(gMachineType[0].Name, "OBOE");
-  strcpy(gMachineType[1].Name, "BASSOON");
-  strcpy(gMachineType[2].Name, "CLARINET");
-  strcpy(gMachineType[3].Name, "BAGPIPE");
+  strcpy(gMachineType[0].Name, "Oboe");
+  strcpy(gMachineType[1].Name, "Bassoon");
+  strcpy(gMachineType[2].Name, "Clarinet");
+  strcpy(gMachineType[3].Name, "Bagpipe");
   //Add the virtual names for the errors
   for (uint8_t j = 0; j<NROFERRORS;j++)
   {

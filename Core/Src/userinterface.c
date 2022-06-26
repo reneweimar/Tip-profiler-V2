@@ -617,6 +617,8 @@ void USR_ShowPosition (int32_t newPosition)
   sprintf(strValue,"%d UM    ",newPosition);
   ssd1306_WriteStringEightBitFont(64, 22,strValue,Font_6x10, White);
 }
+int16_t Dig4, Dig3, Dig2, Dig1, Dig0;
+
 //-----------------------------------------------------------------------------
 //! \brief      Displays screens
 //! \details    Displays the corresponding screen on the OLED display
@@ -624,7 +626,7 @@ void USR_ShowPosition (int32_t newPosition)
 void USR_ShowScreen(uint32_t NewScreen)
 {
     char strValue[50];
-    int16_t Dig4, Dig3, Dig2, Dig1, Dig0;  
+    //int16_t Dig4, Dig3, Dig2, Dig1, Dig0;  
     uint16_t TopPage;
     char txtSign[2];
     gCurrentScreen = NewScreen;
@@ -816,16 +818,21 @@ void USR_ShowScreen(uint32_t NewScreen)
       case 30: //Scrape big steps
       {
         gCurrentScreen = 30;
-
         ssd1306_WriteStringEightBitFont(0, 0,"               ", Font_6x10, White);
         ssd1306_DrawRectangle(White,37,15,1,33,0);
-
-        ssd1306_WriteStringEightBitFont(40,  16,"WHOLE REED", Font_6x10, White);
-
-        ssd1306_WriteStringEightBitFont(40,  28,"BIG STEPS", Font_6x10, White);
-
-        ssd1306_WriteStringEightBitFont(40,  40,"ONE CYCLE", Font_6x10, White);
-
+        ssd1306_WriteStringEightBitFont(40,  LINE1_Y,"With big side steps", Font_6x10, White);
+        Dig0 = gMachineType[gMachine/100].Parameters[2].Value / 100; 
+        Dig1 = (gMachineType[gMachine/100].Parameters[2].Value % 100) /10;
+        Dig2 = gMachineType[gMachine/100].Parameters[4].Value / 100;
+        Dig3 = (gMachineType[gMachine/100].Parameters[4].Value % 100)/10;
+        Dig4 = gMachineType[gMachine/100].Parameters[4].Value - Dig2 * 100 - Dig3 * 10;
+        sprintf(strValue, "%u.%uSPS / %u.%u%uSS /", Dig0, Dig1, Dig2, Dig3, Dig4); 
+        ssd1306_WriteStringEightBitFont(40,  LINE3_Y,strValue, Font_6x10, White);
+        Dig2 = gMachineType[gMachine/100].Parameters[0].Value / 100;
+        Dig3 = (gMachineType[gMachine/100].Parameters[0].Value % 100)/10;
+        Dig4 = gMachineType[gMachine/100].Parameters[0].Value - Dig2 * 100 - Dig3 * 10;
+        sprintf(strValue, "%u.%u%uSW", Dig2, Dig3, Dig4); 
+        ssd1306_WriteStringEightBitFont(40,  40,strValue, Font_6x10, White);
         ssd1306_WriteStringEightBitFont(0, 27,"SCRAPE", Font_6x10, White);
         USR_WriteKeys("<>$&*OK");
         USR_WriteInstrumentName();
