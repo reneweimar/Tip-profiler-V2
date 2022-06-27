@@ -64,6 +64,9 @@ void IDX_HandleMotor (void)
   
   //gIDX_Motor.GetPosition = TIM8->CNT - 32767;
   gIDX_Motor.GetPosition = gIDX_Motor.Encoder;
+  /*
+  BEFORE START POSITION WAS HOME POSITION
+  
   if ((abs(gIDX_Motor.GetPosition) < IDX_ACCURACY) && (gIDX_Motor.IsHomed == 1))
   {
     gIDX_Motor.IsInStartPosition = 1;
@@ -72,6 +75,7 @@ void IDX_HandleMotor (void)
   {
     gIDX_Motor.IsInStartPosition = 0;
   }
+  */
     
   gIDX_Motor.GetUm = (int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse);
 
@@ -298,6 +302,7 @@ void IDX_HandleTasks(void)
         {
           PWR_SensorsOn();
           IDX_HomeFlag = 0;
+          gIDX_Motor.IsInStartPosition = 0;
           IDXHomeAccuracy = 300;
           gIDX_Motor.MaxSpeed = 10000;
           if (gMachineType[gMachine/100].Parameters[SIDESTREDUCTION].Value == 15000)

@@ -138,6 +138,46 @@ uint8_t ssd1306_Init(void)
   return 1;
 }
 
+uint8_t ssd1306_GetCharWidth(char ch, FontDefEightBit Font)
+{
+    int32_t i, j;
+    uint32_t b;
+    uint32_t CharacterWidth;
+    //Search for the most left pixel in all rows of the character. 
+    //and calculate the font width. 
+    //If a pixel is on, The font width = Font.FontWidth - j
+    CharacterWidth = 0;
+    for (i = 0; i < Font.FontHeight; i++)
+    {
+			b = Font.data[(ch - 32) * Font.FontHeight + i]; 
+      for (j = 0; j < Font.FontWidth; j++)
+      {
+        if ((b << j) & 1<<(Font.FontWidth - 2)) //Pixel is on
+        {
+            if (Font.FontWidth - j > CharacterWidth)
+            {
+                CharacterWidth = Font.FontWidth - j; //Set CharacterWidth if biggest
+            }
+        }
+      }
+    }
+	if (ch == 32) CharacterWidth = Font.FontWidth - 2; //Space reserves space in normal text, not in enter value screen
+	if (ch == 33) CharacterWidth = 3;
+	return CharacterWidth;
+}
+uint8_t ssd1306_GetStringWidth(char* str, FontDefEightBit Font)
+{
+    uint8_t Length = 0;
+    while (*str)
+    {
+        Length += ssd1306_GetCharWidth(*str,Font);
+        // Next char
+        str++;
+    }
+    // Everything ok
+    return Length;
+}
+
 //
 //  Fill the whole screen with the given color
 //
@@ -748,10 +788,13 @@ char ssd1306_WriteChar(char ch, FontDef Font,SSD1306_COLOR color)
 //! \param[in]  FontDefEightBit Font -> Selected font
 //! \param[in]  SSD1306_COLOR color -> Character color (Black or white)
 //! \param[out] char response 0=Failed, other = OK
-char ssd1306_WriteCharEightBitFont(char ch, FontDefEightBit Font, SSD1306_COLOR color)
+uint8_t Height;
+uint8_t Width;
+/*char ssd1306_WriteCharEightBitFont(char ch, FontDefEightBit Font, SSD1306_COLOR color)
 {
     int32_t i, j;
     uint32_t b;
+
     // Translate font to screenbuffer
     for (i = 0; i < Font.FontHeight; i++)
     {
@@ -778,6 +821,75 @@ char ssd1306_WriteCharEightBitFont(char ch, FontDefEightBit Font, SSD1306_COLOR 
     // Return written char for validation
     return ch;
 }
+*/
+
+//-----------------------------------------------------------------------------
+//! \brief      Draw 1 true type char on the screen 
+//! \details    Draw 1 char to the screen buffer set the screenpointer exactly the character width further
+//! \param[in]  char ch -> Character to write
+//! \param[in]  FontDefEightBit Font -> Selected font
+//! \param[in]  SSD1306_COLOR color -> Character color (Black or white)
+//! \param[out] char response 0=Failed, other = OK
+char ssd1306_WriteCharEightBitFont(char ch, FontDefEightBit Font, SSD1306_COLOR color)
+{
+    int32_t i, j;
+    uint32_t b;
+    uint32_t CharacterWidth;
+    Height = Font.FontHeight;
+		Width =Font.FontWidth;
+    //Search for the most left pixel in all rows of the character. 
+    //and calculate the font width. 
+    //If a pixel is on, The font width = Font.FontWidth - j
+    /*
+    CharacterWidth = 0;
+    for (i = 0; i < Font.FontHeight; i++)
+    {
+			b = Font.data[(ch - 32) * Font.FontHeight + i]; 
+      for (j = 0; j < Font.FontWidth; j++)
+      {
+        if ((b << j) & 1<<(Font.FontWidth - 2)) //Pixel is on
+        {
+            if (Font.FontWidth - j > CharacterWidth)
+            {
+                CharacterWidth = Font.FontWidth - j; //Set CharacterWidth if biggest
+            }
+        }
+      }
+    }
+	if (CharacterWidth == 0) CharacterWidth = Font.FontWidth - 2; //Space
+    if (ch == 33) CharacterWidth = 3;
+    */
+    CharacterWidth = ssd1306_GetCharWidth (ch,Font);
+    // Translate font to screenbuffer taking into account the CharacterWidth
+    for (i = 0; i < Font.FontHeight; i++)
+    {
+      b = Font.data[(ch - 32) * Font.FontHeight + i]; 
+      for (j = Font.FontWidth - CharacterWidth; j < Font.FontWidth; j++)
+      {
+        if ((SSD1306.CurrentX + j - (Font.FontWidth - CharacterWidth) < SSD1306_WIDTH) && (SSD1306.CurrentY + i < SSD1306_HEIGHT)) //Check if still inside array
+        {
+          if ((b << j) & 1<<(Font.FontWidth - 2))
+          {
+              ssd1306_DrawPixel(SSD1306.CurrentX + j - (Font.FontWidth - CharacterWidth), (SSD1306.CurrentY + i), (SSD1306_COLOR) color);
+          }
+          else
+          {
+              ssd1306_DrawPixel(SSD1306.CurrentX + j - (Font.FontWidth - CharacterWidth), (SSD1306.CurrentY + i), (SSD1306_COLOR) !color);
+          }
+        }
+      }
+
+    }
+    // The current space is now taken. Add CharacterWidth to the X buffer
+    SSD1306.CurrentX += CharacterWidth;
+
+    // Return written char for validation
+    return ch;
+}
+
+
+
+
 
 //-----------------------------------------------------------------------------
 //! \brief      Draw text on the screen 
@@ -787,7 +899,7 @@ char ssd1306_WriteCharEightBitFont(char ch, FontDefEightBit Font, SSD1306_COLOR 
 //! \param[in]  SSD1306_COLOR color -> Character color (Black or white)
 //! \param[out] char response *str -> Last character sent
 
-char ssd1306_WriteStringEightBitFont(uint8_t newX, uint8_t newY,char* str, FontDefEightBit Font, SSD1306_COLOR color)
+/*char ssd1306_WriteStringEightBitFont(uint8_t newX, uint8_t newY,char* str, FontDefEightBit Font, SSD1306_COLOR color)
 {
     ssd1306_SetCursor(newX, newY);
     // Write until null-byte
@@ -805,7 +917,7 @@ char ssd1306_WriteStringEightBitFont(uint8_t newX, uint8_t newY,char* str, FontD
     // Everything ok
     return *str;
 }
-
+*/
 //
 //  Write full string to screenbuffer
 //
@@ -829,6 +941,75 @@ char ssd1306_WriteString(uint8_t newX, uint8_t newY, char* str, FontDef Font,SSD
   return *str;
 }
 
+
+
+//-----------------------------------------------------------------------------
+//! \brief      Draw text with TrueType font on the screen 
+//! \details    Write full string to screenbuffer considering letter widths
+//! \param[in]  char* str -> String to write
+//! \param[in]  FontDefEightBit Font -> Selected font
+//! \param[in]  SSD1306_COLOR color -> Character color (Black or white)
+//! \param[out] char response *str -> Last character sent
+char testt;
+char ssd1306_WriteStringEightBitFont(uint8_t newX, uint8_t newY,char* str, FontDefEightBit Font, SSD1306_COLOR color)
+{
+    ssd1306_SetCursor(newX, newY);
+	 testt = (char) *str;
+    // Write until null-byte
+    while (*str)
+    {
+        //
+			  if (ssd1306_WriteCharEightBitFont(*str, Font, color) != *str)
+        {
+            // Char could not be written
+            return *str;
+        }
+
+        // Next char
+        str++;
+    }
+    // Everything ok
+    return *str;
+}
+
+//-----------------------------------------------------------------------------
+//! \brief      Draws the battery symbol on the screen
+//! \details    Draws the battery symbol at the correct % in the screen buffer
+//! \param[in]  uint8_t newX
+//! \param[in]  uint8_t newY
+//! \param[in]  int8_t newBars (0,1,2,3,4), -1 is no battery
+//! \param[in]  SSD1306_COLOR color -> Logo color (Black or white)
+void ssd1306_DrawBattery (uint8_t newX, uint8_t newY, int8_t newBars, SSD1306_COLOR color)
+{
+  uint8_t Row, Column, EndColumn, j;
+  uint32_t b;
+
+  ssd1306_SetCursor(newX, newY);
+  
+  for (Row = 0 ; Row < 10; Row++)
+  {
+    for (Column = 0; Column < 2; Column ++)
+    {
+      b = Battery[Row * 2 + Column + newBars * 20];
+      if (Column == 1)
+        EndColumn = 5;
+      else
+        EndColumn = 16;
+      for (j = 0; j < EndColumn; j++)
+      {
+        if ((b << j) & 0x8000)
+        {
+          ssd1306_DrawPixel(SSD1306.CurrentX + j + 16 * Column, (SSD1306.CurrentY + Row), (SSD1306_COLOR) color);
+        }
+        else
+        {
+          ssd1306_DrawPixel(SSD1306.CurrentX + j + 16 * Column, (SSD1306.CurrentY + Row), (SSD1306_COLOR)!color);
+        }
+      }
+    }
+  }
+}
+
 //-----------------------------------------------------------------------------
 //! \brief      Draws a battery symbol on the screen
 //! \details    Draws a battery symbol and status in te screen buffer
@@ -836,7 +1017,7 @@ char ssd1306_WriteString(uint8_t newX, uint8_t newY, char* str, FontDef Font,SSD
 //! \param[in]  uint8_t newBars -> Nr of bars to show (0, 1, 2 or 3)
 //! \param[in]  uint8_t newX -> X top 
 //! \param[in]  uint8_t newY -> Y left
-void ssd1306_DrawBattery (SSD1306_COLOR color, uint8_t newBars, uint8_t newX, uint8_t newY)
+/*void ssd1306_DrawBattery (SSD1306_COLOR color, uint8_t newBars, uint8_t newX, uint8_t newY)
 {
   uint32_t b;
   ssd1306_SetCursor(newX,newY);
@@ -856,7 +1037,7 @@ void ssd1306_DrawBattery (SSD1306_COLOR color, uint8_t newBars, uint8_t newX, ui
     }
   }
 }
-
+*/
 //-----------------------------------------------------------------------------
 //! \brief      Sets the display contrast
 //! \details    Sends the contrast command to the display

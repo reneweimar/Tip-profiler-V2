@@ -133,9 +133,14 @@ void ssd1306_DrawCircleQuads(int16_t x0, int16_t y0, int16_t radius, uint8_t qua
 void ssd1306_DrawProgressBar(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t progress);
 */
 char ssd1306_WriteChar(char ch, FontDef Font,SSD1306_COLOR color);
+//char ssd1306_WriteCharTrueTypeFont(char ch, FontDefEightBit Font, SSD1306_COLOR color);
 char ssd1306_WriteString(uint8_t newX, uint8_t newY, char* str, FontDef Font,SSD1306_COLOR color);
+//char ssd1306_WriteStringEightBitFont(uint8_t newX, uint8_t newY,char* str, FontDefEightBit Font, SSD1306_COLOR color);
 char ssd1306_WriteStringEightBitFont(uint8_t newX, uint8_t newY,char* str, FontDefEightBit Font, SSD1306_COLOR color);
-void ssd1306_DrawBattery (SSD1306_COLOR color, uint8_t newBars, uint8_t newX, uint8_t newY);
+char ssd1306_WriteCharEightBitFont(char ch, FontDefEightBit Font, SSD1306_COLOR color);
+
+//void ssd1306_DrawBattery (SSD1306_COLOR color, uint8_t newBars, uint8_t newX, uint8_t newY);
+void ssd1306_DrawBattery (uint8_t newX, uint8_t newY, int8_t newBars, SSD1306_COLOR color);
 void ssd1306_SetContrast(uint8_t NewContrast);
 void ssd1306_SetCursor(uint8_t x, uint8_t y);
 void ssd1306_Clear(void);
@@ -174,5 +179,7 @@ void ssd1306_SetRasterInt(uint8_t r); /* enable raster interrupt(s) of PAGEx (0:
 __weak void ssd1306_RasterIntCallback(uint8_t r); /* 0:At the beginning of PAGE0, 1:PAGE1, 2:PAGE2 ... 7:PAGE7 (attention!: interrupt function) */
 #endif
 #endif
+uint8_t ssd1306_GetCharWidth(char ch, FontDefEightBit Font);
+extern uint8_t ssd1306_GetStringWidth(char* str, FontDefEightBit Font);
 extern SSD1306_t SSD1306;
 #endif /* SSD1306_H_ */

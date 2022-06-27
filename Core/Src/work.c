@@ -298,7 +298,7 @@ void WRK_HandleActive(void)
             else
             {
               gReturnScreen = gCurrentScreen;
-              USR_SetMessage("NOT HOMED!","","START POSITION MENU","","NOT AVAILABLE","OK",4);        
+              USR_SetMessage("Not homed!","","Start position menu is","","not available.","OK",4);        
 							//USR_SetMessage("","NOT HOMED!","","START POSITION MENU","","OKK",3);
             }
           }
@@ -805,22 +805,24 @@ void WRK_HandleInitialize(void)
   }
   switch (gWRK_Status.SubStatus)
   {
-    case WAITFORINDEXHOME:
-    case WAITFORINDEXSTART:
+    case WAITFORINDEXHOME: //Before index home and index start was the same positon
     {
       if (IDX_Set(HOME,0)== READY)
       {
         IDX_Set(UNDEFINED,0);
-        if (gWRK_Status.SubStatus == WAITFORINDEXSTART)
-        {
-          WRK_SetStatus(MainStatus,ACTIVE);
-          WRK_SetStatus(SubStatus,WAITFORUSER);
-          USR_ShowScreen(gReturnScreen); 
-        }
-        else
-        {
-          WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORHOME);
-        }
+        WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORHOME);
+      }
+      break;
+    }
+    case WAITFORINDEXSTART:
+    {
+      if (IDX_Set(GOTOPOSITION, gScrape.StartPosition )==READY)
+      {
+        IDX_Set(UNDEFINED,0);
+        gIDX_Motor.IsInStartPosition = 1;
+        WRK_SetStatus(MainStatus,ACTIVE);
+        WRK_SetStatus(SubStatus,WAITFORUSER);
+        USR_ShowScreen(gReturnScreen); 
       }
       break;
     }
@@ -858,6 +860,7 @@ void WRK_HandleInitialize(void)
         }
         else if (gIDX_Motor.IsInStartPosition == 0) 
         {  
+					gScrape.StartPosition = gMachineType[gMachine/100].Parameters[SCRAPEWIDTH].Value * 42 / 15 * 1000 / gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value; //Pulses -> Value * 10 / 2 (Half scrape width) * 840 / 1500 um -> Pulse
           WRK_SetStatus(SubStatus,WAITFORINDEXSTART);
         }
         else
@@ -1518,10 +1521,10 @@ void WRK_Init(void)
 			VirtaddVarCounter ++;
     }
   }
-  strcpy(gMachineType[0].Name, "OBOE");
-  strcpy(gMachineType[1].Name, "BASSOON");
-  strcpy(gMachineType[2].Name, "CLARINET");
-  strcpy(gMachineType[3].Name, "BAGPIPE");
+  strcpy(gMachineType[0].Name, "Oboe");
+  strcpy(gMachineType[1].Name, "Bassoon");
+  strcpy(gMachineType[2].Name, "Clarinet");
+  strcpy(gMachineType[3].Name, "Bagpipe");
   //Add the virtual names for the errors
   for (uint8_t j = 0; j<NROFERRORS;j++)
   {
