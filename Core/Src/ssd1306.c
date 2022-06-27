@@ -161,7 +161,7 @@ uint8_t ssd1306_GetCharWidth(char ch, FontDefEightBit Font)
         }
       }
     }
-	if (CharacterWidth == 0) CharacterWidth = Font.FontWidth - 2; //Space
+	if (ch == 32) CharacterWidth = Font.FontWidth - 2; //Space reserves space in normal text, not in enter value screen
 	if (ch == 33) CharacterWidth = 3;
 	return CharacterWidth;
 }
@@ -950,10 +950,11 @@ char ssd1306_WriteString(uint8_t newX, uint8_t newY, char* str, FontDef Font,SSD
 //! \param[in]  FontDefEightBit Font -> Selected font
 //! \param[in]  SSD1306_COLOR color -> Character color (Black or white)
 //! \param[out] char response *str -> Last character sent
-
+char testt;
 char ssd1306_WriteStringEightBitFont(uint8_t newX, uint8_t newY,char* str, FontDefEightBit Font, SSD1306_COLOR color)
 {
     ssd1306_SetCursor(newX, newY);
+	 testt = (char) *str;
     // Write until null-byte
     while (*str)
     {

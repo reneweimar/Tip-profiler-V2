@@ -29,6 +29,12 @@ int16_t gParameterValue;
 uint8_t CursorPosition;
 uint8_t gParameterDigits;
 uint8_t gParameterDecimals;
+uint8_t CharWidth[8];
+uint8_t CharPos[8];
+uint8_t CurPos[8];
+char CharValue[8];
+
+
 //-----------------------------------------------------------------------------
 //! \brief      Gets the button status of the requested button
 //! \details    Returns 1 if the TimeOn parameter of the requested button
@@ -161,11 +167,17 @@ void USR_CursorDown(void)
   int8_t NewOption;
   if (gMachineType[gMachine/100].Parameters[gParameterNumber].Options == 0) //Normal editing value
   {
-    if (CursorPosition == 36) NewValue = 1;
+    /*if (CursorPosition == 36) NewValue = 1;
     if (CursorPosition == 30) NewValue = 10;
     if (CursorPosition == 18) NewValue = 100;
     if (CursorPosition == 12) NewValue = 1000;
     if (CursorPosition == 6) NewValue = 10000;
+    */
+    if (CursorPosition == 6) NewValue = 1;
+    if (CursorPosition == 5) NewValue = 10;
+    if (CursorPosition == 3) NewValue = 100;
+    if (CursorPosition == 2) NewValue = 1000;
+    if (CursorPosition == 1) NewValue = 10000;
     if (gParameterValue - NewValue >= gMachineType[gMachine/100].Parameters[gParameterNumber].Min)
     {
       gParameterValue -= NewValue ;
@@ -203,22 +215,17 @@ void USR_CursorDown(void)
 //! \param      None  
 void USR_CursorLeft(void)
 {
-  CursorPosition -= 6;
-  if (CursorPosition == 24)
+  if (CursorPosition > 1) 
   {
-    if (gParameterDigits > 0)
+    if (CharWidth[CursorPosition-1] > 0)
     {
-      CursorPosition = 18;
-    }
-    else
-    {
-      CursorPosition = 30;
+        CursorPosition --;
     }
   }
-  else if ((CursorPosition == 12) && (gParameterDigits == 1))
-    CursorPosition = 18;
-  else if (CursorPosition < 6)
-    CursorPosition = 6;
+  if (CursorPosition == 4)
+  {
+    CursorPosition = 3;
+  }
   USR_ShowScreen (2); 
 }
 //-----------------------------------------------------------------------------
@@ -227,20 +234,14 @@ void USR_CursorLeft(void)
 //! \param      None  
 void USR_CursorRight(void)
 {
-  CursorPosition += 6;
-  if (gParameterDecimals == 0)
+  if (CursorPosition < 7) 
   {
-    if (CursorPosition == 24) CursorPosition = 18;
+    if (CharWidth[CursorPosition+1] > 0)
+    {
+        CursorPosition ++;
+    }
   }
-  else if (gParameterDecimals == 1)
-  {
-    if ((CursorPosition == 24) || (CursorPosition > 30)) CursorPosition = 30;
-  }
-  else
-  {
-    if (CursorPosition == 24) CursorPosition = 30;
-    if (CursorPosition > 36) CursorPosition = 36;
-  }
+  if (CursorPosition == 4) CursorPosition = 5;
   USR_ShowScreen (2); 
 }
 
@@ -255,11 +256,17 @@ void USR_CursorUp(void)
   int8_t NewOption;
   if (gMachineType[gMachine/100].Parameters[gParameterNumber].Options == 0) //Normal editing value
   {
-    if (CursorPosition == 36) NewValue = 1;
+    /*if (CursorPosition == 36) NewValue = 1;
     if (CursorPosition == 30) NewValue = 10;
     if (CursorPosition == 18) NewValue = 100;
     if (CursorPosition == 12) NewValue = 1000;
     if (CursorPosition == 6) NewValue = 10000;
+    */
+    if (CursorPosition == 6) NewValue = 1;
+    if (CursorPosition == 5) NewValue = 10;
+    if (CursorPosition == 3) NewValue = 100;
+    if (CursorPosition == 2) NewValue = 1000;
+    if (CursorPosition == 1) NewValue = 10000;
     if (gParameterValue + NewValue <= gMachineType[gMachine/100].Parameters[gParameterNumber].Max)
     {
       gParameterValue += NewValue ;
@@ -302,8 +309,8 @@ void USR_EnterValue(int16_t NewNumber)
   gParameterValue = gMachineType[gMachine/100].Parameters[NewNumber].Value; //Get the current parameter value
   gParameterDecimals = gMachineType[gMachine/100].Parameters[NewNumber].Decimals;
   gParameterDigits = gMachineType[gMachine/100].Parameters[NewNumber].Digits - gMachineType[gMachine/100].Parameters[NewNumber].Decimals;
-  CursorPosition = 24 - (gParameterDigits *6);
-  if (CursorPosition == 24) CursorPosition = 30;
+  CursorPosition = 0;//24 - (gParameterDigits *6);
+  //if (CursorPosition == 24) CursorPosition = 30;
   USR_ClearScreen(2);
   USR_ShowScreen (2); 
 }
@@ -490,6 +497,8 @@ void USR_SaveParameter(void)
     gMachine = gParameterValue ; 
   }
 }
+
+
 //-----------------------------------------------------------------------------
 //! \brief      Fills error message line 0 to 2
 //! \details    Fills gUSR_Errormessage
@@ -617,7 +626,6 @@ void USR_ShowPosition (int32_t newPosition)
   sprintf(strValue,"%d UM    ",newPosition);
   ssd1306_WriteStringEightBitFont(64, 22,strValue,Font_6x10, White);
 }
-int16_t Dig4, Dig3, Dig2, Dig1, Dig0;
 
 //-----------------------------------------------------------------------------
 //! \brief      Displays screens
@@ -626,7 +634,7 @@ int16_t Dig4, Dig3, Dig2, Dig1, Dig0;
 void USR_ShowScreen(uint32_t NewScreen)
 {
     char strValue[50];
-    //int16_t Dig4, Dig3, Dig2, Dig1, Dig0;  
+    int16_t Dig4, Dig3, Dig2, Dig1, Dig0;  
     uint16_t TopPage;
     char txtSign[2];
     gCurrentScreen = NewScreen;
@@ -659,11 +667,11 @@ void USR_ShowScreen(uint32_t NewScreen)
       {
         USR_ClearScreen(0);
         USR_DrawLogo(15,5, White);
-        ssd1306_WriteStringEightBitFont(60,5,"VERSION:", Font_6x10, White);
+        ssd1306_WriteStringEightBitFont(60,5,"Version:", Font_6x10, White);
         sprintf(strValue, "%02u.%02u.%04u", VERSIONMAJOR, VERSIONMINOR, VERSIONTWEAK);
-        ssd1306_WriteStringEightBitFont(60,15,strValue, Font_6x10, White);
-        ssd1306_WriteStringEightBitFont(60, 30,"TYPE:", Font_6x10, White);
-        ssd1306_WriteStringEightBitFont(60, 40,gMachineType[gMachine/100].Name, Font_6x10, White);
+        ssd1306_WriteStringEightBitFont(60,17,strValue, Font_6x10, White);
+        ssd1306_WriteStringEightBitFont(60, 30,"Type:", Font_6x10, White);
+        ssd1306_WriteStringEightBitFont(60, 42,gMachineType[gMachine/100].Name, Font_6x10, White);
         
         ssd1306_WriteString(15, 55,"reed machines", Font_7x10, White);
         break;
@@ -680,88 +688,161 @@ void USR_ShowScreen(uint32_t NewScreen)
         Dig2 = (gParameterValue - (Dig4*10000) - (Dig3*1000)) / 100;
         Dig1 = (gParameterValue - (Dig4*10000) - (Dig3*1000) - (Dig2*100)) / 10;
         Dig0 = gParameterValue - (Dig4*10000) - (Dig3*1000) - (Dig2*100) - (Dig1 * 10);
+
+        
         //gParameterDigits can be 1 or 2 or 3
         //gParameterDecimals can be 0,1,2 or 3
+        for (uint8_t i; i < 8; i ++)
+        {
+          CharWidth[i]=0;
+          CharPos[i]=0;
+          CurPos[i]=0;
+          CharValue[i]='0';
+        }
+        //Negative sign
         if (gParameterValue < 0) //Negative
         {
+          CharWidth[0] = ssd1306_GetCharWidth('-',Font_6x10);
+					CharValue[0] = 45;
+					CharWidth[0] = ssd1306_GetCharWidth(CharValue[0],Font_6x10);
           strcpy (txtSign,"-");
         }
         else
         {
           strcpy (txtSign," ");  
         }
+        //No decimals
         if (gParameterDecimals == 0)
         {
+          
+          
+          CharValue[3]=Dig2+48;
+          CharWidth[3]=ssd1306_GetCharWidth(CharValue[3],Font_6x10);
+          
           if (gParameterDigits <= 1)
             sprintf(strValue, "%s  %u    %s", txtSign,abs(Dig2),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
           else if (gParameterDigits == 2)
+					{
+						CharValue[2]=Dig3+48;
+						CharWidth[2]=ssd1306_GetCharWidth(CharValue[2],Font_6x10);
             sprintf(strValue, "%s %u%u    %s", txtSign, abs(Dig3), abs(Dig2),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
+					}
           else if (gParameterDigits == 3)
+					{
+						CharValue[1]=Dig4+48;
+						CharWidth[1]=ssd1306_GetCharWidth(CharValue[1],Font_6x10);
+						CharValue[2]=Dig3+48;
+						CharWidth[2]=ssd1306_GetCharWidth(CharValue[2],Font_6x10);
             sprintf(strValue, "%s%u%u%u    %s", txtSign, abs(Dig4), abs(Dig3), abs (Dig2),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
+					}
         }
+        //1 decimal
         else if (gParameterDecimals == 1)
         {
+						CharValue[3]=Dig2+48;
+						CharWidth[3]=ssd1306_GetCharWidth(CharValue[3],Font_6x10);
+						CharValue[5]=Dig1+48;
+						CharWidth[5]=ssd1306_GetCharWidth(CharValue[5],Font_6x10);
           if (gParameterDigits <= 1)
+					{
             sprintf(strValue, "%s  %u.%u  %s", txtSign, abs(Dig2), abs(Dig1),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
-          else if (gParameterDigits == 2)
+          }
+					else if (gParameterDigits == 2)
+					{
+						CharValue[2]=Dig3+48;
+						CharWidth[2]=ssd1306_GetCharWidth(CharValue[2],Font_6x10);
             sprintf(strValue, "%s %u%u.%u  %s", txtSign, abs(Dig3), abs(Dig2), abs(Dig1),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
-          else if (gParameterDigits == 3)
-            sprintf(strValue, "%s%u%u%u.%u  %s", txtSign, abs(Dig4), abs(Dig3), abs (Dig2), abs (Dig1),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
+          }
+					else if (gParameterDigits == 3)
+          {
+						CharValue[1]=Dig4+48;
+            CharWidth[1]=ssd1306_GetCharWidth(CharValue[1],Font_6x10);
+						CharValue[2]=Dig3+48;
+						CharWidth[2]=ssd1306_GetCharWidth(CharValue[2],Font_6x10);
+						sprintf(strValue, "%s%u%u%u.%u  %s", txtSign, abs(Dig4), abs(Dig3), abs (Dig2), abs (Dig1),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
+					}
         }
+        //2 or 3 decimals
         else
         {
           if (gParameterDigits <= 1)
           {
 						if (gParameterDecimals <= 2)
 						{
+							CharValue[3]=Dig2+48;
+							CharWidth[3]=ssd1306_GetCharWidth(CharValue[3],Font_6x10);
+							CharValue[5]=Dig1+48;
+							CharWidth[5]=ssd1306_GetCharWidth(CharValue[5],Font_6x10);
+							CharValue[6]=Dig0+48;
+							CharWidth[6]=ssd1306_GetCharWidth(CharValue[6],Font_6x10);
 							sprintf(strValue, "%s  %u.%u%u %s", txtSign, abs(Dig2), abs(Dig1), abs(Dig0),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
 						}
 						else  //3 decimals
 						{
+							CharValue[3]=Dig3+48;
+							CharWidth[3]=ssd1306_GetCharWidth(CharValue[3],Font_6x10);
+							CharValue[5]=Dig2+48;
+							CharWidth[5]=ssd1306_GetCharWidth(CharValue[5],Font_6x10);
+							CharValue[6]=Dig1+48;
+							CharWidth[6]=ssd1306_GetCharWidth(CharValue[6],Font_6x10);
+							CharValue[7]=Dig0+48;
+							CharWidth[7]=ssd1306_GetCharWidth(CharValue[7],Font_6x10);
+
 							sprintf(strValue, "%s  %u.%u%u%u %s", txtSign, abs(Dig3), abs(Dig2), abs(Dig1), abs(Dig0),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
 						}
           }
           else if (gParameterDigits == 2)
           {
+            CharValue[2]=Dig3+48;
+            CharWidth[2]=ssd1306_GetCharWidth(CharValue[2],Font_6x10);
+            CharValue[3]=Dig2+48;
+            CharWidth[3]=ssd1306_GetCharWidth(CharValue[3],Font_6x10);
+            CharValue[5]=Dig1+48;
+            CharWidth[5]=ssd1306_GetCharWidth(CharValue[5],Font_6x10);
+            CharValue[6]=Dig0+48;
+            CharWidth[6]=ssd1306_GetCharWidth(CharValue[6],Font_6x10);
             sprintf(strValue, "%s %u%u.%u%u %s", txtSign, abs(Dig3), abs(Dig2), abs(Dig1), abs(Dig0),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
           }
         }
-      /*}
-        else
+        uint8_t CursorWidth = ssd1306_GetCharWidth(36,Font_6x10);
+        CharPos[4] = 24; //Decimal point always in the same location
+				CharValue[4] = 46;
+				CharWidth[4]=ssd1306_GetCharWidth(46,Font_6x10);
+        CharPos[3] = CharPos[4] - CharWidth[3];
+        CurPos[3] = CharPos[3] - (CursorWidth - CharWidth[3])/2;
+        CharPos[2] = CharPos[3] - CharWidth[2];
+        CurPos[2] = CharPos[2] - (CursorWidth - CharWidth[2])/2;
+        CharPos[1] = CharPos[2] - CharWidth[1];
+        CurPos[1] = CharPos[1] - (CursorWidth - CharWidth[1])/2;
+        CharPos[0] = CharPos[1] - CharWidth[0];
+        CurPos[0] = CharPos[0] - (CursorWidth - CharWidth[2])/2;
+        CharPos[5] = CharPos[4] + CharWidth[4];
+        CurPos[5] = CharPos[5] - (CursorWidth - CharWidth[5])/2;
+        CharPos[6] = CharPos[5] + CharWidth[5];
+        CurPos[6] = CharPos[6] - (CursorWidth - CharWidth[6])/2;
+        CharPos[7] = CharPos[6] + CharWidth[6];
+        CurPos[7] = CharPos[7] - (CursorWidth - CharWidth[7])/2;
+        if (CursorPosition == 0)
         {
-          if (gParameterDecimals == 0)
-          {
-            if (gParameterDigits <= 1)
-              sprintf(strValue, "   %u    %s", abs(Dig2),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);  
-            else
-              sprintf(strValue, "  %u%u    %s", abs(Dig3), abs(Dig2),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
-          }
-          else if (gParameterDecimals == 1)
-          {
-            if (gParameterDigits <= 1)
-              sprintf(strValue, "   %u.%u  %s", abs(Dig2), abs(Dig1),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
-            else
-              sprintf(strValue, "  %u%u.%u  %s", abs(Dig3), abs(Dig2), abs(Dig1),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
-          }
-          else
-          {
-            if (gParameterDigits <= 1)
-						{
-							if (gParameterDecimals <= 2)
-							{
-								sprintf(strValue, "   %u.%u%u %s", abs(Dig2), abs(Dig1), abs(Dig0),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
-							}
-							else  //3 decimals
-							{
-								sprintf(strValue, "   %u.%u%u%u %s", abs(Dig3),abs(Dig2), abs(Dig1), abs(Dig0),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
-							}
-						}
+            if (gParameterDigits <= 1) 
+                CursorPosition = 3;
             else 
-              sprintf(strValue, "%u%u.%u%u %s", abs(Dig3), abs(Dig2), abs(Dig1), abs(Dig0),gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
-          }
-        }*/
-        ssd1306_WriteStringEightBitFont(12, 28,strValue, Font_6x10, White);
-        ssd1306_WriteStringEightBitFont(CursorPosition, 40,"  $  ", Font_6x10, White);
+                CursorPosition = 4 - gParameterDigits; 
+        }
+        for(uint8_t i = 0; i < 8; i ++)
+        {
+            if (CharWidth[i] > 0)
+            {
+								ssd1306_SetCursor(CharPos[i], 28);
+                ssd1306_WriteCharEightBitFont(CharValue[i], Font_6x10, White);
+            }
+        }
+				ssd1306_WriteStringEightBitFont(0, 40,"             ", Font_6x10, White);
+        ssd1306_WriteStringEightBitFont(CurPos[CursorPosition], 40,"$", Font_6x10, White);
+        sprintf(strValue, "%s", gMachineType[gMachine/100].Parameters[gParameterNumber].Unit);
+        ssd1306_WriteStringEightBitFont(CharPos[gParameterDecimals + 4] + 10, 28, strValue, Font_6x10, White);
+        //ssd1306_WriteStringEightBitFont(12, 28, strValue, Font_6x10, White);
+        //ssd1306_WriteStringEightBitFont(CursorPosition, 40,"  $  ", Font_6x10, White);
         ssd1306_WriteStringEightBitFont(0, BOTTOMLINE_Y + 3,"                     ", Font_6x10, White);
         if (gMachineType[gMachine/100].Parameters[gParameterNumber].Options == 0) //Enter value
           ssd1306_WriteStringEightBitFont(0, BOTTOMLINE_Y + 3,"<>$&*OK", Font_6x10, White);
@@ -980,9 +1061,9 @@ void USR_ShowScreen(uint32_t NewScreen)
         TopPage = gCurrentScreen - gCurrentScreen%3;   //10102 -> 10102 - 1 = 10101, 10104 -> 10104 - 0 = 10104
 
         if (gServiceMenu)
-          ssd1306_WriteStringEightBitFont(0, 0,"SERVICE        ", Font_6x10, White);  
+          ssd1306_WriteStringEightBitFont(0, 0,"SERVICE          ", Font_6x10, White);  
         else
-          ssd1306_WriteStringEightBitFont(0, 0,"               ", Font_6x10, White);
+          ssd1306_WriteStringEightBitFont(0, 0,"                 ", Font_6x10, White);
         for (uint8_t i = 0;i<3;i++)
         {
   
@@ -1033,9 +1114,9 @@ void USR_ShowScreen(uint32_t NewScreen)
         TopPage = gCurrentScreen - (gCurrentScreen-1)%3;   //10202 -> 10202 - 1 = 10201, 10204 -> 10204 - 0 = 10204
 
         if (gServiceMenu)
-          ssd1306_WriteStringEightBitFont(0, 0,"SERVICE        ", Font_6x10, White);  
+          ssd1306_WriteStringEightBitFont(0, 0,"SERVICE             ", Font_6x10, White);  
         else
-          ssd1306_WriteStringEightBitFont(0, 0,"               ", Font_6x10, White);
+          ssd1306_WriteStringEightBitFont(0, 0,"                    ", Font_6x10, White);
         for (uint8_t i = 0;i<3;i++)
         {
   
@@ -1137,9 +1218,9 @@ void USR_ShowScreen(uint32_t NewScreen)
       {
 
         if (gServiceMenu)
-          ssd1306_WriteStringEightBitFont(0, 0,"SERVICE        ", Font_6x10, White);  
+          ssd1306_WriteStringEightBitFont(0, 0,"SERVICE          ", Font_6x10, White);  
         else
-          ssd1306_WriteStringEightBitFont(0, 0,"               ", Font_6x10, White);
+          ssd1306_WriteStringEightBitFont(0, 0,"                 ", Font_6x10, White);
         uint8_t LastError = Errors[0] - 1001;
         uint8_t LastPage = (LastError+2) / 3;
         if (Errors[99] > 0) LastPage = 33;
@@ -1197,9 +1278,9 @@ void USR_ShowScreen(uint32_t NewScreen)
       {
         gCurrentScreen = 10401;
         if (gServiceMenu)
-          ssd1306_WriteStringEightBitFont(0, 0,"SERVICE        ", Font_6x10, White);  
+          ssd1306_WriteStringEightBitFont(0, 0,"SERVICE          ", Font_6x10, White);  
         else
-          ssd1306_WriteStringEightBitFont(0, 0,"               ", Font_6x10, White);
+          ssd1306_WriteStringEightBitFont(0, 0,"                 ", Font_6x10, White);
         sprintf(strValue, "MASTER CNT:  %u", gCounter.MasterCounter);
 				ssd1306_WriteStringEightBitFont(0, 16,strValue, Font_6x10, White);
         sprintf(strValue, "SERVICE CNT: %u", gCounter.ServiceCounter);

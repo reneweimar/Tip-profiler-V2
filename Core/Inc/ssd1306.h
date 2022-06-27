@@ -137,6 +137,8 @@ char ssd1306_WriteChar(char ch, FontDef Font,SSD1306_COLOR color);
 char ssd1306_WriteString(uint8_t newX, uint8_t newY, char* str, FontDef Font,SSD1306_COLOR color);
 //char ssd1306_WriteStringEightBitFont(uint8_t newX, uint8_t newY,char* str, FontDefEightBit Font, SSD1306_COLOR color);
 char ssd1306_WriteStringEightBitFont(uint8_t newX, uint8_t newY,char* str, FontDefEightBit Font, SSD1306_COLOR color);
+char ssd1306_WriteCharEightBitFont(char ch, FontDefEightBit Font, SSD1306_COLOR color);
+
 //void ssd1306_DrawBattery (SSD1306_COLOR color, uint8_t newBars, uint8_t newX, uint8_t newY);
 void ssd1306_DrawBattery (uint8_t newX, uint8_t newY, int8_t newBars, SSD1306_COLOR color);
 void ssd1306_SetContrast(uint8_t NewContrast);
