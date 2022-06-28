@@ -435,27 +435,27 @@ void WRK_HandleActive(void)
           WRK_SetStatus(MainStatus,INITIALIZE);
           WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);  
         }
-        else if ((gCurrentScreen == 30)||(gCurrentScreen == 40)) //Start Scrape process with big side step (40 = endless)
+        else if ((gCurrentScreen == 30)||(gCurrentScreen == 40)) //Start Scrape process with small side step (40 = endless)
         {
-          WRK_HandleResetUnitErrors();
-          if (gCurrentScreen == 40) gScrape.Endless = 1;
-          gReturnScreen = gCurrentScreen;
-          gReturnFromErrorScreen = gCurrentScreen;
-          gScrape.SideStep = gIDX_Motor.Factor * (gMachineType[gMachine/100].Parameters[SIDESTEPBIG].Value * 84 / 15 * 1000 / gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value); //Pulses -> Value * 10 * 840 / 1500
-          gScrape.StartPosition = gMachineType[gMachine/100].Parameters[SCRAPEWIDTH].Value * 42 / 15 * 1000 / gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value; //Pulses -> Value * 10 / 2 (Half scrape width) * 840 / 1500 um -> Pulse
-          gScrape.EndPosition = 0;
-          WRK_SetStatus(MainStatus, SCRAPEREED);
+            WRK_HandleResetUnitErrors();
+            if (gCurrentScreen == 41) gScrape.Endless = 1;
+            gReturnScreen = gCurrentScreen;
+            gReturnFromErrorScreen = gCurrentScreen;
+            gScrape.SideStep = gIDX_Motor.Factor * (gMachineType[gMachine/100].Parameters[SIDESTEPSMALL].Value * 84 / 15 * 1000 / gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value); //Pulses -> Value * 10 * 840 / 1500
+            gScrape.StartPosition = gMachineType[gMachine/100].Parameters[SCRAPEWIDTH].Value * 42 / 15 * 1000 / gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value; //Pulses -> Value * 10 / 2 (Half scrape width) * 840 / 1500 um -> Pulse
+            gScrape.EndPosition = 0;
+            WRK_SetStatus(MainStatus, SCRAPEREED);
         }
-        else if ((gCurrentScreen == 31)||(gCurrentScreen == 41)) //Start Scrape process with small side step (41 is endless)
+        else if ((gCurrentScreen == 31)||(gCurrentScreen == 41)) //Start Scrape process with big side step (41 is endless)
         {
-          WRK_HandleResetUnitErrors();
-          if (gCurrentScreen == 41) gScrape.Endless = 1;
-          gReturnScreen = gCurrentScreen;
-          gReturnFromErrorScreen = gCurrentScreen;
-          gScrape.SideStep = gIDX_Motor.Factor * (gMachineType[gMachine/100].Parameters[SIDESTEPSMALL].Value * 84 / 15 * 1000 / gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value); //Pulses -> Value * 10 * 840 / 1500
-          gScrape.StartPosition = gMachineType[gMachine/100].Parameters[SCRAPEWIDTH].Value * 42 / 15 * 1000 / gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value; //Pulses -> Value * 10 / 2 (Half scrape width) * 840 / 1500 um -> Pulse
-          gScrape.EndPosition = 0;
-          WRK_SetStatus(MainStatus, SCRAPEREED);
+            WRK_HandleResetUnitErrors();
+            if (gCurrentScreen == 40) gScrape.Endless = 1;
+            gReturnScreen = gCurrentScreen;
+            gReturnFromErrorScreen = gCurrentScreen;
+            gScrape.SideStep = gIDX_Motor.Factor * (gMachineType[gMachine/100].Parameters[SIDESTEPBIG].Value * 84 / 15 * 1000 / gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value); //Pulses -> Value * 10 * 840 / 1500
+            gScrape.StartPosition = gMachineType[gMachine/100].Parameters[SCRAPEWIDTH].Value * 42 / 15 * 1000 / gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value; //Pulses -> Value * 10 / 2 (Half scrape width) * 840 / 1500 um -> Pulse
+            gScrape.EndPosition = 0;
+            WRK_SetStatus(MainStatus, SCRAPEREED);
         }
         else if (gCurrentScreen == 32) //Start Scrape process only outer sections
         {

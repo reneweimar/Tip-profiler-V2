@@ -1,34 +1,26 @@
----- CursorPosition Matches (35 in 3 files) ----
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):uint8_t CursorPosition;
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src)://! \details    Calculates the new value based on extremes and cursorposition
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    if (CursorPosition == 36) NewValue = 1;
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    if (CursorPosition == 30) NewValue = 10;
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    if (CursorPosition == 18) NewValue = 100;
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    if (CursorPosition == 12) NewValue = 1000;
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    if (CursorPosition == 6) NewValue = 10000;
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  if (CursorPosition > 1) 
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    if (CharWidth[CursorPosition-1] > 0)
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        CursorPosition --;
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  if (CursorPosition == 4)
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    CursorPosition = 3;
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  if (CursorPosition < 7) 
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    if (CharWidth[CursorPosition+1] > 0)
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        CursorPosition ++;
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  if (CursorPosition == 4) CursorPosition = 5;
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src)://! \details    Calculates the new value based on extremes and cursorposition
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    if (CursorPosition == 36) NewValue = 1;
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    if (CursorPosition == 30) NewValue = 10;
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    if (CursorPosition == 18) NewValue = 100;
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    if (CursorPosition == 12) NewValue = 1000;
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    if (CursorPosition == 6) NewValue = 10000;
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  CursorPosition = 24 - (gParameterDigits *6);
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  if (CursorPosition == 24) CursorPosition = 30;
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):void USR_ResetCursorPosition (void)
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  CursorPosition = 0;
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        if (CursorPosition == 0)
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):                CursorPosition = 3;
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):                CursorPosition = 4 - gParameterDigits; 
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        ssd1306_WriteStringEightBitFont(CurPos[CursorPosition], 40,"$", Font_6x10, White);
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        //ssd1306_WriteStringEightBitFont(CursorPosition, 40,"  $  ", Font_6x10, White);
-Userinterface.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):extern void USR_ResetCursorPosition (void);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      USR_ResetCursorPosition(); //Reset the cursor position
+---- USR_WriteKeys Matches (25 in 2 files) ----
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_WriteKeys(USR_Message[5]);
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_WriteKeys("< > * OK");
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_WriteKeys("< > * OK");
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_WriteKeys("< > $ & * OK");
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_WriteKeys("< > $ & * OK");
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_WriteKeys("< > $ & * OK");
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_WriteKeys("< > $ & * OK");
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_WriteKeys("< > $ & * OK");
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_WriteKeys("< > $ & * OK");
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_WriteKeys("< > $ & * OK");
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_WriteKeys("& $ > *");
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_WriteKeys("& $ > *");
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_WriteKeys("& $ > *");
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_WriteKeys("* OK");
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_WriteKeys("* OK");
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_WriteKeys("");
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_WriteKeys("* OK");
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_WriteKeys("< > $ & *");
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          USR_WriteKeys("*");
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          USR_WriteKeys("& $ *");
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_WriteKeys("* OK");
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_WriteKeys("# OK");
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_WriteKeys("");
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):void USR_WriteKeys (char* newKeys)
+Userinterface.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):void USR_WriteKeys (char* newKeys);

@@ -25,6 +25,8 @@
 #define LINE4_Y 34
 #define LINE5_Y 40
 #define LINESPACE 6
+#define PLUGGEDIN_X 99
+#define PAGE_X 80
 
 
 
