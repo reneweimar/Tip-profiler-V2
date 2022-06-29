@@ -909,16 +909,16 @@ void USR_ShowScreen(uint32_t NewScreen)
         ssd1306_WriteStringEightBitFont(0, 0,"Scrape", Font_6x10, White);
         ssd1306_WriteStringEightBitFont(0,  LINE1_Y,"With small side steps", Font_6x10, White);
         //Calculate the 2 digits of the scrape speed
-        Dig[0] = gMachineType[gMachine/100].Parameters[2].Value / 100; 
-        Dig[1] = (gMachineType[gMachine/100].Parameters[2].Value % 100) /10;
+        Dig[0] = pSCRAPESPEED / 100; 
+        Dig[1] = (pSCRAPESPEED % 100) /10;
         //Calculate the 3 digits of the scrape width
-        Dig[2] = gMachineType[gMachine/100].Parameters[0].Value / 100;
-        Dig[3] = (gMachineType[gMachine/100].Parameters[0].Value % 100)/10;
-        Dig[4] = gMachineType[gMachine/100].Parameters[0].Value - Dig[2] * 100 - Dig[3] * 10;
+        Dig[2] = pSCRAPEWIDTH / 100;
+        Dig[3] = (pSCRAPEWIDTH % 100)/10;
+        Dig[4] = pSCRAPEWIDTH - Dig[2] * 100 - Dig[3] * 10;
         //Calculate the 3 digits of the side step small
-        Dig[5] = gMachineType[gMachine/100].Parameters[3].Value / 100;
-        Dig[6] = (gMachineType[gMachine/100].Parameters[3].Value % 100)/10;
-        Dig[7] = gMachineType[gMachine/100].Parameters[3].Value - Dig[5] * 100 - Dig[6] * 10;
+        Dig[5] = pSIDESTEPSMALL / 100;
+        Dig[6] = (pSIDESTEPSMALL % 100)/10;
+        Dig[7] = pSIDESTEPSMALL - Dig[5] * 100 - Dig[6] * 10;
         //Create the string to be sent to the display
         sprintf(strValue, "SS%u.%u / SW%u.%u%u / SSS%u.%u%u", Dig[0], Dig[1], Dig[2], Dig[3], Dig[4], Dig[5], Dig[6], Dig[7]); 
         //Write the string to the display
@@ -935,16 +935,16 @@ void USR_ShowScreen(uint32_t NewScreen)
         ssd1306_WriteStringEightBitFont(0, 0,"Scrape", Font_6x10, White);
         ssd1306_WriteStringEightBitFont(0,  LINE1_Y,"With big side steps", Font_6x10, White);
         //Calculate the 2 digits of the scrape speed
-        Dig[0] = gMachineType[gMachine/100].Parameters[2].Value / 100; 
-        Dig[1] = (gMachineType[gMachine/100].Parameters[2].Value % 100) /10;
+        Dig[0] = pSCRAPESPEED / 100; 
+        Dig[1] = (pSCRAPESPEED % 100) /10;
         //Calculate the 3 digits of the scrape width
-        Dig[2] = gMachineType[gMachine/100].Parameters[0].Value / 100;
-        Dig[3] = (gMachineType[gMachine/100].Parameters[0].Value % 100)/10;
-        Dig[4] = gMachineType[gMachine/100].Parameters[0].Value - Dig[2] * 100 - Dig[3] * 10;
+        Dig[2] = pSCRAPEWIDTH / 100;
+        Dig[3] = (pSCRAPEWIDTH % 100)/10;
+        Dig[4] = pSCRAPEWIDTH - Dig[2] * 100 - Dig[3] * 10;
         //Calculate the 3 digits of the side step small
-        Dig[5] = gMachineType[gMachine/100].Parameters[4].Value / 100;
-        Dig[6] = (gMachineType[gMachine/100].Parameters[4].Value % 100)/10;
-        Dig[7] = gMachineType[gMachine/100].Parameters[4].Value - Dig[5] * 100 - Dig[6] * 10;
+        Dig[5] = pSIDESTEPBIG / 100;
+        Dig[6] = (pSIDESTEPBIG % 100)/10;
+        Dig[7] = pSIDESTEPBIG - Dig[5] * 100 - Dig[6] * 10;
         //Create the string to be sent to the display
         sprintf(strValue, "SS%u.%u / SW%u.%u%u / BSS%u.%u%u", Dig[0], Dig[1], Dig[2], Dig[3], Dig[4], Dig[5], Dig[6], Dig[7]);
         //Write the string to the display
@@ -961,24 +961,24 @@ void USR_ShowScreen(uint32_t NewScreen)
         ssd1306_WriteStringEightBitFont(0, 0,"Scrape", Font_6x10, White);
         ssd1306_WriteStringEightBitFont(0,  LINE1_Y,"Outer parts", Font_6x10, White);
         //Calculate the 2 digits of the scrape speed
-        Dig[0] = gMachineType[gMachine/100].Parameters[2].Value / 100; 
-        Dig[1] = (gMachineType[gMachine/100].Parameters[2].Value % 100) /10;
+        Dig[0] = pSCRAPESPEED / 100; 
+        Dig[1] = (pSCRAPESPEED % 100) /10;
         //Calculate the 3 digits of the scrape width
-        Dig[2] = gMachineType[gMachine/100].Parameters[0].Value / 100;
-        Dig[3] = (gMachineType[gMachine/100].Parameters[0].Value % 100)/10;
-        Dig[4] = gMachineType[gMachine/100].Parameters[0].Value - Dig[2] * 100 - Dig[3] * 10;
+        Dig[2] = pSCRAPEWIDTH / 100;
+        Dig[3] = (pSCRAPEWIDTH % 100)/10;
+        Dig[4] = pSCRAPEWIDTH - Dig[2] * 100 - Dig[3] * 10;
         //Calculate the 3 digits of the side step big
-        Dig[5] = gMachineType[gMachine/100].Parameters[4].Value / 100;
-        Dig[6] = (gMachineType[gMachine/100].Parameters[4].Value % 100)/10;
-        Dig[7] = gMachineType[gMachine/100].Parameters[4].Value - Dig[5] * 100 - Dig[6] * 10;
+        Dig[5] = pSIDESTEPBIG / 100;
+        Dig[6] = (pSIDESTEPBIG % 100)/10;
+        Dig[7] = pSIDESTEPBIG - Dig[5] * 100 - Dig[6] * 10;
         //Create the string to be sent to the display
         sprintf(strValue, "SS%u.%u / SW%u.%u%u / SSS%u.%u%u", Dig[0], Dig[1], Dig[2], Dig[3], Dig[4], Dig[5], Dig[6], Dig[7]); 
         //Write the string to the display
         ssd1306_WriteStringEightBitFont(0,  LINE3_Y,strValue, Font_6x10, White);
         //Calculate the 3 digits of the inner scrape width
-        Dig[8] = gMachineType[gMachine/100].Parameters[2].Value / 100;
-        Dig[9] = (gMachineType[gMachine/100].Parameters[2].Value % 100)/10;
-        Dig[10] = gMachineType[gMachine/100].Parameters[2].Value - Dig[8] * 100 - Dig[9] * 10;
+        Dig[8] = pSCRAPESPEED / 100;
+        Dig[9] = (pSCRAPESPEED % 100)/10;
+        Dig[10] = pSCRAPESPEED - Dig[8] * 100 - Dig[9] * 10;
         //Create the string to be sent to the display
         sprintf(strValue, "OIW%u%u.%u", Dig[8], Dig[9], Dig[10]);
         //Write the string to the display

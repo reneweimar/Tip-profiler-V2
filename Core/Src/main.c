@@ -72,7 +72,7 @@ void SystemClock_Config(void);
   * @retval int
   */
   uint8_t G;
-uint8_t a;
+uint32_t a;
 
 int main(void)
 {

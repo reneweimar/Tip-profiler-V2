@@ -32,7 +32,7 @@ I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h)(0x613620C6)
-I (../Core/Inc/work.h)(0x62B96817)
+I (../Core/Inc/work.h)(0x62BBC6DF)
 I (../Core/Inc/fonts.h)(0x62B96817)
 F (..\Core\Src\ssd1306.c)(0x62B96817)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_80352105-Id:\Keil_v5\ARM\PACK\ARM\CMSIS\5.9.0\CMSIS\Core\Include-Id:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include-D__UVISION_VERSION="525" -D_RTE_ -DSTM32F10X_HD -DUSE_HAL_DRIVER -DSTM32F103xE-o .\80352105\ssd1306.o --omf_browse .\80352105\ssd1306.crf --depend .\80352105\ssd1306.d)
 I (d:\Keil_v5\ARM\ARMCC\include\math.h)(0x599F218E)
@@ -70,10 +70,10 @@ I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h)(0x613620C6)
-I (../Core/Inc/work.h)(0x62B96817)
+I (../Core/Inc/work.h)(0x62BBC6DF)
 I (d:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599F218C)
 I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x599F218C)
-F (..\Core\Src\work.c)(0x62BAD140)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_80352105-Id:\Keil_v5\ARM\PACK\ARM\CMSIS\5.9.0\CMSIS\Core\Include-Id:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include-D__UVISION_VERSION="525" -D_RTE_ -DSTM32F10X_HD -DUSE_HAL_DRIVER -DSTM32F103xE-o .\80352105\work.o --omf_browse .\80352105\work.crf --depend .\80352105\work.d)
+F (..\Core\Src\work.c)(0x62BBC67B)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_80352105-Id:\Keil_v5\ARM\PACK\ARM\CMSIS\5.9.0\CMSIS\Core\Include-Id:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include-D__UVISION_VERSION="525" -D_RTE_ -DSTM32F10X_HD -DUSE_HAL_DRIVER -DSTM32F103xE-o .\80352105\work.o --omf_browse .\80352105\work.crf --depend .\80352105\work.d)
 I (../Core/Inc/main.h)(0x623C1B39)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h)(0x613620C6)
 I (../Core/Inc/stm32f1xx_hal_conf.h)(0x6139FDFB)
@@ -105,20 +105,20 @@ I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h)(0x613620C6)
-I (../Core/Inc/work.h)(0x62B96817)
+I (../Core/Inc/work.h)(0x62BBC6DF)
 I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x599F218C)
 I (../Core/Inc/eeprom.h)(0x61F92B18)
-I (../Core/Inc/userinterface.h)(0x62BACD17)
+I (../Core/Inc/userinterface.h)(0x62BBC6B0)
 I (../Core/Inc/ssd1306.h)(0x62B96817)
 I (../Core/Inc/ssd1306_defines.h)(0x61EE0214)
 I (../Core/Inc/fonts.h)(0x62B96817)
 I (d:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599F218C)
 I (../Core/Inc/power.h)(0x61EA5015)
 I (../Core/Inc/adc.h)(0x61EA5015)
-I (../Core/Inc/strokemotor.h)(0x62971D71)
+I (../Core/Inc/strokemotor.h)(0x62BBC67B)
 I (../Core/Inc/indexmotor.h)(0x623C1B39)
 I (../Core/Inc/i2c.h)(0x61C28721)
-F (..\Core\Src\indexmotor.c)(0x62B96817)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_80352105-Id:\Keil_v5\ARM\PACK\ARM\CMSIS\5.9.0\CMSIS\Core\Include-Id:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include-D__UVISION_VERSION="525" -D_RTE_ -DSTM32F10X_HD -DUSE_HAL_DRIVER -DSTM32F103xE-o .\80352105\indexmotor.o --omf_browse .\80352105\indexmotor.crf --depend .\80352105\indexmotor.d)
+F (..\Core\Src\indexmotor.c)(0x62BBC67B)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_80352105-Id:\Keil_v5\ARM\PACK\ARM\CMSIS\5.9.0\CMSIS\Core\Include-Id:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include-D__UVISION_VERSION="525" -D_RTE_ -DSTM32F10X_HD -DUSE_HAL_DRIVER -DSTM32F103xE-o .\80352105\indexmotor.o --omf_browse .\80352105\indexmotor.crf --depend .\80352105\indexmotor.d)
 I (../Core/Inc/indexmotor.h)(0x623C1B39)
 I (../Core/Inc/main.h)(0x623C1B39)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h)(0x613620C6)
@@ -151,7 +151,7 @@ I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h)(0x613620C6)
-I (../Core/Inc/work.h)(0x62B96817)
+I (../Core/Inc/work.h)(0x62BBC6DF)
 I (../Core/Inc/gpio.h)(0x6139FDF9)
 I (../Core/Inc/tim.h)(0x61EA5015)
 I (../Core/Inc/power.h)(0x61EA5015)
@@ -188,12 +188,12 @@ I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h)(0x613620C6)
-I (../Core/Inc/work.h)(0x62B96817)
-I (../Core/Inc/strokemotor.h)(0x62971D71)
+I (../Core/Inc/work.h)(0x62BBC6DF)
+I (../Core/Inc/strokemotor.h)(0x62BBC67B)
 I (../Core/Inc/tim.h)(0x61EA5015)
 I (../Core/Inc/gpio.h)(0x6139FDF9)
 I (../Core/Inc/power.h)(0x61EA5015)
-F (../Core/Src/main.c)(0x62BAD202)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_80352105-Id:\Keil_v5\ARM\PACK\ARM\CMSIS\5.9.0\CMSIS\Core\Include-Id:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include-D__UVISION_VERSION="525" -D_RTE_ -DSTM32F10X_HD -DUSE_HAL_DRIVER -DSTM32F103xE-o .\80352105\main.o --omf_browse .\80352105\main.crf --depend .\80352105\main.d)
+F (../Core/Src/main.c)(0x62BBC738)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_80352105-Id:\Keil_v5\ARM\PACK\ARM\CMSIS\5.9.0\CMSIS\Core\Include-Id:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include-D__UVISION_VERSION="525" -D_RTE_ -DSTM32F10X_HD -DUSE_HAL_DRIVER -DSTM32F103xE-o .\80352105\main.o --omf_browse .\80352105\main.crf --depend .\80352105\main.d)
 I (../Core/Inc/main.h)(0x623C1B39)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h)(0x613620C6)
 I (../Core/Inc/stm32f1xx_hal_conf.h)(0x6139FDFB)
@@ -225,15 +225,15 @@ I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h)(0x613620C6)
-I (../Core/Inc/work.h)(0x62B96817)
-I (../Core/Inc/strokemotor.h)(0x62971D71)
+I (../Core/Inc/work.h)(0x62BBC6DF)
+I (../Core/Inc/strokemotor.h)(0x62BBC67B)
 I (../Core/Inc/indexmotor.h)(0x623C1B39)
 I (../Core/Inc/tim.h)(0x61EA5015)
 I (../Core/Inc/usart.h)(0x6139FDFB)
 I (../Core/Inc/dma.h)(0x6139FDFA)
 I (../Core/Inc/adc.h)(0x61EA5015)
 I (../Core/Inc/i2c.h)(0x61C28721)
-I (../Core/Inc/userinterface.h)(0x62BACD17)
+I (../Core/Inc/userinterface.h)(0x62BBC6B0)
 I (../Core/Inc/ssd1306.h)(0x62B96817)
 I (../Core/Inc/ssd1306_defines.h)(0x61EE0214)
 I (../Core/Inc/fonts.h)(0x62B96817)
@@ -275,7 +275,7 @@ I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h)(0x613620C6)
-I (../Core/Inc/work.h)(0x62B96817)
+I (../Core/Inc/work.h)(0x62BBC6DF)
 F (../Core/Src/adc.c)(0x61EA5015)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_80352105-Id:\Keil_v5\ARM\PACK\ARM\CMSIS\5.9.0\CMSIS\Core\Include-Id:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include-D__UVISION_VERSION="525" -D_RTE_ -DSTM32F10X_HD -DUSE_HAL_DRIVER -DSTM32F103xE-o .\80352105\adc.o --omf_browse .\80352105\adc.crf --depend .\80352105\adc.d)
 I (../Core/Inc/adc.h)(0x61EA5015)
 I (../Core/Inc/main.h)(0x623C1B39)
@@ -309,7 +309,7 @@ I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h)(0x613620C6)
-I (../Core/Inc/work.h)(0x62B96817)
+I (../Core/Inc/work.h)(0x62BBC6DF)
 I (../Core/Inc/power.h)(0x61EA5015)
 F (../Core/Src/dma.c)(0x61EA5015)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_80352105-Id:\Keil_v5\ARM\PACK\ARM\CMSIS\5.9.0\CMSIS\Core\Include-Id:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include-D__UVISION_VERSION="525" -D_RTE_ -DSTM32F10X_HD -DUSE_HAL_DRIVER -DSTM32F103xE-o .\80352105\dma.o --omf_browse .\80352105\dma.crf --depend .\80352105\dma.d)
 I (../Core/Inc/dma.h)(0x6139FDFA)
@@ -344,7 +344,7 @@ I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h)(0x613620C6)
-I (../Core/Inc/work.h)(0x62B96817)
+I (../Core/Inc/work.h)(0x62BBC6DF)
 F (../Core/Src/i2c.c)(0x61EA5015)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_80352105-Id:\Keil_v5\ARM\PACK\ARM\CMSIS\5.9.0\CMSIS\Core\Include-Id:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include-D__UVISION_VERSION="525" -D_RTE_ -DSTM32F10X_HD -DUSE_HAL_DRIVER -DSTM32F103xE-o .\80352105\i2c.o --omf_browse .\80352105\i2c.crf --depend .\80352105\i2c.d)
 I (../Core/Inc/i2c.h)(0x61C28721)
 I (../Core/Inc/main.h)(0x623C1B39)
@@ -378,7 +378,7 @@ I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h)(0x613620C6)
-I (../Core/Inc/work.h)(0x62B96817)
+I (../Core/Inc/work.h)(0x62BBC6DF)
 F (../Core/Src/tim.c)(0x61EA5015)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_80352105-Id:\Keil_v5\ARM\PACK\ARM\CMSIS\5.9.0\CMSIS\Core\Include-Id:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include-D__UVISION_VERSION="525" -D_RTE_ -DSTM32F10X_HD -DUSE_HAL_DRIVER -DSTM32F103xE-o .\80352105\tim.o --omf_browse .\80352105\tim.crf --depend .\80352105\tim.d)
 I (../Core/Inc/tim.h)(0x61EA5015)
 I (../Core/Inc/main.h)(0x623C1B39)
@@ -412,9 +412,9 @@ I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h)(0x613620C6)
-I (../Core/Inc/work.h)(0x62B96817)
+I (../Core/Inc/work.h)(0x62BBC6DF)
 I (../Core/Inc/indexmotor.h)(0x623C1B39)
-I (../Core/Inc/strokemotor.h)(0x62971D71)
+I (../Core/Inc/strokemotor.h)(0x62BBC67B)
 F (../Core/Src/usart.c)(0x6139FDFB)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_80352105-Id:\Keil_v5\ARM\PACK\ARM\CMSIS\5.9.0\CMSIS\Core\Include-Id:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include-D__UVISION_VERSION="525" -D_RTE_ -DSTM32F10X_HD -DUSE_HAL_DRIVER -DSTM32F103xE-o .\80352105\usart.o --omf_browse .\80352105\usart.crf --depend .\80352105\usart.d)
 I (../Core/Inc/usart.h)(0x6139FDFB)
 I (../Core/Inc/main.h)(0x623C1B39)
@@ -448,8 +448,8 @@ I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h)(0x613620C6)
-I (../Core/Inc/work.h)(0x62B96817)
-F (../Core/Src/stm32f1xx_it.c)(0x625AD2E9)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_80352105-Id:\Keil_v5\ARM\PACK\ARM\CMSIS\5.9.0\CMSIS\Core\Include-Id:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include-D__UVISION_VERSION="525" -D_RTE_ -DSTM32F10X_HD -DUSE_HAL_DRIVER -DSTM32F103xE-o .\80352105\stm32f1xx_it.o --omf_browse .\80352105\stm32f1xx_it.crf --depend .\80352105\stm32f1xx_it.d)
+I (../Core/Inc/work.h)(0x62BBC6DF)
+F (../Core/Src/stm32f1xx_it.c)(0x62BBC67B)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_80352105-Id:\Keil_v5\ARM\PACK\ARM\CMSIS\5.9.0\CMSIS\Core\Include-Id:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include-D__UVISION_VERSION="525" -D_RTE_ -DSTM32F10X_HD -DUSE_HAL_DRIVER -DSTM32F103xE-o .\80352105\stm32f1xx_it.o --omf_browse .\80352105\stm32f1xx_it.crf --depend .\80352105\stm32f1xx_it.d)
 I (../Core/Inc/main.h)(0x623C1B39)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h)(0x613620C6)
 I (../Core/Inc/stm32f1xx_hal_conf.h)(0x6139FDFB)
@@ -481,9 +481,9 @@ I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h)(0x613620C6)
-I (../Core/Inc/work.h)(0x62B96817)
+I (../Core/Inc/work.h)(0x62BBC6DF)
 I (../Core/Inc/indexmotor.h)(0x623C1B39)
-I (../Core/Inc/strokemotor.h)(0x62971D71)
+I (../Core/Inc/strokemotor.h)(0x62BBC67B)
 I (../Core/Inc/stm32f1xx_it.h)(0x6139FDFB)
 F (../Core/Src/stm32f1xx_hal_msp.c)(0x625AD2E9)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_80352105-Id:\Keil_v5\ARM\PACK\ARM\CMSIS\5.9.0\CMSIS\Core\Include-Id:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include-D__UVISION_VERSION="525" -D_RTE_ -DSTM32F10X_HD -DUSE_HAL_DRIVER -DSTM32F103xE-o .\80352105\stm32f1xx_hal_msp.o --omf_browse .\80352105\stm32f1xx_hal_msp.crf --depend .\80352105\stm32f1xx_hal_msp.d)
 I (../Core/Inc/main.h)(0x623C1B39)
@@ -517,8 +517,8 @@ I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h)(0x613620C6)
-I (../Core/Inc/work.h)(0x62B96817)
-F (..\Core\Src\userinterface.c)(0x62BAD796)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_80352105-Id:\Keil_v5\ARM\PACK\ARM\CMSIS\5.9.0\CMSIS\Core\Include-Id:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include-D__UVISION_VERSION="525" -D_RTE_ -DSTM32F10X_HD -DUSE_HAL_DRIVER -DSTM32F103xE-o .\80352105\userinterface.o --omf_browse .\80352105\userinterface.crf --depend .\80352105\userinterface.d)
+I (../Core/Inc/work.h)(0x62BBC6DF)
+F (..\Core\Src\userinterface.c)(0x62BBC67B)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_80352105-Id:\Keil_v5\ARM\PACK\ARM\CMSIS\5.9.0\CMSIS\Core\Include-Id:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include-D__UVISION_VERSION="525" -D_RTE_ -DSTM32F10X_HD -DUSE_HAL_DRIVER -DSTM32F103xE-o .\80352105\userinterface.o --omf_browse .\80352105\userinterface.crf --depend .\80352105\userinterface.d)
 I (../Core/Inc/main.h)(0x623C1B39)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h)(0x613620C6)
 I (../Core/Inc/stm32f1xx_hal_conf.h)(0x6139FDFB)
@@ -550,8 +550,8 @@ I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h)(0x613620C6)
-I (../Core/Inc/work.h)(0x62B96817)
-I (../Core/Inc/userinterface.h)(0x62BACD17)
+I (../Core/Inc/work.h)(0x62BBC6DF)
+I (../Core/Inc/userinterface.h)(0x62BBC6B0)
 I (../Core/Inc/ssd1306.h)(0x62B96817)
 I (../Core/Inc/ssd1306_defines.h)(0x61EE0214)
 I (../Core/Inc/fonts.h)(0x62B96817)
@@ -593,7 +593,7 @@ I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h)(0x613620C6)
-I (../Core/Inc/work.h)(0x62B96817)
+I (../Core/Inc/work.h)(0x62BBC6DF)
 I (../Core/Inc/usart.h)(0x6139FDFB)
 F (..\Core\Src\power.c)(0x61EA5015)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_80352105-Id:\Keil_v5\ARM\PACK\ARM\CMSIS\5.9.0\CMSIS\Core\Include-Id:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include-D__UVISION_VERSION="525" -D_RTE_ -DSTM32F10X_HD -DUSE_HAL_DRIVER -DSTM32F103xE-o .\80352105\power.o --omf_browse .\80352105\power.crf --depend .\80352105\power.d)
 I (../Core/Inc/main.h)(0x623C1B39)
@@ -627,7 +627,7 @@ I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h)(0x613620C6)
-I (../Core/Inc/work.h)(0x62B96817)
+I (../Core/Inc/work.h)(0x62BBC6DF)
 I (../Core/Inc/power.h)(0x61EA5015)
 F (..\Core\Src\EEprom.c)(0x61EA5015)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_80352105-Id:\Keil_v5\ARM\PACK\ARM\CMSIS\5.9.0\CMSIS\Core\Include-Id:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include-D__UVISION_VERSION="525" -D_RTE_ -DSTM32F10X_HD -DUSE_HAL_DRIVER -DSTM32F103xE-o .\80352105\eeprom.o --omf_browse .\80352105\eeprom.crf --depend .\80352105\eeprom.d)
 I (../Core/Inc/main.h)(0x623C1B39)
@@ -661,7 +661,7 @@ I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h)(0x613620C6)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h)(0x613620C6)
-I (../Core/Inc/work.h)(0x62B96817)
+I (../Core/Inc/work.h)(0x62BBC6DF)
 I (../Core/Inc/eeprom.h)(0x61F92B18)
 F (../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c)(0x613620C6)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_80352105-Id:\Keil_v5\ARM\PACK\ARM\CMSIS\5.9.0\CMSIS\Core\Include-Id:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include-D__UVISION_VERSION="525" -D_RTE_ -DSTM32F10X_HD -DUSE_HAL_DRIVER -DSTM32F103xE-o .\80352105\stm32f1xx_hal_gpio_ex.o --omf_browse .\80352105\stm32f1xx_hal_gpio_ex.crf --depend .\80352105\stm32f1xx_hal_gpio_ex.d)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h)(0x613620C6)

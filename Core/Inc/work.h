@@ -98,6 +98,27 @@ typedef enum
   TASK_ERROR,
   TASK_READY
 } enuTask;
+
+//Parameter numbering is defined in work.h
+#define pSCRAPEWIDTH         gMachineType[gMachine/100].Parameters[SCRAPEWIDTH].Value
+#define pSCRAPEWIDTHINNER    gMachineType[gMachine/100].Parameters[SCRAPEWIDTHINNER].Value
+#define pSCRAPESPEED         gMachineType[gMachine/100].Parameters[SCRAPESPEED].Value
+#define pSIDESTEPSMALL       gMachineType[gMachine/100].Parameters[SIDESTEPSMALL].Value
+#define pSIDESTEPBIG         gMachineType[gMachine/100].Parameters[SIDESTEPBIG].Value
+#define pSCREENSAVER         gMachineType[gMachine/100].Parameters[SCREENSAVER].Value
+#define pMACHINETYPE         gMachineType[gMachine/100].Parameters[MACHINETYPE].Value
+#define pSIDESTEPOFFSET      gMachineType[gMachine/100].Parameters[SIDESTEPOFFSET].Value
+#define pSCRAPESPEEDMIN      gMachineType[gMachine/100].Parameters[SCRAPESPEEDMIN].Value
+#define pSCRAPESPEEDMAX      gMachineType[gMachine/100].Parameters[SCRAPESPEEDMAX].Value
+#define pSCRAPEWIDTHMAX      gMachineType[gMachine/100].Parameters[SCRAPEWIDTHMAX].Value
+#define pSCRAPEWIDTHFACT     gMachineType[gMachine/100].Parameters[SCRAPEWIDTHFACT].Value
+#define pSCRAPESPEEDFACT     gMachineType[gMachine/100].Parameters[SCRAPESPEEDFACT].Value
+#define pSIDESTEPSMALLFACT   gMachineType[gMachine/100].Parameters[SIDESTSMALLFACT].Value
+#define pSIDESTEPBIGFACT     gMachineType[gMachine/100].Parameters[SIDESTBIGFACT].Value
+#define pSIDESTEPRATIO       gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value
+#define pSIDESTEPREDUCTION   gMachineType[gMachine/100].Parameters[SIDESTREDUCTION].Value
+#define pSTROKEREDUCTION     gMachineType[gMachine/100].Parameters[STROKEREDUCTION].Value
+
 //-----------------------------------------------------------------------------
 //! \brief  Status type enumeration
 typedef enum

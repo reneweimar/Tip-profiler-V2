@@ -186,16 +186,16 @@ uint8_t WRK_CheckConditions(void)
 {
   uint8_t ReturnValue = 1; //OK
   //Check SIDESTEPBIG: Condition is that SIDESTEPBIG >= SIDESTEPSMALL + SIDESTEPDIFFERENCE
-  if ((gParameterNumber == SIDESTEPBIG) && (gParameterValue < gMachineType[gMachine/100].Parameters[SIDESTEPSMALL].Value + SIDESTEPDIFFERENCE)) 
+  if ((gParameterNumber == SIDESTEPBIG) && (gParameterValue < pSIDESTEPSMALL + SIDESTEPDIFFERENCE)) 
     ReturnValue = 0;
   //Check SIDESTEPSMALL: Condition is that SIDESTEPSMALL <= SIDESTEPBIG - SIDESTEPDIFFERENCE
-  if ((gParameterNumber == SIDESTEPSMALL) && (gParameterValue > gMachineType[gMachine/100].Parameters[SIDESTEPBIG].Value - SIDESTEPDIFFERENCE)) 
+  if ((gParameterNumber == SIDESTEPSMALL) && (gParameterValue > pSIDESTEPBIG - SIDESTEPDIFFERENCE)) 
     ReturnValue = 0;
   //Check SCRAPEWIDTHINNER: Condition is that SCRAPEWIDTHINNER <= SCRAPEWIDTH - SCRAPEWIDTHDIFFERENCE
-  if ((gParameterNumber == SCRAPEWIDTHINNER) && (gParameterValue > gMachineType[gMachine/100].Parameters[SCRAPEWIDTH].Value - SCRAPEWIDTHDIFFERENCE)) 
+  if ((gParameterNumber == SCRAPEWIDTHINNER) && (gParameterValue > pSCRAPEWIDTH - SCRAPEWIDTHDIFFERENCE)) 
     ReturnValue = 0;
   //Check SCRAPEWIDTH: Condition is that SCRAPEWIDTH >= SCRAPEWIDTHINNER + SCRAPEWIDTHDIFFERENCE
-  if ((gParameterNumber == SCRAPEWIDTH) && (gParameterValue < gMachineType[gMachine/100].Parameters[SCRAPEWIDTHINNER].Value + SCRAPEWIDTHDIFFERENCE)) 
+  if ((gParameterNumber == SCRAPEWIDTH) && (gParameterValue < pSCRAPEWIDTHINNER + SCRAPEWIDTHDIFFERENCE)) 
     ReturnValue = 0;
   return ReturnValue;
 }
@@ -441,8 +441,8 @@ void WRK_HandleActive(void)
             if (gCurrentScreen == 41) gScrape.Endless = 1;
             gReturnScreen = gCurrentScreen;
             gReturnFromErrorScreen = gCurrentScreen;
-            gScrape.SideStep = gIDX_Motor.Factor * (gMachineType[gMachine/100].Parameters[SIDESTEPSMALL].Value * 84 / 15 * 1000 / gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value); //Pulses -> Value * 10 * 840 / 1500
-            gScrape.StartPosition = gMachineType[gMachine/100].Parameters[SCRAPEWIDTH].Value * 42 / 15 * 1000 / gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value; //Pulses -> Value * 10 / 2 (Half scrape width) * 840 / 1500 um -> Pulse
+            gScrape.SideStep = gIDX_Motor.Factor * (pSIDESTEPSMALL * 84 / 15 * 1000 / pSIDESTEPRATIO); //Pulses -> Value * 10 * 840 / 1500
+            gScrape.StartPosition = pSCRAPEWIDTH * 42 / 15 * 1000 / pSIDESTEPRATIO; //Pulses -> Value * 10 / 2 (Half scrape width) * 840 / 1500 um -> Pulse
             gScrape.EndPosition = 0;
             WRK_SetStatus(MainStatus, SCRAPEREED);
         }
@@ -452,8 +452,8 @@ void WRK_HandleActive(void)
             if (gCurrentScreen == 40) gScrape.Endless = 1;
             gReturnScreen = gCurrentScreen;
             gReturnFromErrorScreen = gCurrentScreen;
-            gScrape.SideStep = gIDX_Motor.Factor * (gMachineType[gMachine/100].Parameters[SIDESTEPBIG].Value * 84 / 15 * 1000 / gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value); //Pulses -> Value * 10 * 840 / 1500
-            gScrape.StartPosition = gMachineType[gMachine/100].Parameters[SCRAPEWIDTH].Value * 42 / 15 * 1000 / gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value; //Pulses -> Value * 10 / 2 (Half scrape width) * 840 / 1500 um -> Pulse
+            gScrape.SideStep = gIDX_Motor.Factor * (pSIDESTEPBIG * 84 / 15 * 1000 / pSIDESTEPRATIO); //Pulses -> Value * 10 * 840 / 1500
+            gScrape.StartPosition = pSCRAPEWIDTH * 42 / 15 * 1000 / pSIDESTEPRATIO; //Pulses -> Value * 10 / 2 (Half scrape width) * 840 / 1500 um -> Pulse
             gScrape.EndPosition = 0;
             WRK_SetStatus(MainStatus, SCRAPEREED);
         }
@@ -462,9 +462,9 @@ void WRK_HandleActive(void)
           WRK_HandleResetUnitErrors();
           gReturnScreen = gCurrentScreen;
           gReturnFromErrorScreen = gCurrentScreen;
-          gScrape.SideStep = gIDX_Motor.Factor * (gMachineType[gMachine/100].Parameters[SIDESTEPSMALL].Value * 84 / 15 * 1000 / gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value); //Pulses -> Value * 10 * 840 / 1500
-          gScrape.StartPosition = gMachineType[gMachine/100].Parameters[SCRAPEWIDTH].Value * 42 / 15 * 1000 / gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value; //Pulses -> Value * 10 / 2 (Half scrape width) * 840 / 1500 um -> Pulse
-          gScrape.EndPosition = gMachineType[gMachine/100].Parameters[SCRAPEWIDTHINNER].Value * 42 / 15; //Pulses -> Value * 10 / 2 (Half scrape width inner) * 840 / 1500 um -> Pulse;
+          gScrape.SideStep = gIDX_Motor.Factor * (pSIDESTEPSMALL * 84 / 15 * 1000 / pSIDESTEPRATIO); //Pulses -> Value * 10 * 840 / 1500
+          gScrape.StartPosition = pSCRAPEWIDTH * 42 / 15 * 1000 / pSIDESTEPRATIO; //Pulses -> Value * 10 / 2 (Half scrape width) * 840 / 1500 um -> Pulse
+          gScrape.EndPosition = pSCRAPEWIDTHINNER * 42 / 15; //Pulses -> Value * 10 / 2 (Half scrape width inner) * 840 / 1500 um -> Pulse;
           WRK_SetStatus(MainStatus, SCRAPEREED);
         }
         else if (gCurrentScreen == 33) //Start Scrape process only inner sections
@@ -472,8 +472,8 @@ void WRK_HandleActive(void)
           WRK_HandleResetUnitErrors();
           gReturnScreen = gCurrentScreen;
           gReturnFromErrorScreen = gCurrentScreen;
-          gScrape.SideStep = gIDX_Motor.Factor * (gMachineType[gMachine/100].Parameters[SIDESTEPSMALL].Value * 84 / 15 * 1000 / gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value); //Pulses -> Value * 10 * 840 / 1500
-          gScrape.StartPosition = gMachineType[gMachine/100].Parameters[SCRAPEWIDTHINNER].Value * 42 / 15; //Pulses -> Value * 10 / 2 (Half scrape width) * 840 / 1500 um -> Pulse
+          gScrape.SideStep = gIDX_Motor.Factor * (pSIDESTEPSMALL * 84 / 15 * 1000 / pSIDESTEPRATIO); //Pulses -> Value * 10 * 840 / 1500
+          gScrape.StartPosition = pSCRAPEWIDTHINNER * 42 / 15; //Pulses -> Value * 10 / 2 (Half scrape width) * 840 / 1500 um -> Pulse
           gScrape.EndPosition = 0;              
           WRK_SetStatus(MainStatus, SCRAPEREED);
         }
@@ -860,7 +860,7 @@ void WRK_HandleInitialize(void)
         }
         else if (gIDX_Motor.IsInStartPosition == 0) 
         {  
-					gScrape.StartPosition = gMachineType[gMachine/100].Parameters[SCRAPEWIDTH].Value * 42 / 15 * 1000 / gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value; //Pulses -> Value * 10 / 2 (Half scrape width) * 840 / 1500 um -> Pulse
+					gScrape.StartPosition = pSCRAPEWIDTH * 42 / 15 * 1000 / pSIDESTEPRATIO; //Pulses -> Value * 10 / 2 (Half scrape width) * 840 / 1500 um -> Pulse
           WRK_SetStatus(SubStatus,WAITFORINDEXSTART);
         }
         else
@@ -931,9 +931,9 @@ void WRK_HandleSideStep(void)
           if (gScrape.Status == RightSideLastStep)
           {
 #ifdef IDX_SHOWREALPOSITION
-            USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+            USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
 #else
-            USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float) gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+            USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float) gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
 #endif
             WRK_SetScrapeStatus (RightSideLastScrape);
           }
@@ -945,9 +945,9 @@ void WRK_HandleSideStep(void)
           else if (gScrape.Status == LeftSideLastStep)
           {
 #ifdef IDX_SHOWREALPOSITION
-            USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+            USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
 #else
-            USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float) gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+            USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float) gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
 #endif
             WRK_SetScrapeStatus (LeftSideLastScrape);
           }
@@ -974,9 +974,9 @@ void WRK_HandleSideStep(void)
           else if (gScrape.Status != NoSideStep)
           {
 #ifdef IDX_SHOWREALPOSITION
-              USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+              USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
 #else
-              USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float) gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+              USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float) gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
 #endif
           }
         }
@@ -1080,7 +1080,7 @@ void WRK_HandleScrapeReed (void)
       else
       {
         StoppedBecauseBatteryEmpty = 0;
-        gScrape.Speed = gMachineType[gMachine/100].Parameters[SCRAPESPEED].Value*gMachineType[gMachine/100].Parameters[STROKEREDUCTION].Value/100*60/100; // Value / 100 * 50 (ratio) * 60 (1 min = 60 s)
+        gScrape.Speed = gMachineType[gMachine/100].Parameters[SCRAPESPEED].Value*pSTROKEREDUCTION/100*60/100; // Value / 100 * 50 (ratio) * 60 (1 min = 60 s)
         gReturnScreen = gCurrentScreen;
         USR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK",4);
         USR_IncreaseCounters();
@@ -1103,9 +1103,9 @@ void WRK_HandleScrapeReed (void)
       if (IDX_Set(GOTOPOSITION, gScrape.StartPosition )==READY)
       {
 #ifdef IDX_SHOWREALPOSITION
-          USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+          USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
 #else
-          USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float)gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+          USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float)gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
 #endif
         IDX_Set(UNDEFINED,0);
         WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
@@ -1278,9 +1278,9 @@ void WRK_HandleScrapeReed (void)
           else
           {
 #ifdef IDX_SHOWREALPOSITION
-                      USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+                      USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
 #else
-                      USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float)gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+                      USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float)gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
 #endif
 
             WRK_SetScrapeStatus (RightSideNormalStep);
@@ -1310,9 +1310,9 @@ void WRK_HandleScrapeReed (void)
           WRK_SetScrapeStatus(gScrape.StatusPause);//(RightSideNormalStep);
           USR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK",4);
 #ifdef IDX_SHOWREALPOSITION
-                    USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+                    USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
 #else
-                    USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float)gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+                    USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float)gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
 #endif
 
           WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
@@ -1323,9 +1323,9 @@ void WRK_HandleScrapeReed (void)
           WRK_SetScrapeStatus(gScrape.StatusPause);//(LeftSideNormalStep)
           USR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK",4);
 #ifdef IDX_SHOWREALPOSITION
-                    USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+                    USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
 #else
-                    USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float)gIDX_Motor.UmPerPulse * (float) gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value / 1000));
+                    USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float)gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
 #endif
 
           WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
@@ -1436,9 +1436,9 @@ void WRK_HandleSTREncoder(void)
     {
       STR_Stop();
     }
-    else if ((gSTR_Motor.Encoder >= (4 * gMachineType[gMachine/100].Parameters[STROKEREDUCTION].Value)/100) && (gSTR_Motor.Encoder <=STARTPOSITION))
+    else if ((gSTR_Motor.Encoder >= (4 * pSTROKEREDUCTION)/100) && (gSTR_Motor.Encoder <=STARTPOSITION))
     {
-      newSetSpeed = (STR_GOTOSTARTSPEED * ((325 * gMachineType[gMachine/100].Parameters[STROKEREDUCTION].Value/5000) - gSTR_Motor.Encoder)) / 100;
+      newSetSpeed = (STR_GOTOSTARTSPEED * ((325 * pSTROKEREDUCTION/5000) - gSTR_Motor.Encoder)) / 100;
       if (newSetSpeed < STR_GOTOSTARTSPEED)
         if (newSetSpeed < STR_HOMESPEED) 
           gSTR_Motor.SetSpeed = STR_HOMESPEED;   
