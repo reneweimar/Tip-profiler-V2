@@ -161,8 +161,9 @@ uint8_t ssd1306_GetCharWidth(char ch, FontDefEightBit Font)
         }
       }
     }
-	if (ch == 32) CharacterWidth = Font.FontWidth - 2; //Space reserves space in normal text, not in enter value screen
+	if (ch == 32) CharacterWidth = Font.FontWidth - 3; //Space reserves space in normal text, not in enter value screen
 	if (ch == 33) CharacterWidth = 3;
+    if (ch == 49) CharacterWidth = Font.FontWidth - 1;
 	return CharacterWidth;
 }
 uint8_t ssd1306_GetStringWidth(char* str, FontDefEightBit Font)
@@ -840,25 +841,6 @@ char ssd1306_WriteCharEightBitFont(char ch, FontDefEightBit Font, SSD1306_COLOR 
     //Search for the most left pixel in all rows of the character. 
     //and calculate the font width. 
     //If a pixel is on, The font width = Font.FontWidth - j
-    /*
-    CharacterWidth = 0;
-    for (i = 0; i < Font.FontHeight; i++)
-    {
-			b = Font.data[(ch - 32) * Font.FontHeight + i]; 
-      for (j = 0; j < Font.FontWidth; j++)
-      {
-        if ((b << j) & 1<<(Font.FontWidth - 2)) //Pixel is on
-        {
-            if (Font.FontWidth - j > CharacterWidth)
-            {
-                CharacterWidth = Font.FontWidth - j; //Set CharacterWidth if biggest
-            }
-        }
-      }
-    }
-	if (CharacterWidth == 0) CharacterWidth = Font.FontWidth - 2; //Space
-    if (ch == 33) CharacterWidth = 3;
-    */
     CharacterWidth = ssd1306_GetCharWidth (ch,Font);
     // Translate font to screenbuffer taking into account the CharacterWidth
     for (i = 0; i < Font.FontHeight; i++)
