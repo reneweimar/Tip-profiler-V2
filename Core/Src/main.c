@@ -146,7 +146,7 @@ HAL_Init();
     WRK_HandleSideStep();
     if (a>0)
     {
-        USR_ShowScreen(a);
+        USR_ShowScreen(a,1);
         a=0;
     }
  

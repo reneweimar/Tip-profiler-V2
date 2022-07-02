@@ -163,7 +163,7 @@ uint8_t ssd1306_GetCharWidth(char ch, FontDefEightBit Font)
     }
 	if (ch == 32) CharacterWidth = Font.FontWidth - 3; //Space reserves space in normal text, not in enter value screen
 	if (ch == 33) CharacterWidth = 3;
-    if (ch == 49) CharacterWidth = Font.FontWidth - 1;
+    if (ch == 49) CharacterWidth = Font.FontWidth;
 	return CharacterWidth;
 }
 uint8_t ssd1306_GetStringWidth(char* str, FontDefEightBit Font)
@@ -1082,6 +1082,7 @@ void ssd1306_DrawRectangle(SSD1306_COLOR color, uint8_t newX, uint8_t newY, uint
     }
   }
 }
+
 
 void ssd1306_Clear()
 {

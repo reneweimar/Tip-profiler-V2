@@ -43,7 +43,12 @@ uint16_t LastNormalScreen = 0;
 uint8_t StoppedBecauseBatteryEmpty;
 //! \Global Contrast handler
 uint8_t WRK_UpdateContrast;
+//! \Scrape percentage left done
+uint8_t LeftPercentage;
+//! \Scrape percentage left done
+uint8_t RightPercentage;
 //! \Global Main Menu container
+
 StcMainMenu MainMenu[NROFMAINMENUITEMS]=
 {
   {"SETTINGS", 1},
@@ -200,6 +205,35 @@ uint8_t WRK_CheckConditions(void)
   return ReturnValue;
 }
 //-----------------------------------------------------------------------------
+//! \brief      Starts the correct progress draw routine
+//! \details    Base don the screen number the correct progress bar is started 
+//! \param      None
+void WRK_DrawProgressBar (void)
+{
+    if (gScrape.StartPosition > 0)
+        RightPercentage = (uint8_t) ((gIDX_Motor.GetPosition * 100) / (gScrape.StartPosition*gIDX_Motor.Factor));
+    else
+        LeftPercentage = (uint8_t) ((gIDX_Motor.GetPosition * 100) / (-gScrape.StartPosition*gIDX_Motor.Factor));
+    if (gScrape.Status == RightSideLastStep) RightPercentage = 0; //Avoid accuracy errors
+    if (gScrape.Status == LeftSideLastStep) LeftPercentage = 0; //Avoid accuracy errors
+    if (gReturnScreen == 30)
+    {
+        USR_DrawProgressFull(47,17,LeftPercentage,RightPercentage,4,White);
+    }
+    else if (gReturnScreen == 31)
+    {
+        USR_DrawProgressFull(47,17,LeftPercentage,RightPercentage,2,White);
+    }
+    else if (gReturnScreen == 32)
+    {
+        USR_DrawProgressPartial(47,17,LeftPercentage,RightPercentage,1,White);
+    }
+    else if (gReturnScreen == 33)
+    {
+        USR_DrawProgressPartial(47,17,LeftPercentage,RightPercentage,0,White);
+    }
+}
+//-----------------------------------------------------------------------------
 //! \brief      Handles the active status sequence
 //! \details    Handles actions to startup and execute user input 
 //! \param      None
@@ -218,7 +252,7 @@ void WRK_HandleActive(void)
       if (gCounter.Sequence > SPLASHSCREENTIME)
       {
         USR_ClearScreen(0);
-        USR_ShowScreen(10); //HOME
+        USR_ShowScreen(10,1); //HOME
         gCounter.Sequence = 0;
         WRK_SetStatus(SubStatus,WAITFORUSER);
       }
@@ -229,20 +263,20 @@ void WRK_HandleActive(void)
       if (USR_ButtonPressed(BtnMenu,USR_SHORTPRESSTIME,1)==1)
       {
         WRK_SetStatus(SubStatus, WAITFORUSER);
-        USR_ShowScreen(gReturnScreen);  
+        USR_ShowScreen(gReturnScreen,1);  
       }
       else if (PluggedIn())
       {
-        USR_SetMessage("","PLUGGED IN","","OK: CONTINUE *: CANCEL","","OK",4);
+        USR_SetMessage("","PLUGGED IN","","OK: CONTINUE *: CANCEL","","OK",4,1);
         if (USR_ButtonPressed(BtnOk,USR_SHORTPRESSTIME,1)==1)
         {
           WRK_SetStatus(SubStatus, WAITFORUSER);
-          USR_ShowScreen(gReturnScreen);  
+          USR_ShowScreen(gReturnScreen,1);  
         }
       }
       else
       {
-        USR_SetMessage("BATTERY VOLTAGE TOO","","LOW. PLEASE PLUG IN","","*: CANCEL","OK",4);
+        USR_SetMessage("BATTERY VOLTAGE TOO","","LOW. PLEASE PLUG IN","","*: CANCEL","OK",4,1);
       }
       break;
     }
@@ -258,9 +292,9 @@ void WRK_HandleActive(void)
           { 
             gServiceMenu = 1 - gServiceMenu;
             if (gServiceMenu)
-              USR_ShowScreen (101);
+              USR_ShowScreen (101,1);
             else
-              USR_ShowScreen (10101);
+              USR_ShowScreen (10101,1);
           }  
         }
         else
@@ -279,36 +313,35 @@ void WRK_HandleActive(void)
           {
             if (gSTR_Motor.IsInStartPosition == 1)
             {
-              USR_ShowScreen (gLastScrapeScreen);
+              USR_ShowScreen (gLastScrapeScreen,1);
             }
             else
             {
               gReturnScreen = gCurrentScreen;
-              USR_SetMessage("NOT IN START POS!","","SCRAPING MENU","","NOT AVAILABLE","OK",4);
+              USR_SetMessage("NOT IN START POS!","","SCRAPING MENU","","NOT AVAILABLE","OK",4,1);
             }
           }
           else if((gCurrentScreen >= 30) && (gCurrentScreen < 40))
-            USR_ShowScreen (gLastScrapeScreenEndless);
+            USR_ShowScreen (gLastScrapeScreenEndless,1);
           else if (gCurrentScreen == 10)
           {
             if (gIDX_Motor.IsHomed == 1)
             {
-              USR_ShowScreen (gCurrentScreen + 10);
+              USR_ShowScreen (gCurrentScreen + 10,1);
             }
             else
             {
               gReturnScreen = gCurrentScreen;
-              USR_SetMessage("Not homed!","","Start position menu is","","not available.","OK",4);        
-							//USR_SetMessage("","NOT HOMED!","","START POSITION MENU","","OKK",3);
+              USR_SetMessage("Not homed!","","Start position menu is","","not available.","OK",4,1);        
             }
           }
           else
-            USR_ShowScreen (gCurrentScreen + 10);
+            USR_ShowScreen (gCurrentScreen + 10,1);
           
         }
         else if (gCurrentScreen < 10000) //Menu screen
         {
-          USR_ShowScreen ((gCurrentScreen  * 100) + 1);
+          USR_ShowScreen ((gCurrentScreen  * 100) + 1,1);
         } 
         else if ((gCurrentScreen > 10100) && (gCurrentScreen < 10200)) //Parameter screen
         {
@@ -332,33 +365,33 @@ void WRK_HandleActive(void)
             {
               if (gSTR_Motor.IsInStartPosition == 1)
               {
-                USR_ShowScreen (gLastScrapeScreenEndless);
+                USR_ShowScreen (gLastScrapeScreenEndless,1);
               }
               else
               {
                 gReturnScreen = gCurrentScreen;
-                USR_SetMessage("NOT IN START POS!","","ENDLESS SCRAPING MENU","","NOT AVAILABLE","OK",4);
+                USR_SetMessage("NOT IN START POS!","","ENDLESS SCRAPING MENU","","NOT AVAILABLE","OK",4,1);
               }
             }
             else
             {
               gReturnScreen = gCurrentScreen;
-              USR_SetMessage("NOT HOMED!","","SCRAPING MENU","","NOT AVAILABLE","OK",4);
+              USR_SetMessage("NOT HOMED!","","SCRAPING MENU","","NOT AVAILABLE","OK",4,1);
             }
           }
           else if((gCurrentScreen >= 40) && (gCurrentScreen < 50))
-            USR_ShowScreen (gLastScrapeScreen);
+            USR_ShowScreen (gLastScrapeScreen,1);
           else
-            USR_ShowScreen (gCurrentScreen - 10);
+            USR_ShowScreen (gCurrentScreen - 10,1);
         }
       }
       else if ((USR_ButtonPressed(BtnDown, USR_SHORTPRESSTIME,1) == 1)  && (gCurrentScreen >= 10))
       {
-        USR_ShowScreen (gCurrentScreen + 1);
+        USR_ShowScreen (gCurrentScreen + 1,1);
       }
       else if ((USR_ButtonPressed(BtnUp,USR_SHORTPRESSTIME,1) == 1) && (gCurrentScreen >= 10))
       {
-        USR_ShowScreen (gCurrentScreen - 1);
+        USR_ShowScreen (gCurrentScreen - 1,1);
       }
       else if (USR_ButtonPressed(BtnMenu,USR_SHORTPRESSTIME,1) == 1)
       {
@@ -367,19 +400,19 @@ void WRK_HandleActive(void)
           if ((gCurrentScreen < 100) && (gCurrentScreen >=10)) //Normal screen
           {
             LastNormalScreen = gCurrentScreen;
-            USR_ShowScreen (101);
+            USR_ShowScreen (101,1);
           }
           else if ((gCurrentScreen >= 10000))
           {
-            USR_ShowScreen (gCurrentScreen  / 100);
+            USR_ShowScreen (gCurrentScreen  / 100,1);
           } 
           else if (LastNormalScreen >=10)
           {
-            USR_ShowScreen (LastNormalScreen);
+            USR_ShowScreen (LastNormalScreen,1);
           }
           else if (gCurrentScreen == 1040101) //Reset Counter -> Cancel reset
           {
-            USR_ShowScreen(LastScreen);
+            USR_ShowScreen(LastScreen,1);
           }
         }
       }
@@ -394,26 +427,26 @@ void WRK_HandleActive(void)
       {
         if (gCurrentScreen == 3) //Error screen
         {
-          USR_ShowScreen (gReturnFromErrorScreen);
+          USR_ShowScreen (gReturnFromErrorScreen,1);
         }
         else if (gCurrentScreen == 4) //Message screen
         {
-          USR_ShowScreen (gReturnScreen);
+          USR_ShowScreen (gReturnScreen,1);
         }
         else if ((gCurrentScreen > 10400) && (gCurrentScreen < 10500)) //Counter screen
         {
           LastScreen = gCurrentScreen;
-          USR_ShowScreen(gCurrentScreen*100+1);
+          USR_ShowScreen(gCurrentScreen*100+1,1);
         }
         else if (gCurrentScreen == 1040101) //Reset Counter
         {
           USR_ResetServiceCounter();
-          USR_ShowScreen(LastScreen);
+          USR_ShowScreen(LastScreen,1);
         }
         else if (BattPercentage == 0)
         {
           gReturnScreen = gCurrentScreen;
-          USR_SetMessage("BATTERY VOLTAGE TOO","","LOW. PLEASE PLUG IN","","*: CANCEL","OK",4);
+          USR_SetMessage("BATTERY VOLTAGE TOO","","LOW. PLEASE PLUG IN","","*: CANCEL","OK",4,1);
           WRK_SetStatus(SubStatus,WAITFORPLUGIN);
         }
         //From here all screens that are affected by the battery empty warning
@@ -422,7 +455,7 @@ void WRK_HandleActive(void)
           WRK_HandleResetUnitErrors();
           gReturnScreen = 20;
           gReturnFromErrorScreen = 10;
-          USR_SetMessage("","","     PLEASE WAIT","","","",4);
+          USR_SetMessage("","","     Please wait","","","",4,1);
           WRK_SetStatus(MainStatus,INITIALIZE);
           WRK_SetStatus(SubStatus,WAITFORINDEXHOME);  
         }
@@ -431,28 +464,28 @@ void WRK_HandleActive(void)
           WRK_HandleResetUnitErrors();
           gReturnScreen = gLastScrapeScreen;
           gReturnFromErrorScreen = 20;
-          USR_SetMessage("","","     PLEASE WAIT","","","",4);
+          USR_SetMessage("","","     Please wait","","","",4,1);
           WRK_SetStatus(MainStatus,INITIALIZE);
           WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);  
         }
-        else if ((gCurrentScreen == 30)||(gCurrentScreen == 40)) //Start Scrape process with small side step (40 = endless)
-        {
-            WRK_HandleResetUnitErrors();
-            if (gCurrentScreen == 41) gScrape.Endless = 1;
-            gReturnScreen = gCurrentScreen;
-            gReturnFromErrorScreen = gCurrentScreen;
-            gScrape.SideStep = gIDX_Motor.Factor * (pSIDESTEPSMALL * 84 / 15 * 1000 / pSIDESTEPRATIO); //Pulses -> Value * 10 * 840 / 1500
-            gScrape.StartPosition = pSCRAPEWIDTH * 42 / 15 * 1000 / pSIDESTEPRATIO; //Pulses -> Value * 10 / 2 (Half scrape width) * 840 / 1500 um -> Pulse
-            gScrape.EndPosition = 0;
-            WRK_SetStatus(MainStatus, SCRAPEREED);
-        }
-        else if ((gCurrentScreen == 31)||(gCurrentScreen == 41)) //Start Scrape process with big side step (41 is endless)
+        else if ((gCurrentScreen == 30)||(gCurrentScreen == 40)) //Start Scrape process with big side step (40 = endless)
         {
             WRK_HandleResetUnitErrors();
             if (gCurrentScreen == 40) gScrape.Endless = 1;
             gReturnScreen = gCurrentScreen;
             gReturnFromErrorScreen = gCurrentScreen;
             gScrape.SideStep = gIDX_Motor.Factor * (pSIDESTEPBIG * 84 / 15 * 1000 / pSIDESTEPRATIO); //Pulses -> Value * 10 * 840 / 1500
+            gScrape.StartPosition = pSCRAPEWIDTH * 42 / 15 * 1000 / pSIDESTEPRATIO; //Pulses -> Value * 10 / 2 (Half scrape width) * 840 / 1500 um -> Pulse
+            gScrape.EndPosition = 0;
+            WRK_SetStatus(MainStatus, SCRAPEREED);
+        }
+        else if ((gCurrentScreen == 31)||(gCurrentScreen == 41)) //Start Scrape process with small side step (41 is endless)
+        {
+            WRK_HandleResetUnitErrors();
+            if (gCurrentScreen == 41) gScrape.Endless = 1;
+            gReturnScreen = gCurrentScreen;
+            gReturnFromErrorScreen = gCurrentScreen;
+            gScrape.SideStep = gIDX_Motor.Factor * (pSIDESTEPSMALL * 84 / 15 * 1000 / pSIDESTEPRATIO); //Pulses -> Value * 10 * 840 / 1500
             gScrape.StartPosition = pSCRAPEWIDTH * 42 / 15 * 1000 / pSIDESTEPRATIO; //Pulses -> Value * 10 / 2 (Half scrape width) * 840 / 1500 um -> Pulse
             gScrape.EndPosition = 0;
             WRK_SetStatus(MainStatus, SCRAPEREED);
@@ -464,7 +497,7 @@ void WRK_HandleActive(void)
           gReturnFromErrorScreen = gCurrentScreen;
           gScrape.SideStep = gIDX_Motor.Factor * (pSIDESTEPSMALL * 84 / 15 * 1000 / pSIDESTEPRATIO); //Pulses -> Value * 10 * 840 / 1500
           gScrape.StartPosition = pSCRAPEWIDTH * 42 / 15 * 1000 / pSIDESTEPRATIO; //Pulses -> Value * 10 / 2 (Half scrape width) * 840 / 1500 um -> Pulse
-          gScrape.EndPosition = pSCRAPEWIDTHINNER * 42 / 15; //Pulses -> Value * 10 / 2 (Half scrape width inner) * 840 / 1500 um -> Pulse;
+          gScrape.EndPosition = pSCRAPEWIDTHINNER * 42 / 15 * 1000 / pSIDESTEPRATIO; //Pulses -> Value * 10 / 2 (Half scrape width inner) * 840 / 1500 um -> Pulse;
           WRK_SetStatus(MainStatus, SCRAPEREED);
         }
         else if (gCurrentScreen == 33) //Start Scrape process only inner sections
@@ -473,7 +506,7 @@ void WRK_HandleActive(void)
           gReturnScreen = gCurrentScreen;
           gReturnFromErrorScreen = gCurrentScreen;
           gScrape.SideStep = gIDX_Motor.Factor * (pSIDESTEPSMALL * 84 / 15 * 1000 / pSIDESTEPRATIO); //Pulses -> Value * 10 * 840 / 1500
-          gScrape.StartPosition = pSCRAPEWIDTHINNER * 42 / 15; //Pulses -> Value * 10 / 2 (Half scrape width) * 840 / 1500 um -> Pulse
+          gScrape.StartPosition = pSCRAPEWIDTHINNER * 42 / 15 * 1000 / pSIDESTEPRATIO; //Pulses -> Value * 10 / 2 (Half scrape width) * 840 / 1500 um -> Pulse
           gScrape.EndPosition = 0;              
           WRK_SetStatus(MainStatus, SCRAPEREED);
         }
@@ -533,7 +566,7 @@ void WRK_HandleCommand(uint32_t newCommand)
 	  case 3010: //Cancel, go back
 		case 2030: //Cancel, go back
     {
-      USR_ShowScreen (gCurrentScreen / 100); 
+      USR_ShowScreen (gCurrentScreen / 100,1); 
       WRK_SetStatus(MainStatus,ACTIVE);
       WRK_SetStatus(SubStatus,WAITFORUSER);
       break;
@@ -541,14 +574,14 @@ void WRK_HandleCommand(uint32_t newCommand)
     case 1011: //Reset factory OK
     {
       WRK_HandleResetFactory();
-      USR_ShowScreen (gCurrentScreen / 100); 
+      USR_ShowScreen (gCurrentScreen / 100,1); 
       WRK_SetStatus(MainStatus,ACTIVE);
       WRK_SetStatus(SubStatus,WAITFORUSER);
       break;
     } 
     case 2011: //Set stroke length: OK -> INDEX HOME Position -> STROKE HOME position
     {
-      USR_ShowScreen (gCurrentScreen + 1);   
+      USR_ShowScreen (gCurrentScreen + 1,1);   
       WRK_SetStatus(MainStatus, INITIALIZE);
       WRK_SetStatus(SubStatus, WAITFORINDEXHOME);
 			break;
@@ -557,7 +590,7 @@ void WRK_HandleCommand(uint32_t newCommand)
 			
 		case 2031: //Second time OK -> Goto START and menu up
 		{
-      USR_ShowScreen (gCurrentScreen + 1);   
+      USR_ShowScreen (gCurrentScreen + 1,1);   
 			WRK_SetStatus(MainStatus, INITIALIZE);
 			WRK_SetStatus(SubStatus, WAITFORSTROKEMOTORSTART);
 			break;
@@ -672,13 +705,13 @@ void WRK_HandleEnterValue(void)
           gParameterValue = gParameterValue + SCRAPEWIDTHINNER;
           USR_SaveParameter();
         }
-        USR_ShowScreen (LastScreen); 
+        USR_ShowScreen (LastScreen,1); 
         WRK_SetStatus(MainStatus,ACTIVE);
         WRK_SetStatus(SubStatus,WAITFORUSER);
       }
       else if (USR_ButtonPressed(BtnMenu,10,1)==1) //Cancel the change
       {  
-        USR_ShowScreen (LastScreen); 
+        USR_ShowScreen (LastScreen,1); 
         WRK_SetStatus(MainStatus,ACTIVE);
         WRK_SetStatus(SubStatus,WAITFORUSER);
       }
@@ -691,7 +724,7 @@ void WRK_HandleEnterValue(void)
         if (WRK_CheckConditions() == 1) //Check conditions of the parameter. If not ok show screen
         {
           USR_SaveParameter();
-          USR_ShowScreen (LastScreen); 
+          USR_ShowScreen (LastScreen,1); 
           WRK_SetStatus(MainStatus,ACTIVE);
           WRK_SetStatus(SubStatus,WAITFORUSER);
         }
@@ -718,7 +751,7 @@ void WRK_HandleEnterValue(void)
       }
       else if (USR_ButtonPressed(BtnMenu,10,1)==1) //Cancel, don't save
       {
-        USR_ShowScreen (LastScreen); 
+        USR_ShowScreen (LastScreen,1); 
         WRK_SetStatus(MainStatus,ACTIVE);
         WRK_SetStatus(SubStatus,WAITFORUSER);
       }
@@ -754,7 +787,7 @@ void WRK_HandleExecuteCommand(void)
   {
     case UNDEFINED:
     {      
-      USR_ShowScreen(gCurrentScreen * 100 + 1);
+      USR_ShowScreen(gCurrentScreen * 100 + 1,1);
       WRK_SetStatus(SubStatus,WAITFORUSER);
       break;
     }
@@ -822,7 +855,7 @@ void WRK_HandleInitialize(void)
         gIDX_Motor.IsInStartPosition = 1;
         WRK_SetStatus(MainStatus,ACTIVE);
         WRK_SetStatus(SubStatus,WAITFORUSER);
-        USR_ShowScreen(gReturnScreen); 
+        USR_ShowScreen(gReturnScreen,1); 
       }
       break;
     }
@@ -834,7 +867,7 @@ void WRK_HandleInitialize(void)
         if (gCurrentScreen > 10200)
         {
           WRK_SetStatus(MainStatus,EXECUTECOMMAND);  
-          USR_ShowScreen(gCurrentScreen + 1);
+          USR_ShowScreen(gCurrentScreen + 1,1);
           WRK_SetStatus(SubStatus,WAITFORUSER); 
           
         }
@@ -842,7 +875,7 @@ void WRK_HandleInitialize(void)
         {
           WRK_SetStatus(MainStatus,ACTIVE);
           WRK_SetStatus(SubStatus,WAITFORUSER);
-          USR_ShowScreen(gReturnScreen); 
+          USR_ShowScreen(gReturnScreen,1); 
         }
       }
       break;
@@ -854,7 +887,7 @@ void WRK_HandleInitialize(void)
         STR_Set(UNDEFINED,0);
         if (gCurrentScreen > 10200)
         {
-          USR_ShowScreen (gCurrentScreen/100); 
+          USR_ShowScreen (gCurrentScreen/100,1); 
           WRK_SetStatus(MainStatus,ACTIVE);
           WRK_SetStatus(SubStatus,WAITFORUSER);
         }
@@ -867,7 +900,7 @@ void WRK_HandleInitialize(void)
         {
           WRK_SetStatus(MainStatus,ACTIVE);
           WRK_SetStatus(SubStatus,WAITFORUSER);
-          USR_ShowScreen(gReturnScreen); 
+          USR_ShowScreen(gReturnScreen,1); 
         }
       }
       break;
@@ -930,11 +963,7 @@ void WRK_HandleSideStep(void)
           gScrape.NextScrape = 0;
           if (gScrape.Status == RightSideLastStep)
           {
-#ifdef IDX_SHOWREALPOSITION
-            USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
-#else
-            USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float) gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
-#endif
+            WRK_DrawProgressBar();
             WRK_SetScrapeStatus (RightSideLastScrape);
           }
           else if (gScrape.Status == RightSideLastScrape)
@@ -944,11 +973,7 @@ void WRK_HandleSideStep(void)
           }
           else if (gScrape.Status == LeftSideLastStep)
           {
-#ifdef IDX_SHOWREALPOSITION
-            USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
-#else
-            USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float) gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
-#endif
+            WRK_DrawProgressBar();
             WRK_SetScrapeStatus (LeftSideLastScrape);
           }
           else if (gScrape.Status == LeftSideLastScrape)
@@ -973,11 +998,7 @@ void WRK_HandleSideStep(void)
           }
           else if (gScrape.Status != NoSideStep)
           {
-#ifdef IDX_SHOWREALPOSITION
-              USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
-#else
-              USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float) gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
-#endif
+            WRK_DrawProgressBar();
           }
         }
       }
@@ -994,25 +1015,25 @@ void WRK_HandleSideStep(void)
     
       if ((gScrape.Status == RightSideNormalStep)||(gScrape.Status == RightSidePauseRequested))//((WRK_SetScrapeStatus (= 0)||(WRK_SetScrapeStatus (= 6))
       {
-        if ((gIDX_Motor.SetPosition - gScrape.EndPosition)> gScrape.SideStep) 
+        if ((gIDX_Motor.SetPosition - (gScrape.EndPosition * gIDX_Motor.Factor))> gScrape.SideStep) 
         {
           IDX_SetPosition(gIDX_Motor.SetPosition - gScrape.SideStep);
         }
         else
         {
-          IDX_SetPosition(gScrape.EndPosition);
+          IDX_SetPosition(gScrape.EndPosition * gIDX_Motor.Factor);
           WRK_SetScrapeStatus (RightSideLastStep);//WRK_SetScrapeStatus ( 1;
         }
       }
       else if ((gScrape.Status == LeftSideNormalStep)||(gScrape.Status == LeftSidePauseRequested))//((WRK_SetScrapeStatus (= 3)||(WRK_SetScrapeStatus (= 8))
       {
-        if ((abs(gIDX_Motor.SetPosition) - abs(gScrape.EndPosition)) > gScrape.SideStep) 
+        if ((abs(gIDX_Motor.SetPosition) - abs(gScrape.EndPosition * gIDX_Motor.Factor)) > gScrape.SideStep) 
         {
           IDX_SetPosition(gIDX_Motor.SetPosition + gScrape.SideStep);
         }
         else 
         {
-          IDX_SetPosition(gScrape.EndPosition);
+          IDX_SetPosition(gScrape.EndPosition * gIDX_Motor.Factor);
           WRK_SetScrapeStatus (LeftSideLastStep);//WRK_SetScrapeStatus ( 4;
         }
       }
@@ -1056,7 +1077,7 @@ void WRK_HandleScrapeReed (void)
       if ((gIDX_Motor.IsHomed == 0) && (gWRK_Status.MainStatus != SCRAPENOSIDESTEPS)) //No side steps doesn't need IDX motor
       {
         gReturnScreen = gCurrentScreen;
-        USR_SetMessage("SIDE STEP SET IS","","NOT HOMED","","","OK",3);
+        USR_SetMessage("SIDE STEP SET IS","","NOT HOMED","","","OK",3,1);
         USR_SaveError(11001,1);
         WRK_SetStatus(MainStatus, ACTIVE);
         WRK_SetStatus(SubStatus, WAITFORUSER);
@@ -1064,7 +1085,7 @@ void WRK_HandleScrapeReed (void)
       else if ((gIDX_Motor.IsInStartPosition == 0) && (gWRK_Status.MainStatus != SCRAPENOSIDESTEPS)) //No side steps doesn't need IDX motor
       {
         gReturnScreen = gCurrentScreen;
-        USR_SetMessage("SIDE STEP SET NOT","","AT START POSITION","","","OK",3);
+        USR_SetMessage("SIDE STEP SET NOT","","AT START POSITION","","","OK",3,1);
         USR_SaveError(11002,1);
         WRK_SetStatus(MainStatus, ACTIVE);
         WRK_SetStatus(SubStatus, WAITFORUSER);
@@ -1072,7 +1093,7 @@ void WRK_HandleScrapeReed (void)
       else if (gSTR_Motor.IsInStartPosition == 0)
       {
         gReturnScreen = gCurrentScreen;
-        USR_SetMessage("STROKE SET NOT","","AT START POSITION","","","OK",3);
+        USR_SetMessage("STROKE SET NOT","","AT START POSITION","","","OK",3,1);
         USR_SaveError(21002,1);
         WRK_SetStatus(MainStatus, ACTIVE);
         WRK_SetStatus(SubStatus, WAITFORUSER);
@@ -1082,7 +1103,11 @@ void WRK_HandleScrapeReed (void)
         StoppedBecauseBatteryEmpty = 0;
         gScrape.Speed = gMachineType[gMachine/100].Parameters[SCRAPESPEED].Value*pSTROKEREDUCTION/100*60/100; // Value / 100 * 50 (ratio) * 60 (1 min = 60 s)
         gReturnScreen = gCurrentScreen;
-        USR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK",4);
+        USR_ClearScreen(5); //Clear line 1
+        USR_SetMessage("Scraping","","","","","OK = Pause",4,0);
+        RightPercentage = 100;
+        LeftPercentage = 100;
+        WRK_DrawProgressBar();
         USR_IncreaseCounters();
         if (gWRK_Status.MainStatus == SCRAPENOSIDESTEPS)
         {
@@ -1099,14 +1124,9 @@ void WRK_HandleScrapeReed (void)
     }
     case WAITFORPOSITION:
     {
-      USR_ClearPosition();
       if (IDX_Set(GOTOPOSITION, gScrape.StartPosition )==READY)
       {
-#ifdef IDX_SHOWREALPOSITION
-          USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
-#else
-          USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float)gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
-#endif
+        WRK_DrawProgressBar();
         IDX_Set(UNDEFINED,0);
         WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
       }
@@ -1140,7 +1160,7 @@ void WRK_HandleScrapeReed (void)
           WRK_SetScrapeStatus (RightSidePauseRequested);
           if (gSTR_Motor.Encoder < STARTPOSITION) //Reduce the speed, so the motor can stop in time
             gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
-          USR_SetMessage("","","    PAUSE SCRAPING","","","",4);
+          USR_SetMessage("","","Pause scraping","","","",4,1);
           break;
         }
         else if ((gScrape.Status == LeftSideNormalStep)||(gScrape.Status == LeftSideLastStep))
@@ -1152,12 +1172,13 @@ void WRK_HandleScrapeReed (void)
           if (gSTR_Motor.Encoder < STARTPOSITION) //Reduce the speed, so the motor can stop in time
             gSTR_Motor.SetSpeed = STR_GOTOSTARTSPEED;
           WRK_SetScrapeStatus (LeftSidePauseRequested);
-          USR_SetMessage("","","    PAUSE SCRAPING","","","",4);
+          USR_SetMessage("","","Pause scraping","","","",4,1);
           break;
         }
       }
       if (gScrape.Status == RightSideEndOfScraping)
       {
+        RightPercentage = 0;
         gIDX_Motor.MainStatus = (INACTIVE);
         IDX_Set(UNDEFINED,0);
         WRK_SetScrapeStatus (LeftSideNormalStep);
@@ -1175,7 +1196,9 @@ void WRK_HandleScrapeReed (void)
           {
             gScrape.EndPosition *= -1; //Right side of the reed
             gScrape.StartPosition *= -1; //Right side of the reed
-            USR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK",4);
+            USR_ShowScreen(gReturnScreen,1);
+            USR_ClearScreen(5); //Clear line 1
+            USR_SetMessage("Scraping","","","","","OK = Pause",4,0);
             USR_IncreaseCounters();
             WRK_SetScrapeStatus (RightSideNormalStep);
             WRK_SetStatus(SubStatus, WAITFORPOSITION);
@@ -1185,20 +1208,18 @@ void WRK_HandleScrapeReed (void)
             if (StoppedBecauseBatteryEmpty == 1)
             {
               WRK_SetStatus(SubStatus, WAITFORPLUGIN);  
-              USR_SetMessage("BATTERY EMPTY. PLUG","","IN TO CONTINUE","","*: CANCEL","OK",4);  
+              USR_SetMessage("BATTERY EMPTY. PLUG","","IN TO CONTINUE","","*: CANCEL","OK",4,1);  
             }
             else
             {
-              WRK_SetStatus(MainStatus, ACTIVE);
-              WRK_SetStatus(SubStatus, WAITFORUSER);
-              USR_ShowScreen(gReturnScreen); 
+              gScrape.StartPosition *= -1; //Right side of the reed
+              WRK_SetStatus(SubStatus, WAITFORINDEXSTART);
             }
           }
         }
-        else
+        else //Scraping cycle is ready. Goto start position
         {
-          USR_ClearPosition();
-          WRK_SetStatus(SubStatus, WAITFORINDEXHOME);
+          WRK_SetStatus(SubStatus, WAITFORINDEXSTART);
         }
       }
       else if ((gScrape.Status == RightSidePaused) || (gScrape.Status == LeftSidePaused) || (gScrape.Status == NoSideStepPaused))
@@ -1209,8 +1230,8 @@ void WRK_HandleScrapeReed (void)
         }
         else
         {
-        USR_SetMessage("","OK: CONTINUE SCRAPING",""," *: CANCEL SCRAPING","","*OK",4);
-        WRK_SetStatus(SubStatus,WAITFORUSER);
+            USR_SetMessage("","OK: Continue scraping","","*: Cancel scraping","","* OK",4,1);
+            WRK_SetStatus(SubStatus,WAITFORUSER);
         }
       }
       else if ((gScrape.Status == NoSideStep) && (StoppedBecauseBatteryEmpty))
@@ -1221,15 +1242,19 @@ void WRK_HandleScrapeReed (void)
       }
       break;
     }
-    case WAITFORINDEXHOME:
+   
+    case WAITFORINDEXSTART:
     {
-      if (IDX_Set(GOTOPOSITION, 0)==READY)
+      if (IDX_Set(GOTOPOSITION, pSCRAPEWIDTH * 42 / 15 * 1000 / pSIDESTEPRATIO)==READY)
       {
         IDX_Set(UNDEFINED,0);
         //Check battery status
         if (gScrape.Endless)
         {
-          USR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK",4);
+            
+            USR_ShowScreen(gReturnScreen,1);
+            USR_ClearScreen(5); //Clear line 1
+            USR_SetMessage("Scraping","","","","","OK = Pause",4,0);
           USR_IncreaseCounters();
           WRK_SetScrapeStatus (RightSideNormalStep);//Right side of the reed
           WRK_SetStatus(SubStatus, WAITFORPOSITION);
@@ -1239,13 +1264,13 @@ void WRK_HandleScrapeReed (void)
           if (StoppedBecauseBatteryEmpty == 1)
           {
             WRK_SetStatus(SubStatus, WAITFORPLUGIN);  
-            USR_SetMessage("BATTERY VOLTAGE TOO","","LOW. PLEASE PLUG IN","","*: CANCEL","OK",4);  
+            USR_SetMessage("BATTERY VOLTAGE TOO","","LOW. PLEASE PLUG IN","","*: CANCEL","OK",4,1);  
           }
           else
           {
             WRK_SetStatus(MainStatus, ACTIVE);
             WRK_SetStatus(SubStatus, WAITFORUSER);
-            USR_ShowScreen(gReturnScreen); 
+            USR_ShowScreen(gReturnScreen,1); 
           }
         }
       }
@@ -1257,11 +1282,11 @@ void WRK_HandleScrapeReed (void)
       {
         WRK_SetStatus(MainStatus, ACTIVE);
         WRK_SetStatus(SubStatus, WAITFORUSER);
-        USR_ShowScreen(gReturnScreen);  
+        USR_ShowScreen(gReturnScreen,1);  
       }
       else if (PluggedIn())
       {
-        USR_SetMessage("","PLUGGED IN","","OK: CONTINUE *: CANCEL","","OK",4);
+        USR_SetMessage("","PLUGGED IN","","OK: CONTINUE *: CANCEL","","OK",4,1);
         if (USR_ButtonPressed(BtnOk,USR_SHORTPRESSTIME,1)==1)
         {
           StoppedBecauseBatteryEmpty = 0;
@@ -1269,7 +1294,10 @@ void WRK_HandleScrapeReed (void)
           gScrape.EndPosition *= -1; //Right side of the reed
           gScrape.StartPosition *= -1; //Right side of the reed
           USR_IncreaseCounters();
-          USR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK",4);
+          
+          USR_ShowScreen(gReturnScreen,1);
+          USR_ClearScreen(5); //Clear line 1
+          USR_SetMessage("Scraping","","","","","OK = Pause",4,0);
           if (gWRK_Status.MainStatus == SCRAPENOSIDESTEPS)
           {
             WRK_SetScrapeStatus (NoSideStep);
@@ -1277,12 +1305,7 @@ void WRK_HandleScrapeReed (void)
           }
           else
           {
-#ifdef IDX_SHOWREALPOSITION
-                      USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
-#else
-                      USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float)gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
-#endif
-
+            WRK_DrawProgressBar();
             WRK_SetScrapeStatus (RightSideNormalStep);
             WRK_SetStatus(SubStatus, WAITFORPOSITION);
           }
@@ -1290,7 +1313,7 @@ void WRK_HandleScrapeReed (void)
       }
       else
       {
-        USR_SetMessage("BATTERY VOLTAGE TOO","","LOW. PLEASE PLUG IN","","*: CANCEL","OK",4);
+        USR_SetMessage("BATTERY VOLTAGE TOO","","LOW. PLEASE PLUG IN","","*: CANCEL","OK",4,1);
       }
       break;
     }
@@ -1301,42 +1324,40 @@ void WRK_HandleScrapeReed (void)
         if (gScrape.Status == NoSideStepPaused)//pause scraping no side step
         {
           WRK_SetScrapeStatus(NoSideStep);
-          USR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK",4);
+          
+          USR_ShowScreen(gReturnScreen,1);
+          USR_ClearScreen(5); //Clear line 1
+          USR_SetMessage("Scraping","","","","","OK = Pause",4,0);
           WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
           break;
         }
         if (gScrape.Status == RightSidePaused)//pause scraping right part.
         {
           WRK_SetScrapeStatus(gScrape.StatusPause);//(RightSideNormalStep);
-          USR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK",4);
-#ifdef IDX_SHOWREALPOSITION
-                    USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
-#else
-                    USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float)gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
-#endif
-
+          USR_ShowScreen(gReturnScreen,1);
+          USR_ClearScreen(5); //Clear line 1
+          USR_SetMessage("Scraping","","","","","OK = Pause",4,0);
+          WRK_DrawProgressBar();
           WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
           break;
         }
         else if (gScrape.Status == LeftSidePaused)//(WRK_SetScrapeStatus (= 9) //Pause scraping left part.
         {
           WRK_SetScrapeStatus(gScrape.StatusPause);//(LeftSideNormalStep)
-          USR_SetMessage("","SCRAPING","","OK: PAUSE SCRAPING","","OK",4);
-#ifdef IDX_SHOWREALPOSITION
-                    USR_ShowPosition((int32_t) ((float) gIDX_Motor.GetPosition / (float) gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
-#else
-                    USR_ShowPosition((int32_t) ((float) gIDX_Motor.SetPosition / (float)gIDX_Motor.UmPerPulse * (float) pSIDESTEPRATIO / 1000));
-#endif
-
+          
+          USR_ShowScreen(gReturnScreen,1);
+          USR_ClearScreen(5); //Clear line 1
+          USR_SetMessage("Scraping","","","","","OK = Pause",4,0);
+          WRK_DrawProgressBar();
           WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
           break;
         }
       }
       else if (USR_ButtonPressed(BtnMenu,USR_SHORTPRESSTIME,1)==1)
       {
-        USR_SetMessage("","","   CANCEL SCRAPING","","","",4);  
+        USR_SetMessage("","","Cancel scraping","","","",4,1);  
         gScrape.Endless = 0;
-        WRK_SetStatus(SubStatus, WAITFORINDEXHOME);
+        WRK_SetStatus(SubStatus, WAITFORINDEXSTART);
       }
       break;
     }
@@ -1382,7 +1403,7 @@ void WRK_HandleSequence(void)
     case INACTIVE:
     {
       gCounter.Sequence = 0;
-      USR_ShowScreen(1);
+      USR_ShowScreen(1,1);
       WRK_SetStatus(MainStatus,ACTIVE);
       break;
     }
@@ -1664,30 +1685,30 @@ void WRK_SetStatus (enuType newType, enuStatus newStatus)
 void WRK_ShowError (uint16_t newError)
 {
   if (newError == 13001) //Index motor not turning or encoder not detected
-    USR_SetMessage("SIDE STEP MOTOR NOT","","TURNING OR ENCODER","","SIGNAL MISSING","OK",3);
+    USR_SetMessage("SIDE STEP MOTOR NOT","","TURNING OR ENCODER","","SIGNAL MISSING","OK",3,1);
   else if (newError == 13002) //Index motor turning wrong direction or encoder channels swapped
-    USR_SetMessage("SIDE STEP MOTOR","","TURNING WRONG","","DIRECTION","OK",3);
+    USR_SetMessage("SIDE STEP MOTOR","","TURNING WRONG","","DIRECTION","OK",3,1);
   else if (newError == 13003) //Stroke motor turning but home sensor status not changing
-    USR_SetMessage("SIDE STEP MOTOR ","","TURNING BUT HOME","","SENSOR MISSING","OK",3);
+    USR_SetMessage("SIDE STEP MOTOR ","","TURNING BUT HOME","","SENSOR MISSING","OK",3,1);
   else if (newError == 23001) //Stroke motor not turning or encoder not detected
-    USR_SetMessage("STROKE MOTOR NOT","","TURNING OR ENCODER","","SIGNAL MISSING","OK",3);
+    USR_SetMessage("STROKE MOTOR NOT","","TURNING OR ENCODER","","SIGNAL MISSING","OK",3,1);
   else if (newError == 23002) //Stroke motor turning but encoder not detected
-    USR_SetMessage("STROKE MOTOR ","","TURNING BUT ENCODER","","SIGNAL MISSING","OK",3);
+    USR_SetMessage("STROKE MOTOR ","","TURNING BUT ENCODER","","SIGNAL MISSING","OK",3,1);
   else if (newError == 23003) //Stroke motor turning but home sensor not detected when expected
-    USR_SetMessage("STROKE MOTOR TURNING","","BUT HOME SENSOR","","SIGNAL MISSING","OK",3);
+    USR_SetMessage("STROKE MOTOR TURNING","","BUT HOME SENSOR","","SIGNAL MISSING","OK",3,1);
   else if (newError == 23004) //Stroke motor is at starttposition but home sensor isnot off
-    USR_SetMessage("STROKE UNIT AT START","","POSITION BUT HOME","","SENSOR STILL ON","OK",3);
+    USR_SetMessage("STROKE UNIT AT START","","POSITION BUT HOME","","SENSOR STILL ON","OK",3,1);
   else if (newError == 31001) 
-    USR_SetMessage("SIDE STEP CONFLICT","","BIG <= SMALL","","OK: CORRECT *: CANCEL","OK",3);
+    USR_SetMessage("SIDE STEP CONFLICT","","BIG <= SMALL","","OK: CORRECT *: CANCEL","OK",3,1);
   else if (newError == 31002) 
-    USR_SetMessage("SIDE STEP CONFLICT","","SMALL >= BIG","","OK: CORRECT *: CANCEL","OK",3);
+    USR_SetMessage("SIDE STEP CONFLICT","","SMALL >= BIG","","OK: CORRECT *: CANCEL","OK",3,1);
   else if (newError == 31003) 
-    USR_SetMessage("SIDE STEP CONFLICT","","WIDTH <= INNER","","OK: CORRECT *: CANCEL","OK",3);
+    USR_SetMessage("SIDE STEP CONFLICT","","WIDTH <= INNER","","OK: CORRECT *: CANCEL","OK",3,1);
   else if (newError == 31004) 
-    USR_SetMessage("SIDE STEP CONFLICT","","INNER >= WIDTH","","OK: CORRECT *: CANCEL","OK",3);
+    USR_SetMessage("SIDE STEP CONFLICT","","INNER >= WIDTH","","OK: CORRECT *: CANCEL","OK",3,1);
   else
   {
-    USR_SetMessage("","","    UNKNOWN ERROR","","","OK",0);
+    USR_SetMessage("","","    UNKNOWN ERROR","","","OK",0,1);
   }
   USR_SaveError(newError,1);
 }

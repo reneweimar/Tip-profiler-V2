@@ -94,6 +94,202 @@ uint8_t USR_ButtonWaitForRelease (enuButtons ReqButton)
 }
 
 //-----------------------------------------------------------------------------
+//! \brief      Clears the position of the index
+//! \details    Clears the position in um
+//! \param      None
+void USR_ClearPosition (void)
+{
+  ssd1306_WriteStringEightBitFont(64, 22,"              ",Font_6x10, White);
+}
+//-----------------------------------------------------------------------------
+//! \brief      Clears the screen
+//! \details    Clears the screen buffer by filling with black
+//! \param      uint8_t newArea: 0 = All, 1 = Title whole, 2 = Screen between lines, 3 = Title without battery, 4 = Keys area, 5 = LINE1, 6 = LINE2, 7 = LINE3, 8 = LINE4, 9 = LINE5
+void USR_ClearScreen (uint8_t newArea)
+{
+  if (newArea == 0)
+    ssd1306_DrawRectangle(Black,0,0,128,64,0);
+  else if (newArea == 1)
+    ssd1306_DrawRectangle(Black,0,0,128,TOPLINE_Y-1,0);
+  else if (newArea == 2)
+  {
+    ssd1306_DrawRectangle(Black,0,TOPLINE_Y+1,128,BOTTOMLINE_Y-1,0);
+    ssd1306_DrawRectangle(White,0,TOPLINE_Y ,128,1,0);
+    ssd1306_DrawRectangle(White,0,BOTTOMLINE_Y,128,1,0);
+  }
+  else if (newArea == 3)
+  {
+    ssd1306_DrawRectangle(Black,0,0,PLUGGEDIN_X - 1,TOPLINE_Y-1,0);
+  }
+  else if (newArea == 4)
+  {
+    ssd1306_DrawRectangle(Black,0,BOTTOMLINE_Y + 1,PAGE_X - 1,63 - BOTTOMLINE_Y,0);
+  }
+  else if (newArea == 5)
+  {
+    ssd1306_DrawRectangle(Black,0,LINE1_Y,128,LINE3_Y-LINE1_Y,0);
+  }
+  else if (newArea == 6)
+  {
+    ssd1306_DrawRectangle(Black,0,LINE2_Y,128,LINE3_Y-LINE1_Y,0);
+  }
+  else if (newArea == 7)
+  {
+    ssd1306_DrawRectangle(Black,0,LINE3_Y,128,LINE3_Y-LINE1_Y,0);
+  }
+  else if (newArea ==8)
+  {
+    ssd1306_DrawRectangle(Black,0,LINE4_Y,128,LINE3_Y-LINE1_Y,0);
+  }
+  else if (newArea ==9)
+  {
+    ssd1306_DrawRectangle(Black,0,LINE5_Y,128,LINE3_Y-LINE1_Y,0);
+  }
+  ssd1306_UpdateScreen();
+}
+//-----------------------------------------------------------------------------
+//! \brief      Handles the down button
+//! \details    Calculates the new value based on extremes and cursorposition
+//! \param      None  
+void USR_CursorDown(void)
+{
+  int16_t NewValue;
+  int16_t Options[5];
+  int8_t NewOption;
+  if (gMachineType[gMachine/100].Parameters[gParameterNumber].Options == 0) //Normal editing value
+  {
+    /*if (CursorPosition == 36) NewValue = 1;
+    if (CursorPosition == 30) NewValue = 10;
+    if (CursorPosition == 18) NewValue = 100;
+    if (CursorPosition == 12) NewValue = 1000;
+    if (CursorPosition == 6) NewValue = 10000;
+    */
+    if (CursorPosition == 6) NewValue = 1;
+    if (CursorPosition == 5) NewValue = 10;
+    if (CursorPosition == 3) NewValue = 100;
+    if (CursorPosition == 2) NewValue = 1000;
+    if (CursorPosition == 1) NewValue = 10000;
+    if (gParameterValue - NewValue >= gMachineType[gMachine/100].Parameters[gParameterNumber].Min)
+    {
+      gParameterValue -= NewValue ;
+      USR_ShowScreen (2,1); 
+    }
+  }
+  else //Select a value from the option
+  {
+    Options[0] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option1;
+    Options[1] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option2;
+    Options[2] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option3;
+    Options[3] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option4;
+    Options[4] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option5;
+
+    for (uint8_t i=0; i < 5; i++)
+    {
+
+      if (gParameterValue == Options[i])
+      {
+        NewOption = i; //Option2 -> Option1
+        if (NewOption == 0)
+        {
+          NewOption = gMachineType[gMachine/100].Parameters[gParameterNumber].Options;
+        }
+				gParameterValue = Options[NewOption-1];
+				USR_ShowScreen (2,1); 
+        return; //Cancel evaluation of the rest
+      }
+    }
+  }
+}
+//-----------------------------------------------------------------------------
+//! \brief      Calculates the new cursor position
+//! \details    Calculates the new cursor position
+//! \param      None  
+void USR_CursorLeft(void)
+{
+  if (CursorPosition > 1) 
+  {
+    if (CharWidth[CursorPosition-1] > 0)
+    {
+        CursorPosition --;
+    }
+  }
+  if (CursorPosition == 4)
+  {
+    CursorPosition = 3;
+  }
+  USR_ShowScreen (2,1); 
+}
+//-----------------------------------------------------------------------------
+//! \brief      Calculates the new cursor position
+//! \details    Calculates the new cursor position
+//! \param      None  
+void USR_CursorRight(void)
+{
+  if (CursorPosition < 7) 
+  {
+    if (CharWidth[CursorPosition+1] > 0)
+    {
+        CursorPosition ++;
+    }
+  }
+  if (CursorPosition == 4) CursorPosition = 5;
+  USR_ShowScreen (2,1); 
+}
+
+//-----------------------------------------------------------------------------
+//! \brief      Handles the up button
+//! \details    Calculates the new value based on extremes and cursorposition
+//! \param      None  
+void USR_CursorUp(void)
+{
+  int16_t NewValue;
+  int16_t Options[5];
+  int8_t NewOption;
+  if (gMachineType[gMachine/100].Parameters[gParameterNumber].Options == 0) //Normal editing value
+  {
+    /*if (CursorPosition == 36) NewValue = 1;
+    if (CursorPosition == 30) NewValue = 10;
+    if (CursorPosition == 18) NewValue = 100;
+    if (CursorPosition == 12) NewValue = 1000;
+    if (CursorPosition == 6) NewValue = 10000;
+    */
+    if (CursorPosition == 6) NewValue = 1;
+    if (CursorPosition == 5) NewValue = 10;
+    if (CursorPosition == 3) NewValue = 100;
+    if (CursorPosition == 2) NewValue = 1000;
+    if (CursorPosition == 1) NewValue = 10000;
+    if (gParameterValue + NewValue <= gMachineType[gMachine/100].Parameters[gParameterNumber].Max)
+    {
+      gParameterValue += NewValue ;
+      USR_ShowScreen (2,1); 
+    }
+  }
+  else //Select a value from the option
+  {
+    Options[0] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option1;
+    Options[1] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option2;
+    Options[2] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option3;
+    Options[3] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option4;
+    Options[4] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option5;
+
+    for (uint8_t i=0; i < 5; i++)
+    {
+
+      if (gParameterValue == Options[i])
+      {
+        NewOption = i+2; //Option1 -> Option2
+        if (NewOption > gMachineType[gMachine/100].Parameters[gParameterNumber].Options)
+        {
+          NewOption = 1;
+        }
+				gParameterValue = Options[NewOption-1];
+				USR_ShowScreen (2,1); 
+        return; //Cancel evaluation of the rest
+      }
+    }
+  }
+}
+//-----------------------------------------------------------------------------
 //! \brief      Draws the logo on the screen
 //! \details    Draws reed machines logo in the screen buffer
 //! \param[in]  uint8_t newX
@@ -130,182 +326,87 @@ void USR_DrawLogo (uint8_t newX, uint8_t newY, SSD1306_COLOR color)
     }
   }
 }
+
 //-----------------------------------------------------------------------------
-//! \brief      Clears the position of the index
-//! \details    Clears the position in um
-//! \param      None
-void USR_ClearPosition (void)
+//! \brief      Draws the full progress bar on the screen
+//! \details    Draws the progress bar for scraping in the screen buffer
+//! \param[in]  uint8_t newX
+//! \param[in]  uint8_t newY
+//! \param[in]  uint8_t newPercentageLeft
+//! \param[in]  uint8_t newPercentageRight
+//! \param[in]  uint8_t newPitch //Distance between the lines (2 = Small steps, 4 = Big steps)
+//! \param[in]  SSD1306_COLOR color -> Logo color (Black or white)
+void USR_DrawProgressFull (uint8_t newX, uint8_t newY, uint8_t newPercentageLeft, uint8_t newPercentageRight, uint8_t newPitch, SSD1306_COLOR color)
 {
-  ssd1306_WriteStringEightBitFont(64, 22,"              ",Font_6x10, White);
-}
-//-----------------------------------------------------------------------------
-//! \brief      Clears the screen
-//! \details    Clears the screen buffer by filling with black
-//! \param      uint8_t Mode: 0 = All, 1 = Title, 2 = Screen, 3 = Top left text, 4 = Bottom left text
-void USR_ClearScreen (uint8_t ShowTitle)
-{
-  if (ShowTitle == 0)
-    ssd1306_DrawRectangle(Black,0,0,128,64,0);
-  else if (ShowTitle == 1)
-    ssd1306_DrawRectangle(Black,0,0,128,TOPLINE_Y-1,0);
-  else if (ShowTitle == 2)
-  {
-    ssd1306_DrawRectangle(Black,0,TOPLINE_Y+1,128,BOTTOMLINE_Y-1,0);
-    ssd1306_DrawRectangle(White,0,TOPLINE_Y ,128,1,0);
-    ssd1306_DrawRectangle(White,0,BOTTOMLINE_Y,128,1,0);
-  }
-  else if (ShowTitle == 3)
-  {
-    ssd1306_DrawRectangle(Black,0,0,PLUGGEDIN_X - 1,TOPLINE_Y-1,0);
-  }
-  else if (ShowTitle == 4)
-  {
-    ssd1306_DrawRectangle(Black,0,BOTTOMLINE_Y + 1,PAGE_X - 1,63 - BOTTOMLINE_Y,0);
-  }
-  ssd1306_UpdateScreen();
-}
-//-----------------------------------------------------------------------------
-//! \brief      Handles the down button
-//! \details    Calculates the new value based on extremes and cursorposition
-//! \param      None  
-void USR_CursorDown(void)
-{
-  int16_t NewValue;
-  int16_t Options[5];
-  int8_t NewOption;
-  if (gMachineType[gMachine/100].Parameters[gParameterNumber].Options == 0) //Normal editing value
-  {
-    /*if (CursorPosition == 36) NewValue = 1;
-    if (CursorPosition == 30) NewValue = 10;
-    if (CursorPosition == 18) NewValue = 100;
-    if (CursorPosition == 12) NewValue = 1000;
-    if (CursorPosition == 6) NewValue = 10000;
-    */
-    if (CursorPosition == 6) NewValue = 1;
-    if (CursorPosition == 5) NewValue = 10;
-    if (CursorPosition == 3) NewValue = 100;
-    if (CursorPosition == 2) NewValue = 1000;
-    if (CursorPosition == 1) NewValue = 10000;
-    if (gParameterValue - NewValue >= gMachineType[gMachine/100].Parameters[gParameterNumber].Min)
-    {
-      gParameterValue -= NewValue ;
-      USR_ShowScreen (2); 
+    uint8_t PLeft, PRight;
+    ssd1306_DrawRectangle(Black,newX,LINE1_Y,81,LINE3_Y-LINE1_Y,0);
+    ssd1306_DrawRectangle(color, newX + 40, newY, 1, 6, 0);
+    //LeftSide
+    for (uint8_t i = 0; i<40 ; i +=newPitch)
+    {   
+        PLeft = (40 - i) * 100 / 40 ;
+        if (PLeft <= newPercentageRight)
+            ssd1306_DrawRectangle(color, newX + i, newY + 2, 1, 2, 0);    
+        PRight = (40 - i) * 100 / 40 ;
+        if (PRight <= newPercentageLeft)
+            ssd1306_DrawRectangle(color, newX + 80 - i, newY + 2, 1, 2, 0);    
     }
-  }
-  else //Select a value from the option
-  {
-    Options[0] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option1;
-    Options[1] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option2;
-    Options[2] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option3;
-    Options[3] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option4;
-    Options[4] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option5;
+}
 
-    for (uint8_t i=0; i < 5; i++)
+//-----------------------------------------------------------------------------
+//! \brief      Draws the partial progress bar on the screen
+//! \details    Draws the progress bar for scraping in the screen buffer
+//! \param[in]  uint8_t newX
+//! \param[in]  uint8_t newY
+//! \param[in]  uint8_t newPercentageLeft
+//! \param[in]  uint8_t newPercentageRight
+//! \param[in]  uint8_t newLocation //Location to be scraped (0 = Inner, 1 = Outer)
+//! \param[in]  SSD1306_COLOR color -> Logo color (Black or white)
+void USR_DrawProgressPartial (uint8_t newX, uint8_t newY, uint8_t newPercentageLeft, uint8_t newPercentageRight, uint8_t newLocation, SSD1306_COLOR color)
+{
+    uint8_t PLeft, PRight;
+    ssd1306_DrawRectangle(Black,newX,LINE1_Y,81,LINE3_Y-LINE1_Y,0);
+    //Draw middle line
+    ssd1306_DrawRectangle(color, newX + 40, newY, 1, 6, 0);
+    if (newLocation == 0) //Inner parts
     {
-
-      if (gParameterValue == Options[i])
-      {
-        NewOption = i; //Option2 -> Option1
-        if (NewOption == 0)
+        ssd1306_DrawRectangle(color, newX, newY, 1, 6, 0);    
+        ssd1306_DrawRectangle(color, newX + 80, newY, 1, 6, 0);
+    }
+    else //Outer parts
+    {
+        ssd1306_DrawRectangle(color, newX + 20, newY, 1, 6, 0);
+        ssd1306_DrawRectangle(color, newX + 60, newY, 1, 6, 0);
+    }
+    //LeftSide
+    for (uint8_t i = 0; i<20 ; i += 2)
+    {   
+        PLeft = (20 - i) * 100 / 20 ;
+        if (newLocation == 0) //Inner parts
         {
-          NewOption = gMachineType[gMachine/100].Parameters[gParameterNumber].Options;
+            if (PLeft <= newPercentageRight)
+                ssd1306_DrawRectangle(color, newX + 20 + i, newY + 2, 1, 2, 0);    
         }
-				gParameterValue = Options[NewOption-1];
-				USR_ShowScreen (2); 
-        return; //Cancel evaluation of the rest
-      }
-    }
-  }
-}
-//-----------------------------------------------------------------------------
-//! \brief      Calculates the new cursor position
-//! \details    Calculates the new cursor position
-//! \param      None  
-void USR_CursorLeft(void)
-{
-  if (CursorPosition > 1) 
-  {
-    if (CharWidth[CursorPosition-1] > 0)
-    {
-        CursorPosition --;
-    }
-  }
-  if (CursorPosition == 4)
-  {
-    CursorPosition = 3;
-  }
-  USR_ShowScreen (2); 
-}
-//-----------------------------------------------------------------------------
-//! \brief      Calculates the new cursor position
-//! \details    Calculates the new cursor position
-//! \param      None  
-void USR_CursorRight(void)
-{
-  if (CursorPosition < 7) 
-  {
-    if (CharWidth[CursorPosition+1] > 0)
-    {
-        CursorPosition ++;
-    }
-  }
-  if (CursorPosition == 4) CursorPosition = 5;
-  USR_ShowScreen (2); 
-}
-
-//-----------------------------------------------------------------------------
-//! \brief      Handles the up button
-//! \details    Calculates the new value based on extremes and cursorposition
-//! \param      None  
-void USR_CursorUp(void)
-{
-  int16_t NewValue;
-  int16_t Options[5];
-  int8_t NewOption;
-  if (gMachineType[gMachine/100].Parameters[gParameterNumber].Options == 0) //Normal editing value
-  {
-    /*if (CursorPosition == 36) NewValue = 1;
-    if (CursorPosition == 30) NewValue = 10;
-    if (CursorPosition == 18) NewValue = 100;
-    if (CursorPosition == 12) NewValue = 1000;
-    if (CursorPosition == 6) NewValue = 10000;
-    */
-    if (CursorPosition == 6) NewValue = 1;
-    if (CursorPosition == 5) NewValue = 10;
-    if (CursorPosition == 3) NewValue = 100;
-    if (CursorPosition == 2) NewValue = 1000;
-    if (CursorPosition == 1) NewValue = 10000;
-    if (gParameterValue + NewValue <= gMachineType[gMachine/100].Parameters[gParameterNumber].Max)
-    {
-      gParameterValue += NewValue ;
-      USR_ShowScreen (2); 
-    }
-  }
-  else //Select a value from the option
-  {
-    Options[0] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option1;
-    Options[1] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option2;
-    Options[2] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option3;
-    Options[3] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option4;
-    Options[4] = gMachineType[gMachine/100].Parameters[gParameterNumber].Option5;
-
-    for (uint8_t i=0; i < 5; i++)
-    {
-
-      if (gParameterValue == Options[i])
-      {
-        NewOption = i+2; //Option1 -> Option2
-        if (NewOption > gMachineType[gMachine/100].Parameters[gParameterNumber].Options)
+        else  //Outer parts
         {
-          NewOption = 1;
+            if (PLeft <= newPercentageRight)
+                ssd1306_DrawRectangle(color, newX + i, newY + 2, 1, 2, 0);        
         }
-				gParameterValue = Options[NewOption-1];
-				USR_ShowScreen (2); 
-        return; //Cancel evaluation of the rest
-      }
+
+        PRight = (20 - i) * 100 / 20 ;
+        if (newLocation == 0) //Inner parts
+        {
+            if (PRight <= newPercentageLeft)
+                ssd1306_DrawRectangle(color, newX + 60 - i, newY + 2, 1, 2, 0);                
+        }
+        else  //Outer parts
+        {
+            if (PRight <= newPercentageLeft)
+                ssd1306_DrawRectangle(color, newX + 80 - i, newY + 2, 1, 2, 0);                
+        }
     }
-  }
 }
+
 //-----------------------------------------------------------------------------
 //! \brief      Fills the values for entering values and starts the screen
 //! \details    Sets the max and min values, value, and curserlocation
@@ -319,8 +420,7 @@ void USR_EnterValue(int16_t NewNumber)
   gParameterDigits = gMachineType[gMachine/100].Parameters[NewNumber].Digits - gMachineType[gMachine/100].Parameters[NewNumber].Decimals;
   CursorPosition = 0;//24 - (gParameterDigits *6);
   //if (CursorPosition == 24) CursorPosition = 30;
-  USR_ClearScreen(2);
-  USR_ShowScreen (2); 
+  USR_ShowScreen (2,1); 
 }
 //-----------------------------------------------------------------------------
 //! \brief      Handles the button TimeOn and WaitForRelease counter
@@ -506,12 +606,11 @@ void USR_SaveParameter(void)
   }
 }
 
-
 //-----------------------------------------------------------------------------
 //! \brief      Fills error message line 0 to 2
 //! \details    Fills gUSR_Errormessage
 //! \param[in]  char* newMessage0, newMessage1, newMessage2, newMessage3
-void USR_SetMessage (char* newMessage0, char* newMessage1, char* newMessage2, char* newMessage3, char* newMessage4, char* newMessage5,uint8_t newScreen)
+void USR_SetMessage (char* newMessage0, char* newMessage1, char* newMessage2, char* newMessage3, char* newMessage4, char* newMessage5,uint8_t newScreen, uint8_t ClearScreen)
 {
   uint8_t Different = 0;
 	if (strcmp(USR_Message[0], newMessage0))
@@ -545,8 +644,9 @@ void USR_SetMessage (char* newMessage0, char* newMessage1, char* newMessage2, ch
     Different = 1;
   }
 	//Show screen only if the information is different or if the screen now shown is not 3 or 4.
-  if (((newScreen) && (Different)) || (gCurrentScreen >= 10)) USR_ShowScreen(newScreen);
+  if (((newScreen) && (Different)) || (gCurrentScreen >= 10)) USR_ShowScreen(newScreen, ClearScreen);
 }
+
 //-----------------------------------------------------------------------------
 //! \brief      Shows the battery percentage and symbol
 //! \details    Calculates the percentage of the battery and displays the
@@ -639,14 +739,14 @@ void USR_ShowPosition (int32_t newPosition)
 //! \brief      Displays screens
 //! \details    Displays the corresponding screen on the OLED display
 //! \param[in]  uint16_t NewScreen
-void USR_ShowScreen(uint32_t NewScreen)
+void USR_ShowScreen(uint32_t NewScreen, uint8_t ClearScreen)
 {
     char strValue[50];
     int16_t Dig[11];  
     uint16_t TopPage;
     char txtSign[2];
     gCurrentScreen = NewScreen;
-    USR_ClearScreen(2);
+    if (ClearScreen) USR_ClearScreen(2);
     if (((gCurrentScreen >= 10) && (gCurrentScreen < 19)) || ((gCurrentScreen >= 50) && (gCurrentScreen < 59))) gCurrentScreen = 10;
     if ((gCurrentScreen >= 20) && (gCurrentScreen < 29)) gCurrentScreen = 20;
 	  if (gServiceMenu)
@@ -861,10 +961,11 @@ void USR_ShowScreen(uint32_t NewScreen)
       case 3: //Error screen
       case 4: //Message screen 
       {
+        USR_ClearScreen(3);
         if (gCurrentScreen == 3)
-          ssd1306_WriteStringEightBitFont(0,0,"ERROR         ", Font_6x10, White);
+          ssd1306_WriteStringEightBitFont(0,0,"Error", Font_6x10, White);
         else
-          ssd1306_WriteStringEightBitFont(0,0,"MESSAGE       ", Font_6x10, White);
+          ssd1306_WriteStringEightBitFont(0,0,"Message", Font_6x10, White);
         for (uint8_t i = 0; i<5;i++)
         {
           if (strcmp("",USR_Message[i]))
@@ -902,35 +1003,9 @@ void USR_ShowScreen(uint32_t NewScreen)
         break;
       }
       case 34:
-      case 30: //Scrape small steps
+      case 30: //Scrape big steps
       {
         gCurrentScreen = 30;
-        USR_ClearScreen(3);
-        ssd1306_WriteStringEightBitFont(0, 0,"Scrape", Font_6x10, White);
-        ssd1306_WriteStringEightBitFont(0,  LINE1_Y,"With small side steps", Font_6x10, White);
-        //Calculate the 2 digits of the scrape speed
-        Dig[0] = pSCRAPESPEED / 100; 
-        Dig[1] = (pSCRAPESPEED % 100) /10;
-        //Calculate the 3 digits of the scrape width
-        Dig[2] = pSCRAPEWIDTH / 100;
-        Dig[3] = (pSCRAPEWIDTH % 100)/10;
-        Dig[4] = pSCRAPEWIDTH - Dig[2] * 100 - Dig[3] * 10;
-        //Calculate the 3 digits of the side step small
-        Dig[5] = pSIDESTEPSMALL / 100;
-        Dig[6] = (pSIDESTEPSMALL % 100)/10;
-        Dig[7] = pSIDESTEPSMALL - Dig[5] * 100 - Dig[6] * 10;
-        //Create the string to be sent to the display
-        sprintf(strValue, "SS%u.%u / SW%u.%u%u / SSS%u.%u%u", Dig[0], Dig[1], Dig[2], Dig[3], Dig[4], Dig[5], Dig[6], Dig[7]); 
-        //Write the string to the display
-        ssd1306_WriteStringEightBitFont(0,  LINE3_Y,strValue, Font_6x10, White);
-        //Write the key options to the display
-        USR_WriteKeys("< > $ & * OK");
-        //Write the intrument name to the display
-        USR_WriteInstrumentName();
-        break;
-      }
-      case 31: //Scrape big steps
-      {
         USR_ClearScreen(3);
         ssd1306_WriteStringEightBitFont(0, 0,"Scrape", Font_6x10, White);
         ssd1306_WriteStringEightBitFont(0,  LINE1_Y,"With big side steps", Font_6x10, White);
@@ -938,17 +1013,55 @@ void USR_ShowScreen(uint32_t NewScreen)
         Dig[0] = pSCRAPESPEED / 100; 
         Dig[1] = (pSCRAPESPEED % 100) /10;
         //Calculate the 3 digits of the scrape width
-        Dig[2] = pSCRAPEWIDTH / 100;
-        Dig[3] = (pSCRAPEWIDTH % 100)/10;
-        Dig[4] = pSCRAPEWIDTH - Dig[2] * 100 - Dig[3] * 10;
+        Dig[2] = pSCRAPEWIDTH / 1000;
+        Dig[3] = (pSCRAPEWIDTH % 1000)/100;
+        Dig[4] = (pSCRAPEWIDTH - Dig[2] * 1000 - Dig[3] * 100)/10;
         //Calculate the 3 digits of the side step small
         Dig[5] = pSIDESTEPBIG / 100;
         Dig[6] = (pSIDESTEPBIG % 100)/10;
         Dig[7] = pSIDESTEPBIG - Dig[5] * 100 - Dig[6] * 10;
-        //Create the string to be sent to the display
-        sprintf(strValue, "SS%u.%u / SW%u.%u%u / BSS%u.%u%u", Dig[0], Dig[1], Dig[2], Dig[3], Dig[4], Dig[5], Dig[6], Dig[7]);
-        //Write the string to the display
-        ssd1306_WriteStringEightBitFont(0,  LINE3_Y,strValue, Font_6x10, White);
+        //Create the string and send to the display
+        ssd1306_WriteStringEightBitFont(0,  LINE3_Y,"SS:", Font_6x10, White);
+        sprintf(strValue, "%u.%u", Dig[0], Dig[1]);
+        ssd1306_WriteStringEightBitFont(0,  LINE5_Y,strValue, Font_6x10, White);
+        ssd1306_WriteStringEightBitFont(31,  LINE3_Y,"SW:", Font_6x10, White);
+        sprintf(strValue, "%u%u.%u", Dig[2], Dig[3], Dig[4]);
+        ssd1306_WriteStringEightBitFont(31,  LINE5_Y,strValue, Font_6x10, White);
+        ssd1306_WriteStringEightBitFont(68,  LINE3_Y,"BSS:", Font_6x10, White);
+        sprintf(strValue, "%u.%u%u", Dig[5], Dig[6], Dig[7]);
+        ssd1306_WriteStringEightBitFont(68,  LINE5_Y,strValue, Font_6x10, White);
+        //Write the key options to the display
+        USR_WriteKeys("< > $ & * OK");
+        //Write the intrument name to the display
+        USR_WriteInstrumentName();
+        break;
+      }
+      case 31: //Scrape small steps
+      {
+        USR_ClearScreen(3);
+        ssd1306_WriteStringEightBitFont(0, 0,"Scrape", Font_6x10, White);
+        ssd1306_WriteStringEightBitFont(0,  LINE1_Y,"With small side steps", Font_6x10, White);
+        //Calculate the 2 digits of the scrape speed
+        Dig[0] = pSCRAPESPEED / 100; 
+        Dig[1] = (pSCRAPESPEED % 100) /10;
+        //Calculate the 3 digits of the scrape width
+        Dig[2] = pSCRAPEWIDTH / 1000;
+        Dig[3] = (pSCRAPEWIDTH % 1000)/100;
+        Dig[4] = (pSCRAPEWIDTH - Dig[2] * 1000 - Dig[3] * 100)/10;
+        //Calculate the 3 digits of the side step small
+        Dig[5] = pSIDESTEPSMALL / 100;
+        Dig[6] = (pSIDESTEPSMALL % 100)/10;
+        Dig[7] = pSIDESTEPSMALL - Dig[5] * 100 - Dig[6] * 10;
+        //Create the string and send to the display
+        ssd1306_WriteStringEightBitFont(0,  LINE3_Y,"SS:", Font_6x10, White);
+        sprintf(strValue, "%u.%u", Dig[0], Dig[1]);
+        ssd1306_WriteStringEightBitFont(0,  LINE5_Y,strValue, Font_6x10, White);
+        ssd1306_WriteStringEightBitFont(31,  LINE3_Y,"SW:", Font_6x10, White);
+        sprintf(strValue, "%u%u.%u", Dig[2], Dig[3], Dig[4]);
+        ssd1306_WriteStringEightBitFont(31,  LINE5_Y,strValue, Font_6x10, White);
+        ssd1306_WriteStringEightBitFont(68,  LINE3_Y,"SSS:", Font_6x10, White);
+        sprintf(strValue, "%u.%u%u", Dig[5], Dig[6], Dig[7]);
+        ssd1306_WriteStringEightBitFont(68,  LINE5_Y,strValue, Font_6x10, White);
         //Write the key options to the display
         USR_WriteKeys("< > $ & * OK");
         //Write the intrument name to the display
@@ -964,25 +1077,30 @@ void USR_ShowScreen(uint32_t NewScreen)
         Dig[0] = pSCRAPESPEED / 100; 
         Dig[1] = (pSCRAPESPEED % 100) /10;
         //Calculate the 3 digits of the scrape width
-        Dig[2] = pSCRAPEWIDTH / 100;
-        Dig[3] = (pSCRAPEWIDTH % 100)/10;
-        Dig[4] = pSCRAPEWIDTH - Dig[2] * 100 - Dig[3] * 10;
-        //Calculate the 3 digits of the side step big
-        Dig[5] = pSIDESTEPBIG / 100;
-        Dig[6] = (pSIDESTEPBIG % 100)/10;
-        Dig[7] = pSIDESTEPBIG - Dig[5] * 100 - Dig[6] * 10;
-        //Create the string to be sent to the display
-        sprintf(strValue, "SS%u.%u / SW%u.%u%u / SSS%u.%u%u", Dig[0], Dig[1], Dig[2], Dig[3], Dig[4], Dig[5], Dig[6], Dig[7]); 
-        //Write the string to the display
-        ssd1306_WriteStringEightBitFont(0,  LINE3_Y,strValue, Font_6x10, White);
-        //Calculate the 3 digits of the inner scrape width
-        Dig[8] = pSCRAPESPEED / 100;
-        Dig[9] = (pSCRAPESPEED % 100)/10;
-        Dig[10] = pSCRAPESPEED - Dig[8] * 100 - Dig[9] * 10;
-        //Create the string to be sent to the display
-        sprintf(strValue, "OIW%u%u.%u", Dig[8], Dig[9], Dig[10]);
-        //Write the string to the display
-        ssd1306_WriteStringEightBitFont(82,  LINE5_Y,strValue, Font_6x10, White);
+        Dig[2] = pSCRAPEWIDTH / 1000;
+        Dig[3] = (pSCRAPEWIDTH % 1000)/100;
+        Dig[4] = (pSCRAPEWIDTH - Dig[2] * 1000 - Dig[3] * 100)/10;
+        //Calculate the 3 digits of the side step small
+        Dig[5] = pSIDESTEPSMALL / 100;
+        Dig[6] = (pSIDESTEPSMALL % 100)/10;
+        Dig[7] = pSIDESTEPSMALL - Dig[5] * 100 - Dig[6] * 10;
+        //Calculate the 3 digits of the scrape width
+        Dig[8] = pSCRAPEWIDTHINNER / 1000;
+        Dig[9] = (pSCRAPEWIDTHINNER % 1000)/100;
+        Dig[10] = (pSCRAPEWIDTHINNER - Dig[8] * 1000 - Dig[9] * 100)/10;
+        //Create the string and send to the display
+        ssd1306_WriteStringEightBitFont(0,  LINE3_Y,"SS:", Font_6x10, White);
+        sprintf(strValue, "%u.%u", Dig[0], Dig[1]);
+        ssd1306_WriteStringEightBitFont(0,  LINE5_Y,strValue, Font_6x10, White);
+        ssd1306_WriteStringEightBitFont(31,  LINE3_Y,"SW:", Font_6x10, White);
+        sprintf(strValue, "%u%u.%u", Dig[2], Dig[3], Dig[4]);
+        ssd1306_WriteStringEightBitFont(31,  LINE5_Y,strValue, Font_6x10, White);
+        ssd1306_WriteStringEightBitFont(68,  LINE3_Y,"SSS:", Font_6x10, White);
+        sprintf(strValue, "%u.%u%u", Dig[5], Dig[6], Dig[7]);
+        ssd1306_WriteStringEightBitFont(68,  LINE5_Y,strValue, Font_6x10, White);
+        ssd1306_WriteStringEightBitFont(105,  LINE3_Y,"OIW:", Font_6x10, White);
+        sprintf(strValue, "%u%u.%u", Dig[8], Dig[9], Dig[10]);
+        ssd1306_WriteStringEightBitFont(105,  LINE5_Y,strValue, Font_6x10, White);
         //Write the key options to the display
         USR_WriteKeys("< > $ & * OK");
         //Write the intrument name to the display
@@ -994,11 +1112,39 @@ void USR_ShowScreen(uint32_t NewScreen)
       {
         gCurrentScreen = 33;
         USR_ClearScreen(3);
-        ssd1306_WriteStringEightBitFont(41,16,"ONLY INNER", Font_6x10, White);
-        ssd1306_WriteStringEightBitFont(41,28,"SECTIONS", Font_6x10, White);
-        ssd1306_WriteStringEightBitFont(41,40,"ONE CYCLE", Font_6x10, White);
-        ssd1306_WriteStringEightBitFont(0,0,"Scrape", Font_6x10, White);
+        ssd1306_WriteStringEightBitFont(0, 0,"Scrape", Font_6x10, White);
+        ssd1306_WriteStringEightBitFont(0,  LINE1_Y,"Inner parts", Font_6x10, White);
+        //Calculate the 2 digits of the scrape speed
+        Dig[0] = pSCRAPESPEED / 100; 
+        Dig[1] = (pSCRAPESPEED % 100) /10;
+        //Calculate the 3 digits of the scrape width
+        Dig[2] = pSCRAPEWIDTH / 1000;
+        Dig[3] = (pSCRAPEWIDTH % 1000)/100;
+        Dig[4] = (pSCRAPEWIDTH - Dig[2] * 1000 - Dig[3] * 100)/10;
+        //Calculate the 3 digits of the side step small
+        Dig[5] = pSIDESTEPSMALL / 100;
+        Dig[6] = (pSIDESTEPSMALL % 100)/10;
+        Dig[7] = pSIDESTEPSMALL - Dig[5] * 100 - Dig[6] * 10;
+        //Calculate the 3 digits of the scrape width
+        Dig[8] = pSCRAPEWIDTHINNER / 1000;
+        Dig[9] = (pSCRAPEWIDTHINNER % 1000)/100;
+        Dig[10] = (pSCRAPEWIDTHINNER - Dig[8] * 1000 - Dig[9] * 100)/10;
+        //Create the string and send to the display
+        ssd1306_WriteStringEightBitFont(0,  LINE3_Y,"SS:", Font_6x10, White);
+        sprintf(strValue, "%u.%u", Dig[0], Dig[1]);
+        ssd1306_WriteStringEightBitFont(0,  LINE5_Y,strValue, Font_6x10, White);
+        ssd1306_WriteStringEightBitFont(31,  LINE3_Y,"SW:", Font_6x10, White);
+        sprintf(strValue, "%u%u.%u", Dig[2], Dig[3], Dig[4]);
+        ssd1306_WriteStringEightBitFont(31,  LINE5_Y,strValue, Font_6x10, White);
+        ssd1306_WriteStringEightBitFont(68,  LINE3_Y,"SSS:", Font_6x10, White);
+        sprintf(strValue, "%u.%u%u", Dig[5], Dig[6], Dig[7]);
+        ssd1306_WriteStringEightBitFont(68,  LINE5_Y,strValue, Font_6x10, White);
+        ssd1306_WriteStringEightBitFont(105,  LINE3_Y,"OIW:", Font_6x10, White);
+        sprintf(strValue, "%u%u.%u", Dig[8], Dig[9], Dig[10]);
+        ssd1306_WriteStringEightBitFont(105,  LINE5_Y,strValue, Font_6x10, White);
+        //Write the key options to the display
         USR_WriteKeys("< > $ & * OK");
+        //Write the intrument name to the display
         USR_WriteInstrumentName();
         break;
       }
@@ -1362,9 +1508,8 @@ void USR_ShowScreen(uint32_t NewScreen)
 //! \params     None
 void USR_WriteInstrumentName (void)
 {
-
-  //ssd1306_WriteStringEightBitFont(127 - strlen(gMachineType[gMachine/100].Name)*Font_6x10.FontWidth, BOTTOMLINE_Y + 3,gMachineType[gMachine/100].Name, Font_6x10, White);
-  ssd1306_WriteStringEightBitFont(128 - ssd1306_GetStringWidth(gMachineType[gMachine/100].Name, Font_6x10), BOTTOMLINE_Y + 3,gMachineType[gMachine/100].Name, Font_6x10, White);
+  if (SHOWINSTRUMENTNAME) 
+    ssd1306_WriteStringEightBitFont(128 - ssd1306_GetStringWidth(gMachineType[gMachine/100].Name, Font_6x10), BOTTOMLINE_Y + 3,gMachineType[gMachine/100].Name, Font_6x10, White);
 
 }
 
