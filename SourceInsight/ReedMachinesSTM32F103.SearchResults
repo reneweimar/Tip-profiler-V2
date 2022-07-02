@@ -1,13 +1,4 @@
----- .endposition Matches (12 in 1 files) ----
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            gScrape.EndPosition = 0;
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            gScrape.EndPosition = 0;
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          gScrape.EndPosition = pSCRAPEWIDTHINNER * 42 / 15 * 1000 / pSIDESTEPRATIO; //Pulses -> Value * 10 / 2 (Half scrape width inner) * 840 / 1500 um -> Pulse;
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          gScrape.EndPosition = 0;              
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        if ((gIDX_Motor.SetPosition - gScrape.EndPosition)> gScrape.SideStep) 
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          IDX_SetPosition(gScrape.EndPosition);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        if ((abs(gIDX_Motor.SetPosition) - abs(gScrape.EndPosition)) > gScrape.SideStep) 
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          IDX_SetPosition(gScrape.EndPosition);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        gScrape.EndPosition *= -1; //Left side of the reed
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        if (gScrape.EndPosition == 0)
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            gScrape.EndPosition *= -1; //Right side of the reed
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          gScrape.EndPosition *= -1; //Right side of the reed
+---- RightSideEndOfScraping Matches (3 in 2 files) ----
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            WRK_SetScrapeStatus (RightSideEndOfScraping);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      if (gScrape.Status == RightSideEndOfScraping)
+Work.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):  RightSideEndOfScraping = 3,

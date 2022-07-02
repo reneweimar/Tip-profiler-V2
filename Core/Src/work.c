@@ -210,12 +210,19 @@ uint8_t WRK_CheckConditions(void)
 //! \param      None
 void WRK_DrawProgressBar (void)
 {
+    int32_t EndPosition = gScrape.EndPosition * gIDX_Motor.Factor;
+    int32_t StartPosition = gScrape.StartPosition * gIDX_Motor.Factor;
+    
     if (gScrape.StartPosition > 0)
-        RightPercentage = (uint8_t) ((gIDX_Motor.GetPosition * 100) / (gScrape.StartPosition*gIDX_Motor.Factor));
+    {
+      RightPercentage = (uint8_t) (((gIDX_Motor.GetPosition - EndPosition) * 100) / (StartPosition - EndPosition));
+    }
     else
-        LeftPercentage = (uint8_t) ((gIDX_Motor.GetPosition * 100) / (-gScrape.StartPosition*gIDX_Motor.Factor));
-    if (gScrape.Status == RightSideLastStep) RightPercentage = 0; //Avoid accuracy errors
-    if (gScrape.Status == LeftSideLastStep) LeftPercentage = 0; //Avoid accuracy errors
+    {
+      LeftPercentage = (uint8_t) (((abs(gIDX_Motor.GetPosition) - abs(EndPosition)) * 100) / (abs(StartPosition) - abs(EndPosition)));
+    }
+    //if (gScrape.Status == RightSideLastStep) RightPercentage = 0; //Avoid accuracy errors
+    //if (gScrape.Status == LeftSideLastStep) LeftPercentage = 0; //Avoid accuracy errors
     if (gReturnScreen == 30)
     {
         USR_DrawProgressFull(47,17,LeftPercentage,RightPercentage,4,White);
@@ -1179,6 +1186,7 @@ void WRK_HandleScrapeReed (void)
       if (gScrape.Status == RightSideEndOfScraping)
       {
         RightPercentage = 0;
+        WRK_DrawProgressBar();
         gIDX_Motor.MainStatus = (INACTIVE);
         IDX_Set(UNDEFINED,0);
         WRK_SetScrapeStatus (LeftSideNormalStep);
@@ -1188,6 +1196,8 @@ void WRK_HandleScrapeReed (void)
       }
       else if (gScrape.Status == LeftSideEndOfScraping)
       {
+        LeftPercentage = 0;
+        WRK_DrawProgressBar();
         gIDX_Motor.MainStatus = (INACTIVE);
         IDX_Set(UNDEFINED,0);
         if (gScrape.EndPosition == 0)
