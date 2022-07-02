@@ -51,11 +51,11 @@ uint8_t RightPercentage;
 
 StcMainMenu MainMenu[NROFMAINMENUITEMS]=
 {
-  {"SETTINGS", 1},
-  {"COMMANDS", 1},  
-  {"ERRORS", 1},
-  {"COUNTERS", 0},
-  {"DATA",0}
+  {"Values", 1},
+  {"Commands", 1},  
+  {"Errors", 1},
+  {"Counters", 0},
+  {"Data",0}
 };
 //! \Global service max main menu service flag
 uint8_t gMainMenuMaxService = 3;
@@ -72,8 +72,8 @@ StcMachine gMachineType[NROFMACHINETYPES];
 //! \Global commands container
 StcCommands gCommands[] =
 {
-  {"RESET TO FACTORY   ",1},
-  {"SET STROKE LENGTH  ",1},
+  {"Reset to factory",1},
+  {"Set stroke length",1},
 //  {"STROKE MOTOR       ",0},
 };
 //! \Global User command max flag
@@ -395,6 +395,10 @@ void WRK_HandleActive(void)
           else
             USR_ShowScreen (gCurrentScreen - 10,1);
         }
+        else if ((gCurrentScreen >= 10000))
+        {
+            USR_ShowScreen (gCurrentScreen  / 100,1);
+        } 
       }
       else if ((USR_ButtonPressed(BtnDown, USR_SHORTPRESSTIME,1) == 1)  && (gCurrentScreen >= 10))
       {
@@ -413,10 +417,12 @@ void WRK_HandleActive(void)
             LastNormalScreen = gCurrentScreen;
             USR_ShowScreen (101,1);
           }
+          /*CHANGED TO <
           else if ((gCurrentScreen >= 10000))
           {
             USR_ShowScreen (gCurrentScreen  / 100,1);
           } 
+          */
           else if (LastNormalScreen >=10)
           {
             USR_ShowScreen (LastNormalScreen,1);

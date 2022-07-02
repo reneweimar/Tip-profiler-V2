@@ -1195,7 +1195,11 @@ void USR_ShowScreen(uint32_t NewScreen, uint8_t ClearScreen)
         USR_ClearScreen(3);
         if (gServiceMenu)
         {
-              ssd1306_WriteStringEightBitFont(0,0,"Service", Font_6x10, White);  
+            ssd1306_WriteStringEightBitFont(0,0,"Settings - RM", Font_6x10, White);  
+        }
+        else        
+        {
+            ssd1306_WriteStringEightBitFont(0,0,"Settings", Font_6x10, White);  
         }
         for (uint8_t i = 0;i<3;i++)
         {
@@ -1208,13 +1212,10 @@ void USR_ShowScreen(uint32_t NewScreen, uint8_t ClearScreen)
             }
             else
               USR_ClearScreen(7);
-//              ssd1306_WriteStringEightBitFont(0, 16 + ((LINE3_Y-LINE1_Y) * i),"                    ", Font_6x10, White);
           }
           else
           {
             USR_ClearScreen(7);
-                
- //             ssd1306_WriteStringEightBitFont(0, 16 + ((LINE3_Y-LINE1_Y) * i),"                    ", Font_6x10, White);
           }
         }
         USR_WriteKeys("& $ > *");
@@ -1411,7 +1412,7 @@ void USR_ShowScreen(uint32_t NewScreen, uint8_t ClearScreen)
       {
         USR_ClearScreen(3);
         if (gServiceMenu)
-          ssd1306_WriteStringEightBitFont(0, 0,"Errors - S", Font_6x10, White);  
+          ssd1306_WriteStringEightBitFont(0, 0,"Errors - RM", Font_6x10, White);  
         else
           ssd1306_WriteStringEightBitFont(0, 0,"Errors", Font_6x10, White);
         uint8_t LastError = Errors[0] - 1001;
@@ -1424,12 +1425,15 @@ void USR_ShowScreen(uint32_t NewScreen, uint8_t ClearScreen)
           ErrorDisplayPage ++;
           if (ErrorDisplayPage > LastPage - 1) ErrorDisplayPage = 0;
         }
-
         if (gCurrentScreen == 10300)
         {
           gCurrentScreen = 10303;
           ErrorDisplayPage --;
-          if (ErrorDisplayPage < 0) ErrorDisplayPage = LastPage - 1;
+          if (ErrorDisplayPage < 0) 
+          {
+            ErrorDisplayPage = LastPage - 1;
+            gCurrentScreen = 10300 + LastError - (ErrorDisplayPage*3);
+          }
         }
         if ((LastError == 0)&&(Errors[99] == 0))
         {
@@ -1448,14 +1452,27 @@ void USR_ShowScreen(uint32_t NewScreen, uint8_t ClearScreen)
         else
         {
           gCurrentError = LastError - (gCurrentScreen - 10301) - (ErrorDisplayPage*3);
-          if (gCurrentError <= 0) gCurrentError += 99;
+          if (gCurrentError <= 0) 
+          {
+            gCurrentError = LastError;
+            ErrorDisplayPage = 0;
+            gCurrentScreen = 10301;
+          }
           for (uint8_t i = 0;i<3;i++)
           {
-            if (gCurrentError - i + (gCurrentScreen - 10301) <= 0)
-              sprintf(strValue, "%u", Errors[gCurrentError + (gCurrentScreen - 10301) - i + 99]);
+            if (gCurrentError + (gCurrentScreen - 10301) - i > 0)
+            {
+                //if (gCurrentError - i + (gCurrentScreen - 10301) <= 0)
+                //  sprintf(strValue, "Error %02u: %u", LastError + 1 -(gCurrentError + (gCurrentScreen - 10301) - i + 99), Errors[gCurrentError + (gCurrentScreen - 10301) - i + 99]);
+                //else
+                  sprintf(strValue, "Error %02u: %u", LastError + 1 - (gCurrentError + (gCurrentScreen - 10301) - i), Errors[gCurrentError + (gCurrentScreen - 10301) - i]);
+                ssd1306_WriteStringEightBitFont(Font_6x10.FontWidth * 2, LINE1_Y + ((LINE3_Y-LINE1_Y) * i),strValue, Font_6x10, White); 
+            }    
             else
-              sprintf(strValue, "%u", Errors[gCurrentError + (gCurrentScreen - 10301) - i]);
-            ssd1306_WriteStringEightBitFont(Font_6x10.FontWidth * 2, LINE1_Y + ((LINE3_Y-LINE1_Y) * i),strValue, Font_6x10, White); 
+            {
+                if (i == 1) USR_ClearScreen(7);
+                if (i == 2) USR_ClearScreen(9);
+            }
           }
           USR_WriteKeys("< & $ >");
   
