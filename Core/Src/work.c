@@ -215,14 +215,12 @@ void WRK_DrawProgressBar (void)
     
     if (gScrape.StartPosition > 0)
     {
-      RightPercentage = (uint8_t) (((gIDX_Motor.GetPosition - EndPosition) * 100) / (StartPosition - EndPosition));
+      RightPercentage = (uint8_t) (((abs(gIDX_Motor.GetPosition) - abs(EndPosition)) * 100) / (abs(StartPosition) - abs(EndPosition)));;
     }
     else
     {
       LeftPercentage = (uint8_t) (((abs(gIDX_Motor.GetPosition) - abs(EndPosition)) * 100) / (abs(StartPosition) - abs(EndPosition)));
     }
-    //if (gScrape.Status == RightSideLastStep) RightPercentage = 0; //Avoid accuracy errors
-    //if (gScrape.Status == LeftSideLastStep) LeftPercentage = 0; //Avoid accuracy errors
     if (gReturnScreen == 30)
     {
         USR_DrawProgressFull(47,17,LeftPercentage,RightPercentage,4,White);
@@ -361,6 +359,12 @@ void WRK_HandleActive(void)
           WRK_SetStatus(MainStatus,EXECUTECOMMAND);
           break;
         }
+        else if ((gCurrentScreen > 10300) && (gCurrentScreen < 10400))//Error screen 
+    {
+          gReturnFromErrorScreen = gCurrentScreen;
+          WRK_ShowError (Errors[gCurrentError],0); //View the error only
+          break;
+        }
       }
       else if ((USR_ButtonPressed(BtnLeft, USR_SHORTPRESSTIME,1) == 1) && (gCurrentScreen >= 10))
       {
@@ -430,7 +434,7 @@ void WRK_HandleActive(void)
           gScrape.Endless = 0; //Some function so it is not optimized out
         }
       }
-			else if (USR_ButtonPressed(BtnOk,1,1)==1)
+      else if (USR_ButtonPressed(BtnOk,1,1)==1)
       {
         if (gCurrentScreen == 3) //Error screen
         {
@@ -739,19 +743,19 @@ void WRK_HandleEnterValue(void)
         {
           if (gParameterNumber == SIDESTEPBIG)
           {
-            WRK_ShowError(31001);
+            WRK_ShowError(31001,1);
           }
           else if (gParameterNumber == SIDESTEPSMALL)
           {
-            WRK_ShowError(31002);
+            WRK_ShowError(31002,1);
           }
           else if (gParameterNumber == SCRAPEWIDTH)
           {
-            WRK_ShowError(31003);
+            WRK_ShowError(31003,1);
           }
           else if (gParameterNumber == SCRAPEWIDTHINNER)
           {
-            WRK_ShowError(31004);
+            WRK_ShowError(31004,1);
           }
           WRK_SetStatus(SubStatus, WAITFORUSER2);
         }
@@ -829,7 +833,7 @@ void WRK_HandleInitialize(void)
   {
     STR_Stop();
     IDX_Stop();//IDX_Set(STOP,0);
-    WRK_ShowError(gSTR_ErrorNumber);
+    WRK_ShowError(gSTR_ErrorNumber,1);
     WRK_SetStatus(MainStatus, ACTIVE);
     WRK_SetStatus(SubStatus, WAITFORUSER); 
     return;
@@ -838,7 +842,7 @@ void WRK_HandleInitialize(void)
   {
     STR_Stop();
     IDX_Stop();//IDX_Set(STOP,0);
-    WRK_ShowError (gIDX_ErrorNumber);
+    WRK_ShowError (gIDX_ErrorNumber,1);
     WRK_SetStatus(MainStatus, ACTIVE);
     WRK_SetStatus(SubStatus, WAITFORUSER); 
     return;
@@ -856,7 +860,8 @@ void WRK_HandleInitialize(void)
     }
     case WAITFORINDEXSTART:
     {
-      if (IDX_Set(GOTOPOSITION, gScrape.StartPosition )==READY)
+      //if (IDX_Set(GOTOPOSITION, gScrape.StartPosition )==READY)
+      if (IDX_Set(GOTOPOSITION, -pSCRAPEWIDTH * 42 / 15 * 1000 / pSIDESTEPRATIO)==READY)
       {
         IDX_Set(UNDEFINED,0);
         gIDX_Motor.IsInStartPosition = 1;
@@ -1058,7 +1063,7 @@ void WRK_HandleScrapeReed (void)
   {
     STR_Stop();
     IDX_Set(STOP,0);
-    WRK_ShowError(gSTR_ErrorNumber);
+    WRK_ShowError(gSTR_ErrorNumber,1);
     WRK_SetStatus(MainStatus, ACTIVE);
     WRK_SetStatus(SubStatus, WAITFORUSER); 
     return;
@@ -1067,7 +1072,7 @@ void WRK_HandleScrapeReed (void)
   {
     STR_Stop();;
     IDX_Set(STOP,0);
-    WRK_ShowError(gIDX_ErrorNumber);
+    WRK_ShowError(gIDX_ErrorNumber,1);
     WRK_SetStatus(MainStatus, ACTIVE);
     WRK_SetStatus(SubStatus, WAITFORUSER); 
     return;
@@ -1112,6 +1117,8 @@ void WRK_HandleScrapeReed (void)
         gReturnScreen = gCurrentScreen;
         USR_ClearScreen(5); //Clear line 1
         USR_SetMessage("Scraping","","","","","OK = Pause",4,0);
+        gScrape.EndPosition *= -1; //Left side of the reed
+        gScrape.StartPosition *= -1; //Left side of the reed
         RightPercentage = 100;
         LeftPercentage = 100;
         WRK_DrawProgressBar();
@@ -1123,7 +1130,8 @@ void WRK_HandleScrapeReed (void)
         }
         else
         {
-          WRK_SetScrapeStatus (RightSideNormalStep);
+          //WRK_SetScrapeStatus (RightSideNormalStep);
+          WRK_SetScrapeStatus (LeftSideNormalStep);
           WRK_SetStatus(SubStatus, WAITFORPOSITION);
         }
       }
@@ -1183,20 +1191,23 @@ void WRK_HandleScrapeReed (void)
           break;
         }
       }
-      if (gScrape.Status == RightSideEndOfScraping)
+      //if (gScrape.Status == RightSideEndOfScraping)
+      if (gScrape.Status == LeftSideEndOfScraping)
       {
-        RightPercentage = 0;
+        LeftPercentage = 0;
         WRK_DrawProgressBar();
         gIDX_Motor.MainStatus = (INACTIVE);
         IDX_Set(UNDEFINED,0);
-        WRK_SetScrapeStatus (LeftSideNormalStep);
+        //WRK_SetScrapeStatus (LeftSideNormalStep);
+        WRK_SetScrapeStatus (RightSideNormalStep);
         gScrape.EndPosition *= -1; //Left side of the reed
         gScrape.StartPosition *= -1; //Left side of the reed
         WRK_SetStatus(SubStatus, WAITFORPOSITION);            
       }
-      else if (gScrape.Status == LeftSideEndOfScraping)
+      //else if (gScrape.Status == LeftSideEndOfScraping)
+      else if (gScrape.Status == RightSideEndOfScraping)
       {
-        LeftPercentage = 0;
+        RightPercentage = 0;
         WRK_DrawProgressBar();
         gIDX_Motor.MainStatus = (INACTIVE);
         IDX_Set(UNDEFINED,0);
@@ -1210,7 +1221,7 @@ void WRK_HandleScrapeReed (void)
             USR_ClearScreen(5); //Clear line 1
             USR_SetMessage("Scraping","","","","","OK = Pause",4,0);
             USR_IncreaseCounters();
-            WRK_SetScrapeStatus (RightSideNormalStep);
+            WRK_SetScrapeStatus (LeftSideNormalStep);
             WRK_SetStatus(SubStatus, WAITFORPOSITION);
           }
           else
@@ -1222,7 +1233,7 @@ void WRK_HandleScrapeReed (void)
             }
             else
             {
-              gScrape.StartPosition *= -1; //Right side of the reed
+              //gScrape.StartPosition *= -1; //Right side of the reed
               WRK_SetStatus(SubStatus, WAITFORINDEXSTART);
             }
           }
@@ -1255,7 +1266,8 @@ void WRK_HandleScrapeReed (void)
    
     case WAITFORINDEXSTART:
     {
-      if (IDX_Set(GOTOPOSITION, pSCRAPEWIDTH * 42 / 15 * 1000 / pSIDESTEPRATIO)==READY)
+      //if (IDX_Set(GOTOPOSITION, pSCRAPEWIDTH * 42 / 15 * 1000 / pSIDESTEPRATIO)==READY)
+      if (IDX_Set(GOTOPOSITION, -pSCRAPEWIDTH * 42 / 15 * 1000 / pSIDESTEPRATIO)==READY)
       {
         IDX_Set(UNDEFINED,0);
         //Check battery status
@@ -1692,7 +1704,7 @@ void WRK_SetStatus (enuType newType, enuStatus newStatus)
 //! \brief      Shows the corresponding text for the error
 //! \details    Sets and saves the error text for displaying in screen 3
 //! \param[in]  uint16_t newError
-void WRK_ShowError (uint16_t newError)
+void WRK_ShowError (uint16_t newError, uint8_t newSave)
 {
   if (newError == 13001) //Index motor not turning or encoder not detected
     USR_SetMessage("SIDE STEP MOTOR NOT","","TURNING OR ENCODER","","SIGNAL MISSING","OK",3,1);
@@ -1718,9 +1730,10 @@ void WRK_ShowError (uint16_t newError)
     USR_SetMessage("SIDE STEP CONFLICT","","INNER >= WIDTH","","OK: CORRECT *: CANCEL","OK",3,1);
   else
   {
-    USR_SetMessage("","","    UNKNOWN ERROR","","","OK",0,1);
+    USR_SetMessage("","","    UNKNOWN ERROR","","","OK",3,1);
   }
-  USR_SaveError(newError,1);
+	if (newSave == 1)
+		USR_SaveError(newError,1);
 }
 
 //-----------------------------------------------------------------------------

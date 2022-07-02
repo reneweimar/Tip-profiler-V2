@@ -258,7 +258,6 @@ extern stcCounter gCounter;
 //WRK_functions
 //---------------------- SYSTEM ------------------------
 //Local functions
-void WRK_ShowError (uint16_t newError);
 uint8_t WRK_CheckConditions(void);
 void WRK_HandleActive(void);
 void WRK_HandleBatteryStatus (void);
@@ -272,7 +271,7 @@ void WRK_HandleInitialize(void);
 void WRK_HandleScrapeReed (void);
 void WRK_HandleSensors(void);
 void WRK_SetStatus (enuType newType, enuStatus newStatus);
-void WRK_ShowError (uint16_t newError);
+void WRK_ShowError (uint16_t newError, uint8_t newSave);
 //Exported functions
 extern void WRK_HandleSequence(void);
 extern void WRK_HandleSideStep(void);

@@ -1,4 +1,42 @@
----- RightSideEndOfScraping Matches (3 in 2 files) ----
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            WRK_SetScrapeStatus (RightSideEndOfScraping);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      if (gScrape.Status == RightSideEndOfScraping)
-Work.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):  RightSideEndOfScraping = 3,
+---- setmessage Matches (41 in 3 files) ----
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):void USR_SetMessage (char* newMessage0, char* newMessage1, char* newMessage2, char* newMessage3, char* newMessage4, char* newMessage5,uint8_t newScreen, uint8_t ClearScreen)
+Userinterface.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):extern void USR_SetMessage (char* newMessage0, char* newMessage1, char* newMessage2, char* newMessage3, char* newMessage4, char* newMessage5,uint8_t newScreen, uint8_t ClearScreen);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_SetMessage("","PLUGGED IN","","OK: CONTINUE *: CANCEL","","OK",4,1);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_SetMessage("BATTERY VOLTAGE TOO","","LOW. PLEASE PLUG IN","","*: CANCEL","OK",4,1);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              USR_SetMessage("NOT IN START POS!","","SCRAPING MENU","","NOT AVAILABLE","OK",4,1);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              USR_SetMessage("Not homed!","","Start position menu is","","not available.","OK",4,1);        
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):                USR_SetMessage("NOT IN START POS!","","ENDLESS SCRAPING MENU","","NOT AVAILABLE","OK",4,1);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              USR_SetMessage("NOT HOMED!","","SCRAPING MENU","","NOT AVAILABLE","OK",4,1);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          USR_SetMessage("BATTERY VOLTAGE TOO","","LOW. PLEASE PLUG IN","","*: CANCEL","OK",4,1);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          USR_SetMessage("","","     Please wait","","","",4,1);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          USR_SetMessage("","","     Please wait","","","",4,1);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_SetMessage("SIDE STEP SET IS","","NOT HOMED","","","OK",3,1);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_SetMessage("SIDE STEP SET NOT","","AT START POSITION","","","OK",3,1);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_SetMessage("STROKE SET NOT","","AT START POSITION","","","OK",3,1);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_SetMessage("Scraping","","","","","OK = Pause",4,0);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          USR_SetMessage("","","Pause scraping","","","",4,1);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          USR_SetMessage("","","Pause scraping","","","",4,1);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            USR_SetMessage("Scraping","","","","","OK = Pause",4,0);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              USR_SetMessage("BATTERY EMPTY. PLUG","","IN TO CONTINUE","","*: CANCEL","OK",4,1);  
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            USR_SetMessage("","OK: Continue scraping","","*: Cancel scraping","","* OK",4,1);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            USR_SetMessage("Scraping","","","","","OK = Pause",4,0);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            USR_SetMessage("BATTERY VOLTAGE TOO","","LOW. PLEASE PLUG IN","","*: CANCEL","OK",4,1);  
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_SetMessage("","PLUGGED IN","","OK: CONTINUE *: CANCEL","","OK",4,1);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          USR_SetMessage("Scraping","","","","","OK = Pause",4,0);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_SetMessage("BATTERY VOLTAGE TOO","","LOW. PLEASE PLUG IN","","*: CANCEL","OK",4,1);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          USR_SetMessage("Scraping","","","","","OK = Pause",4,0);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          USR_SetMessage("Scraping","","","","","OK = Pause",4,0);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          USR_SetMessage("Scraping","","","","","OK = Pause",4,0);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        USR_SetMessage("","","Cancel scraping","","","",4,1);  
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    USR_SetMessage("SIDE STEP MOTOR NOT","","TURNING OR ENCODER","","SIGNAL MISSING","OK",3,1);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    USR_SetMessage("SIDE STEP MOTOR","","TURNING WRONG","","DIRECTION","OK",3,1);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    USR_SetMessage("SIDE STEP MOTOR ","","TURNING BUT HOME","","SENSOR MISSING","OK",3,1);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    USR_SetMessage("STROKE MOTOR NOT","","TURNING OR ENCODER","","SIGNAL MISSING","OK",3,1);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    USR_SetMessage("STROKE MOTOR ","","TURNING BUT ENCODER","","SIGNAL MISSING","OK",3,1);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    USR_SetMessage("STROKE MOTOR TURNING","","BUT HOME SENSOR","","SIGNAL MISSING","OK",3,1);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    USR_SetMessage("STROKE UNIT AT START","","POSITION BUT HOME","","SENSOR STILL ON","OK",3,1);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    USR_SetMessage("SIDE STEP CONFLICT","","BIG <= SMALL","","OK: CORRECT *: CANCEL","OK",3,1);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    USR_SetMessage("SIDE STEP CONFLICT","","SMALL >= BIG","","OK: CORRECT *: CANCEL","OK",3,1);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    USR_SetMessage("SIDE STEP CONFLICT","","WIDTH <= INNER","","OK: CORRECT *: CANCEL","OK",3,1);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    USR_SetMessage("SIDE STEP CONFLICT","","INNER >= WIDTH","","OK: CORRECT *: CANCEL","OK",3,1);
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    USR_SetMessage("","","    UNKNOWN ERROR","","","OK",0,1);

@@ -73,6 +73,7 @@ typedef struct
 } stcButtonStatus;
 extern stcButtonStatus Button[NROFBUTTONS];
 extern uint8_t gParameterNumber;
+extern int8_t gCurrentError;
 extern int16_t gParameterValue;
 extern uint32_t gCurrentScreen;
 extern uint32_t gReturnScreen;
