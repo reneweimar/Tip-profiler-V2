@@ -13,7 +13,7 @@
 #define SPLASHSCREENTIME        3000
 #define VERSIONMAJOR            1
 #define VERSIONMINOR            1
-#define VERSIONTWEAK            34
+#define VERSIONTWEAK            37
 #define LOWPOWERTIME            10000
 #define NOBATTERYCONTRAST       25
 #define LOWCONTRAST             75
@@ -71,11 +71,11 @@ typedef enum
 }enuStatus;
 typedef enum //Numbering cannot be changed!!!!
 {
-  SCRAPEWIDTH = 0,
-  SCRAPEWIDTHINNER = 1,
-  SCRAPESPEED = 2,
+  SCRAPESPEED = 0,
+  SCRAPEWIDTH = 1,
+  SIDESTEPBIG = 2,
   SIDESTEPSMALL = 3,
-  SIDESTEPBIG = 4,
+  SCRAPEWIDTHINNER = 4,
   SCREENSAVER = 5,
   MACHINETYPE = 6,
   SIDESTEPOFFSET = 7,
@@ -98,6 +98,27 @@ typedef enum
   TASK_ERROR,
   TASK_READY
 } enuTask;
+
+//Parameter numbering is defined in work.h
+#define pSCRAPEWIDTH         gMachineType[gMachine/100].Parameters[SCRAPEWIDTH].Value
+#define pSCRAPEWIDTHINNER    gMachineType[gMachine/100].Parameters[SCRAPEWIDTHINNER].Value
+#define pSCRAPESPEED         gMachineType[gMachine/100].Parameters[SCRAPESPEED].Value
+#define pSIDESTEPSMALL       gMachineType[gMachine/100].Parameters[SIDESTEPSMALL].Value
+#define pSIDESTEPBIG         gMachineType[gMachine/100].Parameters[SIDESTEPBIG].Value
+#define pSCREENSAVER         gMachineType[gMachine/100].Parameters[SCREENSAVER].Value
+#define pMACHINETYPE         gMachineType[gMachine/100].Parameters[MACHINETYPE].Value
+#define pSIDESTEPOFFSET      gMachineType[gMachine/100].Parameters[SIDESTEPOFFSET].Value
+#define pSCRAPESPEEDMIN      gMachineType[gMachine/100].Parameters[SCRAPESPEEDMIN].Value
+#define pSCRAPESPEEDMAX      gMachineType[gMachine/100].Parameters[SCRAPESPEEDMAX].Value
+#define pSCRAPEWIDTHMAX      gMachineType[gMachine/100].Parameters[SCRAPEWIDTHMAX].Value
+#define pSCRAPEWIDTHFACT     gMachineType[gMachine/100].Parameters[SCRAPEWIDTHFACT].Value
+#define pSCRAPESPEEDFACT     gMachineType[gMachine/100].Parameters[SCRAPESPEEDFACT].Value
+#define pSIDESTEPSMALLFACT   gMachineType[gMachine/100].Parameters[SIDESTSMALLFACT].Value
+#define pSIDESTEPBIGFACT     gMachineType[gMachine/100].Parameters[SIDESTBIGFACT].Value
+#define pSIDESTEPRATIO       gMachineType[gMachine/100].Parameters[SIDESTRATIO].Value
+#define pSIDESTEPREDUCTION   gMachineType[gMachine/100].Parameters[SIDESTREDUCTION].Value
+#define pSTROKEREDUCTION     gMachineType[gMachine/100].Parameters[STROKEREDUCTION].Value
+
 //-----------------------------------------------------------------------------
 //! \brief  Status type enumeration
 typedef enum
@@ -120,7 +141,7 @@ typedef struct
 //! \brief  Parameter storage structure
 typedef struct
 {
-  char Name[21];
+  char Name[25];
   int16_t Min;
   int16_t Max;
   int16_t Value;
@@ -140,7 +161,7 @@ typedef struct
 //! \brief  Commands storage structure
 typedef struct
 {
-  char Name[21];
+  char Name[30];
   uint8_t UserAccess;
 } StcCommands;
 //-----------------------------------------------------------------------------
@@ -237,7 +258,6 @@ extern stcCounter gCounter;
 //WRK_functions
 //---------------------- SYSTEM ------------------------
 //Local functions
-void WRK_ShowError (uint16_t newError);
 uint8_t WRK_CheckConditions(void);
 void WRK_HandleActive(void);
 void WRK_HandleBatteryStatus (void);
@@ -251,7 +271,7 @@ void WRK_HandleInitialize(void);
 void WRK_HandleScrapeReed (void);
 void WRK_HandleSensors(void);
 void WRK_SetStatus (enuType newType, enuStatus newStatus);
-void WRK_ShowError (uint16_t newError);
+void WRK_ShowError (uint16_t newError, uint8_t newSave);
 //Exported functions
 extern void WRK_HandleSequence(void);
 extern void WRK_HandleSideStep(void);

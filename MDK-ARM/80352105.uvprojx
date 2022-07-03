@@ -50,9 +50,13 @@
           </TargetStatus>
           <OutputDirectory>.\80352105\</OutputDirectory>
 <<<<<<< HEAD
+<<<<<<< HEAD
           <OutputName>Version01-01-0029</OutputName>
 =======
           <OutputName>Version01-01-0034</OutputName>
+>>>>>>> Development
+=======
+          <OutputName>Version01-01-0037</OutputName>
 >>>>>>> Development
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>

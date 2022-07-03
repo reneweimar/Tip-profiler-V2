@@ -1,7 +1,2 @@
----- gotostartposition Matches (6 in 3 files) ----
-Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    case GOTOSTARTPOSITION:
-Strokemotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):              STR_SetStatus(SubStatus, GOTOSTARTPOSITION);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      if (STR_Set(GOTOSTARTPOSITION,0)== READY)
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  if ((gSTR_Status.MainStatus == GOTOSTARTPOSITION) && (gSTR_Status.SubStatus == WAITFORSTROKEMOTORSTART))
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  if ((gSTR_Status.MainStatus == GOTOSTARTPOSITION) && (gSTR_Status.SubStatus == WAITFORHOMESENSORON))
-Work.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):    GOTOSTARTPOSITION,
+---- 1020201 Matches (1 in 1 files) ----
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      case 1020201: //Factory reset.

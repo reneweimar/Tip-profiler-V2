@@ -72,6 +72,8 @@ void SystemClock_Config(void);
   * @retval int
   */
   uint8_t G;
+uint32_t a;
+
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -142,6 +144,11 @@ HAL_Init();
     }
     WRK_HandleSTREncoder();
     WRK_HandleSideStep();
+    if (a>0)
+    {
+        USR_ShowScreen(a,1);
+        a=0;
+    }
  
     /* USER CODE END WHILE */
 
