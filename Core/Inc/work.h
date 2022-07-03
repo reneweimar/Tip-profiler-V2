@@ -13,7 +13,7 @@
 #define SPLASHSCREENTIME        3000
 #define VERSIONMAJOR            1
 #define VERSIONMINOR            1
-#define VERSIONTWEAK            36
+#define VERSIONTWEAK            37
 #define LOWPOWERTIME            10000
 #define NOBATTERYCONTRAST       25
 #define LOWCONTRAST             75
@@ -71,11 +71,11 @@ typedef enum
 }enuStatus;
 typedef enum //Numbering cannot be changed!!!!
 {
-  SCRAPEWIDTH = 0,
-  SCRAPEWIDTHINNER = 1,
-  SCRAPESPEED = 2,
+  SCRAPESPEED = 0,
+  SCRAPEWIDTH = 1,
+  SIDESTEPBIG = 2,
   SIDESTEPSMALL = 3,
-  SIDESTEPBIG = 4,
+  SCRAPEWIDTHINNER = 4,
   SCREENSAVER = 5,
   MACHINETYPE = 6,
   SIDESTEPOFFSET = 7,
@@ -141,7 +141,7 @@ typedef struct
 //! \brief  Parameter storage structure
 typedef struct
 {
-  char Name[21];
+  char Name[25];
   int16_t Min;
   int16_t Max;
   int16_t Value;
@@ -161,7 +161,7 @@ typedef struct
 //! \brief  Commands storage structure
 typedef struct
 {
-  char Name[21];
+  char Name[30];
   uint8_t UserAccess;
 } StcCommands;
 //-----------------------------------------------------------------------------

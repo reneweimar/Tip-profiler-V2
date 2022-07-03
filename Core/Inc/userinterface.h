@@ -28,6 +28,9 @@
 #define PLUGGEDIN_X 99
 #define PAGE_X 80
 #define SHOWINSTRUMENTNAME 0
+#define ENTERVALUE_X 50
+#define ENTERVALUE_Y 34
+
 
 
 #define BtnMenuLeft_Pin GPIO_PIN_10
@@ -86,6 +89,7 @@ extern uint32_t gLastScrapeScreenEndless;
 //---------------------- SYSTEM ------------------------
 //Local functions
 void USR_WriteInstrumentName (void);
+void USR_WriteTitle (char* newTitle);
 void USR_WriteKeys (char* newKeys);
 //Exported functions
 extern uint8_t USR_ButtonPressed (enuButtons ReqButton, uint16_t ReqTime, uint8_t ReqWaitForRelease);

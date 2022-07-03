@@ -20,6 +20,7 @@
 
 #include <math.h>
 #include "ssd1306.h"
+#include "userinterface.h"
 
 #if SSD1306_USE_DMA == 0 && SSD1306_CONTUPDATE == 1
 #error SSD1306_CONTUPDATE only in DMA MODE !
@@ -149,7 +150,7 @@ uint8_t ssd1306_GetCharWidth(char ch, FontDefEightBit Font)
     CharacterWidth = 0;
     for (i = 0; i < Font.FontHeight; i++)
     {
-			b = Font.data[(ch - 32) * Font.FontHeight + i]; 
+      b = Font.data[(ch - 32) * Font.FontHeight + i]; 
       for (j = 0; j < Font.FontWidth; j++)
       {
         if ((b << j) & 1<<(Font.FontWidth - 2)) //Pixel is on
@@ -161,10 +162,10 @@ uint8_t ssd1306_GetCharWidth(char ch, FontDefEightBit Font)
         }
       }
     }
-	if (ch == 32) CharacterWidth = Font.FontWidth - 3; //Space reserves space in normal text, not in enter value screen
-	if (ch == 33) CharacterWidth = 3;
+  if (ch == 32) CharacterWidth = Font.FontWidth - 3; //Space reserves space in normal text, not in enter value screen
+  if (ch == 33) CharacterWidth = 3;
     if (ch == 49) CharacterWidth = Font.FontWidth;
-	return CharacterWidth;
+  return CharacterWidth;
 }
 uint8_t ssd1306_GetStringWidth(char* str, FontDefEightBit Font)
 {
@@ -836,14 +837,17 @@ char ssd1306_WriteCharEightBitFont(char ch, FontDefEightBit Font, SSD1306_COLOR 
     int32_t i, j;
     uint32_t b;
     uint32_t CharacterWidth;
-    Height = Font.FontHeight;
-		Width =Font.FontWidth;
+    if ((ch == 94)&&(gCurrentScreen == 2)) //^ Avoid overwriting the lower line in ENTERVALUE 
+      Height = 3;
+    else
+      Height = Font.FontHeight;
+    Width =Font.FontWidth;
     //Search for the most left pixel in all rows of the character. 
     //and calculate the font width. 
     //If a pixel is on, The font width = Font.FontWidth - j
     CharacterWidth = ssd1306_GetCharWidth (ch,Font);
     // Translate font to screenbuffer taking into account the CharacterWidth
-    for (i = 0; i < Font.FontHeight; i++)
+    for (i = 0; i < Height; i++)
     {
       b = Font.data[(ch - 32) * Font.FontHeight + i]; 
       for (j = Font.FontWidth - CharacterWidth; j < Font.FontWidth; j++)
@@ -936,12 +940,12 @@ char testt;
 char ssd1306_WriteStringEightBitFont(uint8_t newX, uint8_t newY,char* str, FontDefEightBit Font, SSD1306_COLOR color)
 {
     ssd1306_SetCursor(newX, newY);
-	 testt = (char) *str;
+   testt = (char) *str;
     // Write until null-byte
     while (*str)
     {
         //
-			  if (ssd1306_WriteCharEightBitFont(*str, Font, color) != *str)
+        if (ssd1306_WriteCharEightBitFont(*str, Font, color) != *str)
         {
             // Char could not be written
             return *str;
@@ -1044,10 +1048,10 @@ void ssd1306_SetContrast(uint8_t NewContrast)
 void ssd1306_SetCursor(uint8_t x, uint8_t y)
 {
   #if (SSD1306_WIDTH == 130)
-		SSD1306.CurrentX = x+2;
-	#else
-		SSD1306.CurrentX = x;
-	#endif
+    SSD1306.CurrentX = x+2;
+  #else
+    SSD1306.CurrentX = x;
+  #endif
   SSD1306.CurrentY = y;
 }
 
@@ -1221,7 +1225,7 @@ void ssd1306_WriteCommand( uint8_t command)
   else
   {
     while(HAL_I2C_GetState(&SSD1306_I2C_PORT) != HAL_I2C_STATE_READY) { };
-		i2c_command = command;
+    i2c_command = command;
     HAL_I2C_Mem_Write_DMA(&SSD1306_I2C_PORT, SSD1306_I2C_ADDR, 0x00, 1, &i2c_command, 1);
   }
 }
@@ -1244,7 +1248,7 @@ void ssd1306_ContUpdateDisable(void)
   if(ssd1306_ContUpdate)
   {
     ssd1306_ContUpdate = 0;
-		while(ssd1306_updatestatus) { };
+    while(ssd1306_updatestatus) { };
   }
 }
 
