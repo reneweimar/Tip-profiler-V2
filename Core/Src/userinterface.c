@@ -705,7 +705,7 @@ void USR_ShowBattery (uint8_t PercentageNew)
     
     //ssd1306_DrawRectangle(Black,78, 0,24,7,0);
     
-    //ssd1306_WriteStringEightBitFont(PLUGGEDIN_X, 0,Percentage, Font_6x10, White);
+    ssd1306_WriteStringEightBitFont(PLUGGEDIN_X, 0,Percentage, Font_6x10, White);
     ssd1306_DrawBattery (107,0,Bars,White);//ssd1306_DrawBattery(White,Bars,115,0);
     ssd1306_UpdateScreen();
 }
