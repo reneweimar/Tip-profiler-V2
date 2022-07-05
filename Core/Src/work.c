@@ -85,7 +85,7 @@ uint16_t gCommandMaxService = sizeof(gCommands)/sizeof(gCommands[0])-1;
 StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
 { //OBOE
   { 
-    {"Scrape Speed, SS",50,400,50,"/s",2,1,1,0,0,0,0,0,0,0},
+    {"Scrape Speed, SS",50,400,200,"/s",2,1,1,0,0,0,0,0,0,0},
     {"Scrape Width, SW",0,1160,780,"mm",3,1,1,0,0,0,0,0,0,0},
     {"Big Side Step, BSS",20,100,40,"mm",3,2,1,0,0,0,0,0,0,0},
     {"Small Side Step, SSS",5,95,20,"mm",3,2,1,0,0,0,0,0,0,0},
@@ -107,7 +107,7 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
     {"",0,0,0,"",0,0,0,0,0,0,0,0,0,0}
   },
   { //BASSOON  
-    {"Scrape Speed, SS",50,400,50,"/s",1,1,1,0,0,0,0,0,0,0},
+    {"Scrape Speed, SS",50,400,200,"/s",1,1,1,0,0,0,0,0,0,0},
     {"Scrape Width, SW",0,2400,1660,"mm",3,1,1,0,0,0,0,0,0,0},
     {"Big Side Step, BSS",30,100,60,"mm",3,2,1,0,0,0,0,0,0,0},
     {"Small Side Step, SSS",5,60,30,"mm",3,2,1,0,0,0,0,0,0,0},
@@ -127,7 +127,7 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
     {"Stroke reduction",0,0,3000,"-",2,0,0,1,2,3000,5000,0,0,0},
   },
   { //KLARINET
-    {"Scrape Speed, SS",50,400,50,"/s",1,1,1,0,0,0,0,0,0,0},
+    {"Scrape Speed, SS",50,400,200,"/s",1,1,1,0,0,0,0,0,0,0},
     {"Scrape Width, SW",0,2400,1660,"mm",3,1,1,0,0,0,0,0,0,0},
     {"Big Side Step, BSS",30,100,60,"mm",3,2,1,0,0,0,0,0,0,0},
     {"Small Side Step, SSS",5,60,30,"mm",3,2,1,0,0,0,0,0,0,0},
@@ -147,7 +147,7 @@ StcParameters DefaultsMachine[NROFMACHINETYPES][20]=
     {"Stroke reduction",0,0,3000,"-",2,0,0,1,2,3000,5000,0,0,0},
   },
   { //BAGPIPE
-    {"Scrape Speed, SS",50,400,50,"/s",1,1,1,0,0,0,0,0,0,0},
+    {"Scrape Speed, SS",50,400,200,"/s",1,1,1,0,0,0,0,0,0,0},
     {"Scrape Width, SW",0,2400,1660,"mm",3,1,1,0,0,0,0,0,0,0},
     {"Big Side Step, BSS",30,100,60,"mm",3,2,1,0,0,0,0,0,0,0},
     {"Small Side Step, SSS",5,60,30,"mm",3,2,1,0,0,0,0,0,0,0},
@@ -1618,9 +1618,10 @@ void WRK_Init(void)
   {
     for (uint8_t i=0; i<=gParameterMaxService ;i++) //Check eeprom memory
     {
+      
       if (EE_ReadVariable(i + j * 100, &ParameterTemp[i]) != 0)
       {
-        ParameterTemp[i] = 0;
+        ParameterTemp[i] = gMachineType[j].Parameters[i].Value;//Never stored. Keep the default value;
       }
       if ((ParameterTemp[i]>0) && (i != 6)) NotEmpty = 1;
     }
