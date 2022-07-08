@@ -213,7 +213,6 @@ void WRK_DrawProgressBar (void)
 {
     int32_t EndPosition = gScrape.EndPosition * gIDX_Motor.Factor;
     int32_t StartPosition = gScrape.StartPosition * gIDX_Motor.Factor;
-    
     if (gScrape.StartPosition > 0)
     {
       RightPercentage = (uint8_t) (((abs(gIDX_Motor.GetPosition) - abs(EndPosition)) * 100) / (abs(StartPosition) - abs(EndPosition)));;
@@ -222,6 +221,7 @@ void WRK_DrawProgressBar (void)
     {
       LeftPercentage = (uint8_t) (((abs(gIDX_Motor.GetPosition) - abs(EndPosition)) * 100) / (abs(StartPosition) - abs(EndPosition)));
     }
+    
     if ((gReturnScreen == 30)||(gReturnScreen == 40))
     {
         USR_DrawProgressFull(47,17,LeftPercentage,RightPercentage,4,White);
@@ -240,7 +240,7 @@ void WRK_DrawProgressBar (void)
     }
     else if  (gReturnScreen == 42)
     {
-        USR_DrawProgressFull(47,17,100,100,4,White);
+        USR_DrawProgressFull(47,17,0,0,4,White);
     }
       
 }
@@ -1149,7 +1149,9 @@ void WRK_HandleScrapeReed (void)
         if (gWRK_Status.MainStatus == SCRAPENOSIDESTEPS)
         {
           WRK_SetScrapeStatus (NoSideStep);
-          WRK_SetStatus(SubStatus, WAITFORSTROKEMOTORSTART);  
+          WRK_DrawProgressBar();
+          WRK_SetStatus(SubStatus, WAITFORINDEXHOME);
+          //WRK_SetStatus(SubStatus, WAITFORSTROKEMOTORSTART);  
         }
         else
         {
@@ -1288,13 +1290,21 @@ void WRK_HandleScrapeReed (void)
       }
       break;
     }
-   
+    case WAITFORINDEXHOME:
+    {
+      if (IDX_Set(HOME,0)==READY)
+      {
+        WRK_SetStatus(SubStatus, WAITFORSTROKEMOTORSTART);  
+      }
+      break;
+    }
     case WAITFORINDEXSTART:
     {
       //if (IDX_Set(GOTOPOSITION, pSCRAPEWIDTH * 42 / 15 * 1000 / pSIDESTEPRATIO)==READY)
       if (IDX_Set(GOTOPOSITION, -pSCRAPEWIDTH * 42 / 15 * 1000 / pSIDESTEPRATIO)==READY)
       {
         IDX_Set(UNDEFINED,0);
+        gIDX_Motor.IsInStartPosition = 1;
         //Check battery status
         if (gScrape.Endless)
         {
@@ -1370,10 +1380,10 @@ void WRK_HandleScrapeReed (void)
         if (gScrape.Status == NoSideStepPaused)//pause scraping no side step
         {
           WRK_SetScrapeStatus(NoSideStep);
-          
           USR_ShowScreen(gReturnScreen,1);
           USR_ClearScreen(5); //Clear line 1
           USR_SetMessage("Scraping","","","","","OK = Pause",4,0);
+          WRK_DrawProgressBar();
           WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);
           break;
         }

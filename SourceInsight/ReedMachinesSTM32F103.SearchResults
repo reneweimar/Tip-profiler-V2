@@ -1,15 +1,7 @@
----- EE_WriteVariable Matches (14 in 4 files) ----
-EEprom.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):uint16_t EE_WriteVariable(uint16_t VirtAddress, uint16_t Data)
-EEprom.h (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\inc):uint16_t EE_WriteVariable(uint16_t VirtAddress, uint16_t Data);
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  EE_WriteVariable(2000 + gMachine, CounterLSB);
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  EE_WriteVariable(2001 + gMachine, CounterMSB);
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  EE_WriteVariable(2002 + gMachine, CounterLSB);
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  EE_WriteVariable(2003 + gMachine, CounterMSB);
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  EE_WriteVariable(2002 + gMachine, 0);        
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  EE_WriteVariable(2003 + gMachine, 0);
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    EE_WriteVariable(Errors[0], newError);
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):  EE_WriteVariable(1000, Errors[0]);
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      EE_WriteVariable(gParameterNumber+100*i, gParameterValue);
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    EE_WriteVariable(gParameterNumber+gMachine, gParameterValue);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      EE_WriteVariable(i * 100 + j, gMachineType[i].Parameters[j].Value);
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        EE_WriteVariable(i+ j * 100, gMachineType[j].Parameters[i].Value);
+---- gIDX_Motor.IsInStartPosition Matches (6 in 2 files) ----
+Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    gIDX_Motor.IsInStartPosition = 1;
+Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    gIDX_Motor.IsInStartPosition = 0;
+Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          gIDX_Motor.IsInStartPosition = 0;
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        gIDX_Motor.IsInStartPosition = 1;
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        else if (gIDX_Motor.IsInStartPosition == 0) 
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      else if ((gIDX_Motor.IsInStartPosition == 0) && (gWRK_Status.MainStatus != SCRAPENOSIDESTEPS)) //No side steps doesn't need IDX motor
