@@ -1,2 +1,7 @@
----- 1020201 Matches (1 in 1 files) ----
-Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      case 1020201: //Factory reset.
+---- gIDX_Motor.IsInStartPosition Matches (6 in 2 files) ----
+Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    gIDX_Motor.IsInStartPosition = 1;
+Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    gIDX_Motor.IsInStartPosition = 0;
+Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          gIDX_Motor.IsInStartPosition = 0;
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        gIDX_Motor.IsInStartPosition = 1;
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        else if (gIDX_Motor.IsInStartPosition == 0) 
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      else if ((gIDX_Motor.IsInStartPosition == 0) && (gWRK_Status.MainStatus != SCRAPENOSIDESTEPS)) //No side steps doesn't need IDX motor

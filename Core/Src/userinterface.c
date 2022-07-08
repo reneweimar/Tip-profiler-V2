@@ -654,9 +654,8 @@ void USR_ShowBattery (uint8_t PercentageNew)
     static uint8_t BatteryPercentageOld=0;
     static uint8_t CntBatteryPercentage;
     static uint16_t BatteryPercentageAverage;
-    //uint8_t XPos = 84;
     char Percentage[4];
-
+    sprintf(Percentage,"%s","  ");
     if (gCurrentScreen == 1) return;  
     CntBatteryPercentage++;
     BatteryPercentageAverage += PercentageNew;
@@ -697,15 +696,11 @@ void USR_ShowBattery (uint8_t PercentageNew)
         Bars = 2;
       else
         Bars = 1; 
-      if (BatteryPercentage == -1)
-      {
-        sprintf(Percentage,"%s","  ");
-      }
     }
     
     //ssd1306_DrawRectangle(Black,78, 0,24,7,0);
     
-    //ssd1306_WriteStringEightBitFont(PLUGGEDIN_X, 0,Percentage, Font_6x10, White);
+    ssd1306_WriteStringEightBitFont(PLUGGEDIN_X, 0,Percentage, Font_6x10, White);
     ssd1306_DrawBattery (107,0,Bars,White);//ssd1306_DrawBattery(White,Bars,115,0);
     ssd1306_UpdateScreen();
 }
@@ -770,10 +765,7 @@ void USR_ShowScreen(uint32_t NewScreen, uint8_t ClearScreen)
       }
       case 2: //Enter value
       {
-        //if (gMachineType[gMachine/100].Parameters[gParameterNumber].Options == 0) //Enter value
-          USR_WriteTitle("Value");
-        //else //Select value
-        //  USR_WriteTitle("Select value");
+        USR_WriteTitle("Value");
         ssd1306_WriteStringEightBitFont(0, LINE1_Y,gMachineType[gMachine/100].Parameters[gParameterNumber].Name, Font_6x10, White);
         Dig[4] = gParameterValue / 10000;
         Dig[3] = (gParameterValue - (Dig[4]*10000)) / 1000;
@@ -951,7 +943,12 @@ void USR_ShowScreen(uint32_t NewScreen, uint8_t ClearScreen)
         if (gCurrentScreen == 3)
           USR_WriteTitle("Error");
         else
-          USR_WriteTitle("Message");
+        {
+          if ((gReturnScreen >=40) && (gReturnScreen < 50)) //Endless scraping
+            USR_WriteTitle("Message endless");
+          else
+            USR_WriteTitle("Message");
+        }
         for (uint8_t i = 0; i<5;i++)
         {
           if (strcmp("",USR_Message[i]))
@@ -1170,7 +1167,7 @@ void USR_ShowScreen(uint32_t NewScreen, uint8_t ClearScreen)
       {
         gCurrentScreen = 42;
         USR_WriteTitle("Scrape endless");
-        ssd1306_WriteStringEightBitFont(0,  LINE1_Y,"With no side steps", Font_6x10, White);
+        ssd1306_WriteStringEightBitFont(0,  LINE1_Y,"Without side steps", Font_6x10, White);
         //Calculate the 2 digits of the scrape speed
         Dig[0] = pSCRAPESPEED / 100; 
         Dig[1] = (pSCRAPESPEED % 100) /10;
