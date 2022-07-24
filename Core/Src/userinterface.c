@@ -19,6 +19,7 @@
 //-----------------------------------------------------------------------------
 stcButtonStatus Button[NROFBUTTONS];
 uint32_t gCurrentScreen = 0xffffffff; //Undefined
+uint32_t gLastPositionScreen = 20;
 uint32_t gLastScrapeScreen = 30;
 uint32_t gLastScrapeScreenEndless = 40;
 uint32_t gReturnScreen;
@@ -728,7 +729,6 @@ void USR_ShowScreen(uint32_t NewScreen, uint8_t ClearScreen)
     gCurrentScreen = NewScreen;
     if (ClearScreen) USR_ClearScreen(2);
     if (((gCurrentScreen >= 10) && (gCurrentScreen < 19)) || ((gCurrentScreen >= 50) && (gCurrentScreen < 59))) gCurrentScreen = 10;
-    if ((gCurrentScreen >= 20) && (gCurrentScreen < 29)) gCurrentScreen = 20;
     if (gServiceMenu)
     {
       if (gCurrentScreen == 100) gCurrentScreen = 101 + gMainMenuMaxService;
@@ -966,22 +966,46 @@ void USR_ShowScreen(uint32_t NewScreen, uint8_t ClearScreen)
       {
         gCurrentScreen = 10;
         USR_ClearScreen(3);
-        ssd1306_WriteStringEightBitFont(0, LINE3_Y,"Go to home position ", Font_6x10, White);
+        ssd1306_WriteStringEightBitFont(0, LINE3_Y,"Find home position ", Font_6x10, White);
         USR_WriteTitle("Home");
-        USR_WriteKeys("< > * OK");
+        USR_WriteKeys("* OK");
+        USR_WriteInstrumentName();
+        break;
+      }
+      case 24:
+      case 20: //Goto Start Position
+      {
+        gCurrentScreen = 20;
+        ssd1306_WriteStringEightBitFont(0,LINE3_Y,"Go to start position", Font_6x10, White);
+        USR_WriteTitle("Position");
+        USR_WriteKeys("< $ & > * OK");
+        USR_WriteInstrumentName();
+        break;
+      }
+      case 21: //Go to Storage Position
+      {
+        ssd1306_WriteStringEightBitFont(0,LINE3_Y,"Go to storage position", Font_6x10, White);
+        USR_WriteTitle("Position");
+        USR_WriteKeys("< $ & > * OK");
+        USR_WriteInstrumentName();
+        break;
+      }
+      case 22: //Go to End Of Stroke Position
+      {
+        ssd1306_WriteStringEightBitFont(0,LINE3_Y,"Go to end of stroke position", Font_6x10, White);
+        USR_WriteTitle("Position");
+        USR_WriteKeys("< $ & > * OK");
         USR_WriteInstrumentName();
         break;
       }
       case 19:
-      case 20: //Start
-      case 21:
+      case 23: //Go to Begin Of Stroke Position
       {
-        gCurrentScreen = 20;
-        ssd1306_WriteStringEightBitFont(0,LINE3_Y,"Go to start position", Font_6x10, White);
-        USR_WriteTitle("Start");
-        USR_WriteKeys("< > * OK");
+        gCurrentScreen = 23;
+        ssd1306_WriteStringEightBitFont(0,LINE3_Y,"Go to begin of stroke position", Font_6x10, White);
+        USR_WriteTitle("Position");
+        USR_WriteKeys("< $ & > * OK");
         USR_WriteInstrumentName();
-
         break;
       }
       case 34:
@@ -1521,6 +1545,7 @@ void USR_ShowScreen(uint32_t NewScreen, uint8_t ClearScreen)
         USR_WriteKeys("");
     }
     }
+    if ((gCurrentScreen < 30) && (gCurrentScreen >= 19)) gLastPositionScreen = gCurrentScreen;
     if ((gCurrentScreen < 40) && (gCurrentScreen >= 29)) gLastScrapeScreen = gCurrentScreen;
     if ((gCurrentScreen < 50) && (gCurrentScreen >= 39)) gLastScrapeScreenEndless = gCurrentScreen;
     ssd1306_UpdateScreen();

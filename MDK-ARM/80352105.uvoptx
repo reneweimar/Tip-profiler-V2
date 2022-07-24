@@ -280,6 +280,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>gSTR_Motor</ItemText>
         </Ww>
+        <Ww>
+          <count>25</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>gLastScrapeScreen,0x0A</ItemText>
+        </Ww>
       </WatchWindow1>
       <MemoryWindow1>
         <Mm>

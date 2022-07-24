@@ -320,9 +320,13 @@ void WRK_HandleActive(void)
       {
         if (gCurrentScreen < 100) //Normal screen
         {
-          if (gCurrentScreen == 20)
+          if (gCurrentScreen == 10)
           {
-            if (gSTR_Motor.IsInStartPosition == 1)
+            gCurrentScreen = 10;
+          }
+          else if ((gCurrentScreen >= 20) && (gCurrentScreen <= 29))
+          {
+            if ((gSTR_Motor.IsInStartPosition == 1) && (gIDX_Motor.IsInStartPosition == 1))
             {
               USR_ShowScreen (gLastScrapeScreen,1);
             }
@@ -336,8 +340,21 @@ void WRK_HandleActive(void)
           {
             if (gServiceMenu) //Endless only available in Service Mode
                 USR_ShowScreen (gLastScrapeScreenEndless,1);
+            else if ((gSTR_Motor.IsHomed == 1) && (gIDX_Motor.IsHomed == 1))
+            {
+              USR_ShowScreen (gLastPositionScreen,1);
+            }
             else
-                USR_ShowScreen (10,1);
+              USR_ShowScreen (10,1);
+          }
+          else if((gCurrentScreen >= 40) && (gCurrentScreen < 50))
+          {
+            if ((gSTR_Motor.IsHomed == 1) && (gIDX_Motor.IsHomed == 1))
+            {
+              USR_ShowScreen (gLastPositionScreen,1);
+            }
+            else
+              USR_ShowScreen (10,1);
           }
           else if (gCurrentScreen == 10)
           {
@@ -383,9 +400,12 @@ void WRK_HandleActive(void)
         {
           if (gCurrentScreen == 10)
           {
+            gCurrentScreen = 10;
+          }
+          /*
             if (gIDX_Motor.IsHomed == 1)
             {
-              if (gSTR_Motor.IsInStartPosition == 1)
+              if ((gSTR_Motor.IsInStartPosition == 1)&& (gIDX_Motor.IsInStartPosition == 1))
               {
                 if (gServiceMenu) //Endless only available in Service Mode
                   USR_ShowScreen (gLastScrapeScreenEndless,1);
@@ -403,7 +423,25 @@ void WRK_HandleActive(void)
               gReturnScreen = gCurrentScreen;
               USR_SetMessage("Not homed!","","Start position menu is","","not available.","OK",4,1);        
             }
+          }*/
+          else if ((gCurrentScreen >= 20) && (gCurrentScreen < 30)) //Position screen
+          {
+            if ((gSTR_Motor.IsHomed == 0) || (gIDX_Motor.IsHomed == 0)) //Not homed
+            {
+              USR_ShowScreen (10,1);
+            }
+            else if ((gSTR_Motor.IsInStartPosition == 0)||(gIDX_Motor.IsInStartPosition == 0)) // Not in START position
+            {
+              gReturnScreen = gCurrentScreen;
+              USR_SetMessage("Not in start position","","Scraping menues are","","not available","OK",4,1);
+            }
+            else if (gServiceMenu) //Endless only available in Service Mode
+              USR_ShowScreen (gLastScrapeScreenEndless,1);
+            else
+              USR_ShowScreen (gLastScrapeScreen,1);
           }
+          else if ((gCurrentScreen >= 30) && (gCurrentScreen < 40)) //Scrape screen
+            USR_ShowScreen (gLastPositionScreen,1);
           else if((gCurrentScreen >= 40) && (gCurrentScreen < 50))
             USR_ShowScreen (gLastScrapeScreen,1);
           else
@@ -436,18 +474,6 @@ void WRK_HandleActive(void)
             LastNormalScreen = gCurrentScreen;
             USR_ShowScreen (101,1);
           }
-          /*CHANGED TO <
-
-          else if ((gCurrentScreen >= 10000))
-          {
-            USR_ShowScreen (gCurrentScreen  / 100,1);
-          } 
-          
-          else if (LastNormalScreen >=10)
-          {
-            USR_ShowScreen (LastNormalScreen,1);
-          }
-          */
           else if (gCurrentScreen == 1040101) //Reset Counter -> Cancel reset
           {
             USR_ShowScreen(LastScreen,1);
@@ -505,6 +531,33 @@ void WRK_HandleActive(void)
           USR_SetMessage("","","Please wait","","","",4,1);
           WRK_SetStatus(MainStatus,INITIALIZE);
           WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART);  
+        }
+        else if (gCurrentScreen == 21) //Goto STORAGE screen
+        {
+          WRK_HandleResetUnitErrors();
+          gReturnScreen = 21;
+          gReturnFromErrorScreen = 21;
+          USR_SetMessage("","","Please wait","","","",4,1);
+          WRK_SetStatus(MainStatus,INITIALIZE);
+          WRK_SetStatus(SubStatus,WAITFORINDEXHOME);  
+        }
+        else if (gCurrentScreen == 22) //Goto END OF STROKE screen
+        {
+          WRK_HandleResetUnitErrors();
+          gReturnScreen = 22;
+          gReturnFromErrorScreen = 22;
+          USR_SetMessage("","","Please wait","","","",4,1);
+          WRK_SetStatus(MainStatus,INITIALIZE);
+          WRK_SetStatus(SubStatus,WAITFORINDEXHOME);  
+        }
+        else if (gCurrentScreen == 23) //Goto BEGIN OF STROKE screen
+        {
+          WRK_HandleResetUnitErrors();
+          gReturnScreen = 23;
+          gReturnFromErrorScreen = 23;
+          USR_SetMessage("","","Please wait","","","",4,1);
+          WRK_SetStatus(MainStatus,INITIALIZE);
+          WRK_SetStatus(SubStatus,WAITFORINDEXHOME2);  
         }
         else if ((gCurrentScreen == 30)||(gCurrentScreen == 40)) //Start Scrape process with big side step (40 = endless)
         {
@@ -875,12 +928,17 @@ void WRK_HandleInitialize(void)
   }
   switch (gWRK_Status.SubStatus)
   {
-    case WAITFORINDEXHOME: //Before index home and index start was the same positon
+    case WAITFORINDEXHOME: //Index home and then Stroke HOME 
+    case WAITFORINDEXHOME2: //Index Home and the Stroke START
     {
       if (IDX_Set(HOME,0)== READY)
       {
         IDX_Set(UNDEFINED,0);
-        WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORHOME);
+        if (gWRK_Status.SubStatus == WAITFORINDEXHOME)
+          WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORHOME);
+        else
+          WRK_SetStatus(SubStatus,WAITFORSTROKEMOTORSTART2);
+
       }
       break;
     }
@@ -918,7 +976,8 @@ void WRK_HandleInitialize(void)
       }
       break;
     }
-    case WAITFORSTROKEMOTORSTART:
+    case WAITFORSTROKEMOTORSTART: //Stroke to start, then Index to Start
+    case WAITFORSTROKEMOTORSTART2: //Stroke to start, then end
     {
       if (STR_Set(GOTOSTARTPOSITION,0)== READY)
       {
@@ -928,6 +987,12 @@ void WRK_HandleInitialize(void)
           USR_ShowScreen (gCurrentScreen/100,1); 
           WRK_SetStatus(MainStatus,ACTIVE);
           WRK_SetStatus(SubStatus,WAITFORUSER);
+        }
+        else if (gWRK_Status.SubStatus == WAITFORSTROKEMOTORSTART2)
+        {
+          WRK_SetStatus(MainStatus,ACTIVE);
+          WRK_SetStatus(SubStatus,WAITFORUSER);
+          USR_ShowScreen(gReturnScreen,1); 
         }
         else if (gIDX_Motor.IsInStartPosition == 0) 
         {  
