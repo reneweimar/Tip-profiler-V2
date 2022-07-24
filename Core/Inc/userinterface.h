@@ -83,6 +83,8 @@ extern uint32_t gReturnScreen;
 extern uint32_t gReturnFromErrorScreen;
 extern uint32_t gLastScrapeScreen;
 extern uint32_t gLastScrapeScreenEndless;
+extern uint32_t gLastPositionScreen;
+
 
 //-----------------------------------------------------------------------------
 //USR_functions

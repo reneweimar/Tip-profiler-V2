@@ -1,7 +1,4 @@
----- gIDX_Motor.IsInStartPosition Matches (6 in 2 files) ----
-Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    gIDX_Motor.IsInStartPosition = 1;
-Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    gIDX_Motor.IsInStartPosition = 0;
-Indexmotor.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):          gIDX_Motor.IsInStartPosition = 0;
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        gIDX_Motor.IsInStartPosition = 1;
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):        else if (gIDX_Motor.IsInStartPosition == 0) 
-Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):      else if ((gIDX_Motor.IsInStartPosition == 0) && (gWRK_Status.MainStatus != SCRAPENOSIDESTEPS)) //No side steps doesn't need IDX motor
+---- gLastPositionScreen Matches (3 in 2 files) ----
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):uint32_t gLastPositionScreen = 20;
+Userinterface.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):    if ((gCurrentScreen < 30) && (gCurrentScreen >= 19)) gLastPositionScreen = gCurrentScreen;
+Work.c (d:\rmb holland bv\products\reed machines\software\tip-profiler-v2\core\src):            USR_ShowScreen (gLastPositionScreen,1);
