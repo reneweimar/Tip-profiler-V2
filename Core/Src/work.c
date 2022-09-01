@@ -22,7 +22,7 @@
 //! \Side step size
 uint16_t WRK_SideStep;
 //! \Global ADC result
-uint16_t ADC_Converted_Values[1];
+uint16_t ADC_Converted_Values[2];
 //! \Global scrape control structure
 stcScrape gScrape;
 //! \Global main and sub, current and previous status of the device
@@ -626,12 +626,14 @@ void WRK_HandleBatteryStatus (void)
 {
     static uint16_t TickTime = 0; 
     static uint8_t ConvertedValueOld;
+    float Factor;
     if (TickTime++ < 499) return; //4997ms 
     TickTime = 0;
 
     if (ConvertedValueOld != ADC_Converted_Values[0])
     {
-      BatteryVoltage = (uint16_t) ((float) ADC_Converted_Values[0] / 4095 * 4210); //4210 = 3300 * (9100 + 33000) / 33000
+      Factor = 1489.091f / (float) ADC_Converted_Values[1] * 1.27576; 
+      BatteryVoltage = (uint16_t) ((float) ADC_Converted_Values[0] / 4095.0f * 3300.0f * Factor); //4210 = 3300 * (9100 + 33000) / 33000
       if (BatteryVoltage <= BATTVOLTAGEMIN)
         BattPercentage = 0;  
       else if (BatteryVoltage>= BATTVOLTAGEMAX)
@@ -729,22 +731,24 @@ void WRK_HandleContrast(void)
   if (PluggedIn())
   {
     gCounter.User = 0;
-    ssd1306_SetContrast(HIGHCONTRAST);
+    WRK_UpdateContrast = HIGHCONTRAST;
+    //ssd1306_SetContrast(HIGHCONTRAST);
   }
   else if (BattPercentage == 0)
   {
-    ssd1306_SetContrast(NOBATTERYCONTRAST);  
+    WRK_UpdateContrast = NOBATTERYCONTRAST;//ssd1306_SetContrast(NOBATTERYCONTRAST);  
   }
   else
   {
     if (gCounter.User < 0xffffffff) gCounter.User += 100;
     if ((gCounter.User > LOWPOWERTIME)&&(SCREENSAVERON)) 
     {
-      ssd1306_SetContrast(LOWCONTRAST);
+      WRK_UpdateContrast = LOWCONTRAST;
+      //ssd1306_SetContrast(LOWCONTRAST);
     }
     else if (SCREENSAVERON)
     {
-      ssd1306_SetContrast(HIGHCONTRAST);
+      WRK_UpdateContrast = HIGHCONTRAST;//ssd1306_SetContrast(HIGHCONTRAST);
     }
   }
   

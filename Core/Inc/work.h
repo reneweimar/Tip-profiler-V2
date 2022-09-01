@@ -239,7 +239,7 @@ extern uint8_t gMainMenuMaxUser;
 extern uint8_t gCommandMaxUser;
 extern uint16_t gCommandMaxService;
 extern uint16_t VirtAddVarTab[NB_OF_VAR];
-extern uint16_t ADC_Converted_Values[1];
+extern uint16_t ADC_Converted_Values[2];
 extern uint32_t HomeCnt;
 extern int32_t gIDX_HalfScrapeWidth;
 extern int32_t gIDX_SideStepBig;

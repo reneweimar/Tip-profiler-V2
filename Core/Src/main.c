@@ -123,7 +123,7 @@ HAL_Init();
   //TODO CLI_Init();
   HAL_TIM_Encoder_Start(&htim8,TIM_CHANNEL_ALL); 
   //TIM8->CNT = 32767; //Encoder 0 value
-  HAL_ADC_Start_DMA(&hadc1,(uint32_t*) &ADC_Converted_Values,1);
+  HAL_ADC_Start_DMA(&hadc1,(uint32_t*) &ADC_Converted_Values,2);
   HAL_TIM_Base_Start (&htim6);
   gInitialized = 1;
   /* USER CODE END 2 */
