@@ -17,7 +17,7 @@ stcPower POWER;
 uint8_t PWR_Charging(void)
 {
   static  uint8_t BattFullAndPluggedIn;
-  uint8_t Charging;
+  uint8_t BlnCharging = 0;
   
   if (Charging()) //Charging input is on 
   {
@@ -25,12 +25,12 @@ uint8_t PWR_Charging(void)
     {
       if ((BattFullAndPluggedIn == 1) && (BattPercentage==100))//Battery is full
       {
-        Charging = 0; 
+        BlnCharging= 0; 
         BattFullAndPluggedIn = 1; //Prevent charging icon showing charging after full load is reached and unit is topping up battery
       }
       else
       {
-        Charging = 1;
+        BlnCharging= 1;
         BattFullAndPluggedIn = 0;
       }
     }
@@ -43,7 +43,7 @@ uint8_t PWR_Charging(void)
   {
     BattFullAndPluggedIn = 0; //Not charging anymore, so reset flag
   }
-  return Charging;
+  return BlnCharging;
 }
 //-----------------------------------------------------------------------------
 //! \brief      Initiates the power unit
