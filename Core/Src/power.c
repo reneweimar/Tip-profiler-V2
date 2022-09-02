@@ -8,6 +8,8 @@
 #include "main.h"
 #include "power.h"
 #include "work.h"
+
+stcPower POWER;
 //-----------------------------------------------------------------------------
 //! \brief      Returns charging or not
 //! \details    Returns charging status
@@ -16,7 +18,7 @@ uint8_t PWR_Charging(void)
 {
   static  uint8_t BattFullAndPluggedIn;
   uint8_t Charging;
-
+  
   if (Charging()) //Charging input is on 
   {
     if (PluggedIn()) //Unit is plugged in
@@ -61,16 +63,21 @@ void PWR_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(Charging_GPIO_Port, &GPIO_InitStruct);
-  GPIO_InitStruct.Pin = StandBy_Pin;
-  HAL_GPIO_Init(StandBy_GPIO_Port, &GPIO_InitStruct);
   GPIO_InitStruct.Pin = Power_Pin;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(Power_GPIO_Port, &GPIO_InitStruct);
+  GPIO_InitStruct.Pin = StandBy_Pin;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
+  HAL_GPIO_Init(StandBy_GPIO_Port, &GPIO_InitStruct);
   GPIO_InitStruct.Pin = Sensors_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(Sensors_GPIO_Port, &GPIO_InitStruct);
+  
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 }
 //-----------------------------------------------------------------------------
 

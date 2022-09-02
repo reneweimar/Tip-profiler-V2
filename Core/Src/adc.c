@@ -108,6 +108,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     */
     GPIO_InitStruct.Pin = BattVoltage_Pin|GPIO_PIN_2;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+    GPIO_InitStruct.Pull = GPIO_PULLDOWN;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
     /* ADC1 DMA Init */

@@ -642,7 +642,7 @@ void USR_SetMessage (char* newMessage0, char* newMessage1, char* newMessage2, ch
   //Show screen only if the information is different or if the screen now shown is not 3 or 4.
   if (((newScreen) && (Different)) || (gCurrentScreen >= 10)) USR_ShowScreen(newScreen, ClearScreen);
 }
-
+    uint8_t NoBattery = 0;
 //-----------------------------------------------------------------------------
 //! \brief      Shows the battery percentage and symbol
 //! \details    Calculates the percentage of the battery and displays the
@@ -655,55 +655,78 @@ void USR_ShowBattery (uint8_t PercentageNew)
     static uint8_t BatteryPercentageOld=0;
     static uint8_t CntBatteryPercentage;
     static uint16_t BatteryPercentageAverage;
+    static uint32_t NoBatteryCounterOld;
     char Percentage[4];
+
     sprintf(Percentage,"%s","  ");
     if (gCurrentScreen == 1) return;  
-    CntBatteryPercentage++;
-    BatteryPercentageAverage += PercentageNew;
-    if (CntBatteryPercentage >= 10)
+  
+  
+    if (NoBatteryCounterOld != POWER.NoBatteryCounter)
     {
-      BatteryPercentageOld = BatteryPercentage;
-      CntBatteryPercentage = 0;
-      BatteryPercentage= BatteryPercentageAverage/10;
-      BatteryPercentageAverage = 0;
+      NoBattery = 1;
+      NoBatteryCounterOld = POWER.NoBatteryCounter;
     }
-    if ((BatteryPercentage > BatteryPercentageOld)&& (NotPluggedIn()))
+    else
     {
-      BatteryPercentage = BatteryPercentageOld;
-      return; //Prevent jittering of percentages
+      NoBattery = 0;
     }
-    if (StandBy()) // full battery
+    
+    if (NoBattery)
     {
-      Bars = 4;
-      sprintf(Percentage,"%s","\\");
+      ssd1306_DrawBattery (107,0,5,White);//ssd1306_DrawBattery(White,Bars,115,0);
+      ssd1306_UpdateScreen();
     }
-    else if (PWR_Charging() == 1) //Charging
+    else
+    
     {
-      Bars++;
-      if (Bars == 5) Bars = 0;
-      sprintf(Percentage,"%s","\\");
-    }
-    else //Not plugged in show percentage
-    {
-      if (BatteryPercentage<=0)
+      CntBatteryPercentage++;
+      BatteryPercentageAverage += PercentageNew;
+      if (CntBatteryPercentage >= 10)
       {
-        Bars = 0;
-      }    
-      else if (BatteryPercentage >= 75)
+        BatteryPercentageOld = BatteryPercentage;
+        CntBatteryPercentage = 0;
+        BatteryPercentage= BatteryPercentageAverage/10;
+        BatteryPercentageAverage = 0;
+      }
+      if ((BatteryPercentage > BatteryPercentageOld)&& (NotPluggedIn()))
+      {
+        BatteryPercentage = BatteryPercentageOld;
+        return; //Prevent jittering of percentages
+      }
+      if (StandBy()) // full battery
+      {
         Bars = 4;
-      else if (BatteryPercentage >= 50)
-        Bars = 3;
-      else if (BatteryPercentage >= 25)
-        Bars = 2;
-      else
-        Bars = 1; 
+        sprintf(Percentage,"%s","\\");
+      }
+      else if (PWR_Charging() == 1) //Charging
+      {
+        Bars++;
+        if (Bars == 5) Bars = 0;
+        sprintf(Percentage,"%s","\\");
+      }
+      else //Not plugged in show percentage
+      {
+        if (BatteryPercentage<=0)
+        {
+          Bars = 0;
+        }    
+        else if (BatteryPercentage >= 75)
+          Bars = 4;
+        else if (BatteryPercentage >= 50)
+          Bars = 3;
+        else if (BatteryPercentage >= 25)
+          Bars = 2;
+        else
+          Bars = 1; 
+      }
+      
+      //ssd1306_DrawRectangle(Black,78, 0,24,7,0);
+      
+      ssd1306_WriteStringEightBitFont(PLUGGEDIN_X, 0,Percentage, Font_6x10, White);
+      ssd1306_DrawBattery (107,0,Bars,White);//ssd1306_DrawBattery(White,Bars,115,0);
+      ssd1306_UpdateScreen();
     }
-    
-    //ssd1306_DrawRectangle(Black,78, 0,24,7,0);
-    
-    ssd1306_WriteStringEightBitFont(PLUGGEDIN_X, 0,Percentage, Font_6x10, White);
-    ssd1306_DrawBattery (107,0,Bars,White);//ssd1306_DrawBattery(White,Bars,115,0);
-    ssd1306_UpdateScreen();
 }
 //-----------------------------------------------------------------------------
 //! \brief      Displays the position of the index

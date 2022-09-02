@@ -963,7 +963,7 @@ char ssd1306_WriteStringEightBitFont(uint8_t newX, uint8_t newY,char* str, FontD
 //! \details    Draws the battery symbol at the correct % in the screen buffer
 //! \param[in]  uint8_t newX
 //! \param[in]  uint8_t newY
-//! \param[in]  int8_t newBars (0,1,2,3,4), -1 is no battery
+//! \param[in]  int8_t newBars (0,1,2,3,4), 5 is no battery
 //! \param[in]  SSD1306_COLOR color -> Logo color (Black or white)
 void ssd1306_DrawBattery (uint8_t newX, uint8_t newY, int8_t newBars, SSD1306_COLOR color)
 {

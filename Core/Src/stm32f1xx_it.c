@@ -23,6 +23,7 @@
 #include "work.h"
 #include "indexmotor.h"
 #include "strokemotor.h"
+#include "power.h"
 #include "stm32f1xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -342,10 +343,22 @@ void I2C1_EV_IRQHandler(void)
   */
 void EXTI9_5_IRQHandler(void)
 {
+ 
   /* USER CODE BEGIN EXTI9_5_IRQn 0 */
+  static uint8_t Old;
+  if(__HAL_GPIO_EXTI_GET_IT(StandBy_Pin) != RESET) //Interrupt from zerocross
+  {
+    if (HAL_GPIO_ReadPin(StandBy_GPIO_Port, StandBy_Pin)== Old)
+    {
+      Old = 1 - Old;
+      POWER.NoBatteryCounter ++;
+    }
+  }
+	
   /* USER CODE END EXTI9_5_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_5);
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_6);
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_7);
   /* USER CODE BEGIN EXTI9_5_IRQn 1 */
 
   /* USER CODE END EXTI9_5_IRQn 1 */

@@ -71,9 +71,8 @@ void SystemClock_Config(void);
   * @brief  The application entry point.
   * @retval int
   */
-  uint8_t G;
+uint8_t G;
 uint32_t a;
-
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -149,7 +148,6 @@ HAL_Init();
         USR_ShowScreen(a,1);
         a=0;
     }
- 
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

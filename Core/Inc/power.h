@@ -28,6 +28,13 @@
 #define PWR_SensorsOff() HAL_GPIO_WritePin(Sensors_GPIO_Port, Sensors_Pin,GPIO_PIN_RESET)
 #define BATTVOLTAGEMIN          3600
 #define BATTVOLTAGEMAX          4050
+
+typedef struct
+{
+  uint32_t NoBatteryCounter;
+}stcPower;
+
+extern stcPower POWER;
 //-----------------------------------------------------------------------------
 //DSP_functions
 //---------------------- SYSTEM ------------------------
