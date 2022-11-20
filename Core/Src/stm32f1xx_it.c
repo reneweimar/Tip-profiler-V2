@@ -346,7 +346,7 @@ void EXTI9_5_IRQHandler(void)
  
   /* USER CODE BEGIN EXTI9_5_IRQn 0 */
   static uint8_t Old;
-  if(__HAL_GPIO_EXTI_GET_IT(StandBy_Pin) != RESET) //Interrupt from zerocross
+  if(__HAL_GPIO_EXTI_GET_IT(StandBy_Pin) != RESET) //Interrupt from standby pin
   {
     if (HAL_GPIO_ReadPin(StandBy_GPIO_Port, StandBy_Pin)== Old)
     {
@@ -354,7 +354,13 @@ void EXTI9_5_IRQHandler(void)
       POWER.NoBatteryCounter ++;
     }
   }
-	
+	if(__HAL_GPIO_EXTI_GET_IT(A_Pin) != RESET) //Interrupt from channel A IDX encoder
+  {
+    if (gIDX_Motor.Direction)
+      gIDX_Motor.GetPosition++;
+  else
+      gIDX_Motor.GetPosition--;
+  }
   /* USER CODE END EXTI9_5_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_5);
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_6);

@@ -37,9 +37,9 @@ void IDX_HandleMotor (void)
 {
   static float PositionOld;
   static float Position;
-  static uint8_t TimeOut;
+  //static uint8_t TimeOut;
 
-  if (((gIDX_Motor.GetSpeed < 0)&&(gIDX_Motor.Control > 0)) || ((gIDX_Motor.GetSpeed > 0)&&(gIDX_Motor.Control < 0))) //Motor turning wrong direction
+  /*if (((gIDX_Motor.GetSpeed < 0)&&(gIDX_Motor.Control > 0)) || ((gIDX_Motor.GetSpeed > 0)&&(gIDX_Motor.Control < 0))) //Motor turning wrong direction
   {
     if (TimeOut ++ > 100)
     {
@@ -53,17 +53,18 @@ void IDX_HandleMotor (void)
   {
     TimeOut = 0;
   }
-  gIDX_Motor.EncoderNew = TIM8->CNT;
+  */
+  /*gIDX_Motor.EncoderNew = TIM8->CNT;
   uint16_t NewFlag = gIDX_Motor.EncoderNew & 0xc000;
   uint16_t OldFlag = gIDX_Motor.EncoderOld & 0xc000;
   if(NewFlag == 0 && OldFlag == 0xC000) gIDX_Motor.EncoderOverFlow += 65536;
   if(NewFlag == 0xC000 && OldFlag == 0) gIDX_Motor.EncoderOverFlow -= 65536;
   gIDX_Motor.Encoder = gIDX_Motor.EncoderNew + gIDX_Motor.EncoderOverFlow;
   gIDX_Motor.EncoderOld = gIDX_Motor.EncoderNew;
-
+  */
   
   //gIDX_Motor.GetPosition = TIM8->CNT - 32767;
-  gIDX_Motor.GetPosition = gIDX_Motor.Encoder;
+  //gIDX_Motor.GetPosition = gIDX_Motor.Encoder;
   /*
   BEFORE START POSITION WAS HOME POSITION
   
@@ -77,7 +78,7 @@ void IDX_HandleMotor (void)
   }
   */
     
-  gIDX_Motor.GetUm = (int32_t) ((float) gIDX_Motor.GetPosition / gIDX_Motor.UmPerPulse);
+  gIDX_Motor.GetUm = (int32_t) ((float) gIDX_Motor.GetPosition * gIDX_Motor.UmPerPulse);
 
   Position = gIDX_Motor.GetPosition;
   if (abs (Position - PositionOld) < 3)
@@ -159,8 +160,8 @@ void IDX_HandleMotor (void)
     gIDX_Motor.PosErrorI = 0;
     gIDX_Motor.PosPID = 0;
     gIDX_Motor.Control = 0;
-    IDX_CCW() = 0;
-    IDX_CW() = 0;
+    TIM1->CCR1 = 0;
+    TIM1->CCR2 = 0;
     gIDX_Motor.PosControl = 0;
     gIDX_Motor.SetSpeed = 0;
   }
@@ -305,7 +306,7 @@ void IDX_HandleTasks(void)
           gIDX_Motor.IsInStartPosition = 0;
           IDXHomeAccuracy = 300;
           gIDX_Motor.MaxSpeed = 10000;
-          if (pSIDESTEPREDUCTION == 15000)
+          /*if (pSIDESTEPREDUCTION == 15000)
           {
             gIDX_Motor.PosP = 2;
             gIDX_Motor.PosI = 0;
@@ -318,6 +319,7 @@ void IDX_HandleTasks(void)
             gIDX_Motor.PosD = 2000;
 
           }
+          */
           gIDX_Motor.IsHomed = 0;
           CheckStoppedCounter = 0;
           IDX_SetStatus(SubStatus,WAITFORPOWERSENSOR);
@@ -327,10 +329,10 @@ void IDX_HandleTasks(void)
         {
           if (IDX_HomeOn()) //Homesensor is on, so move left (flag is in between sensor)
           {
-            //TIM8->CNT = 52767;
-            TIM8->CNT = 20000;//GetPosition set to 20000
-            gIDX_Motor.EncoderOverFlow = 0;
-            gIDX_Motor.SetPosition = -500;
+            
+            //TIM8->CNT = 20000;//GetPosition set to 20000
+            //gIDX_Motor.EncoderOverFlow = 0;
+            gIDX_Motor.SetPosition = -100000;
             gIDX_Motor.MainStatus = ACTIVE;
             gIDX_ResetPosition = 1;
             IDX_SetStatus(SubStatus,WAITFORHOMESENSORON);
@@ -338,9 +340,9 @@ void IDX_HandleTasks(void)
           else //Homesensor is off, so move right (flag is not in between sensor)
           {
             //TIM8->CNT = 12767;
-            TIM8->CNT = 45536; //Get position set to -20000
-            gIDX_Motor.EncoderOverFlow = -65536;
-            gIDX_Motor.SetPosition = 500;
+            //TIM8->CNT = 45536; //Get position set to -20000
+            //gIDX_Motor.EncoderOverFlow = -65536;
+            gIDX_Motor.SetPosition = 100000;
             gIDX_Motor.MainStatus = ACTIVE;
             gIDX_ResetPosition = 1;
             IDX_SetStatus(SubStatus,WAITFORHOMESENSORON2);
@@ -350,21 +352,22 @@ void IDX_HandleTasks(void)
         case WAITFORHOMESENSORON:
         case WAITFORHOMESENSORON2:
         {
-          if ((abs(gIDX_Motor.GetPosition - gIDX_Motor.SetPosition) < IDXHomeAccuracy) && (gIDX_Motor.GetSpeed == 0))
+          if ((gIDX_Motor.GetPosition == gIDX_Motor.SetPosition) && (gIDX_Motor.GetSpeed == 0))
           {
             if (CheckStoppedCounter ++ > 10) //To avoid preliminary triggering in case of overshoot
             {
               if (gIDX_Status.SubStatus == WAITFORHOMESENSORON2)
               {
                 //TIM8->CNT = 52767;
-                TIM8->CNT = 20000;//GetPosition set to 20000
-                gIDX_Motor.EncoderOverFlow = 0;
-                gIDX_Motor.SetPosition = -500;
+                //TIM8->CNT = 2000;//GetPosition set to 20000
+                //gIDX_Motor.EncoderOverFlow = 0;
+                gIDX_Motor.GetPosition = 0;
+                gIDX_Motor.SetPosition = -10000;
                 gIDX_Motor.MainStatus = ACTIVE;
                 gIDX_ResetPosition = 1;
                 IDX_SetStatus(SubStatus,WAITFORHOMESENSORON);
               }
-              else //Last step
+              else //Last step*/
               {
     						if (gIDX_Motor.SetPosition == 0)
                 {
@@ -415,24 +418,33 @@ void IDX_Init(void)
 
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
-
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  
   HAL_GPIO_WritePin(SleepIdx_GPIO_Port, SleepIdx_Pin, GPIO_PIN_RESET);
   GPIO_InitStruct.Pin = IntIndex_Pin;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(IntIndex_GPIO_Port, &GPIO_InitStruct);
+  GPIO_InitStruct.Pin = A_Pin;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
+  HAL_GPIO_Init(A_GPIO_Port, &GPIO_InitStruct);
   GPIO_InitStruct.Pin = SleepIdx_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(SleepIdx_GPIO_Port, &GPIO_InitStruct);
+  GPIO_InitStruct.Pin = Dir_Pin;
+  HAL_GPIO_Init(Dir_GPIO_Port, &GPIO_InitStruct);
   GPIO_InitStruct.Pin = FaultIdx_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(FaultIdx_GPIO_Port, &GPIO_InitStruct);
   HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
   HAL_TIM_Base_Start(&htim1);
   HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_1);
   HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_2);
@@ -459,7 +471,7 @@ void IDX_Init(void)
   gIDX_Motor.PulsesPerRevolution = 28; //(PPR = 7 * 4)
   gIDX_Motor.Ratio = pSIDESTEPREDUCTION/100; 
   gIDX_Motor.Factor = (float) pSIDESTEPREDUCTION / 3000;
-  gIDX_Motor.UmPerPulse = 0.56 * gIDX_Motor.Factor;
+  gIDX_Motor.UmPerPulse = 1/16.5f;//0.56 * gIDX_Motor.Factor;
 }
 
 //-----------------------------------------------------------------------------
@@ -468,10 +480,23 @@ void IDX_Init(void)
 //! \params      None
 void IDX_ResetEncoder(void)
 {
-  TIM8->CNT = 0;
-  gIDX_Motor.EncoderNew = 0;
-  gIDX_Motor.EncoderOld = 0;
-  gIDX_Motor.EncoderOverFlow = 0;
+  
+  //TIM8->CNT = 0;
+  //gIDX_Motor.EncoderNew = 0;
+  //gIDX_Motor.EncoderOld = 0;
+  //gIDX_Motor.EncoderOverFlow = 0;
+  gIDX_Motor.GetPosition = 0;
+  if (gIDX_Status.SubStatus == WAITFORHOMESENSORON2)
+  {
+    gIDX_Motor.SetPosition = 5000;
+  }
+  else
+  {
+    gIDX_Motor.SetPosition = 0;
+    TIM1->CCR1 = 0;
+    TIM1->CCR2 = 0;
+    IDX_Disable();
+  }
 }
 int32_t test;
 //-----------------------------------------------------------------------------
@@ -515,20 +540,20 @@ void IDX_SetPWM (enuStatus newStatus, uint8_t newSpeed)
   {
     case CCW:
     {
-      IDX_CW() = 100 - newSpeed;
-      IDX_CCW()=100;
+      TIM1->CCR2 = 100 - newSpeed;
+      TIM1->CCR1=100;
       break;
     }
     case CW:
     {
-      IDX_CW() = 100;
-      IDX_CCW() = 100 - newSpeed;
+      TIM1->CCR2 = 100;
+      TIM1->CCR1 = 100 - newSpeed;
       break;
     }
     default:
     {
-      IDX_CCW() = 100;
-      IDX_CW()=100;
+      TIM1->CCR2 = 100;
+      TIM1->CCR1=100;
       break;
     }
   }
@@ -580,8 +605,8 @@ void IDX_Stop(void)
     gIDX_Motor.PosErrorI = 0;
     gIDX_Motor.PosPID = 0;
     gIDX_Motor.Control = 0;
-    IDX_CCW() = 0;
-    IDX_CW() = 0;
+    TIM1->CCR2 = 0;
+    TIM1->CCR1 = 0;
     gIDX_Motor.PosControl = 0;
     gIDX_Motor.SetSpeed = 0;
 }

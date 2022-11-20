@@ -26,22 +26,18 @@
 #define A1_GPIO_Port GPIOB
 #define A2_Pin GPIO_PIN_13
 #define A2_GPIO_Port GPIOB
-#define A_Pin GPIO_PIN_8
-#define A_GPIO_Port GPIOA
-#define B_Pin GPIO_PIN_11
-#define B_GPIO_Port GPIOA
-#define A1On()HAL_GPIO_WritePin(A1_GPIO_Port, A1_Pin,GPIO_PIN_SET)
-#define A1Off()HAL_GPIO_WritePin(A1_GPIO_Port, A1_Pin,GPIO_PIN_RESET)
-#define A2On()HAL_GPIO_WritePin(A2_GPIO_Port, A2_Pin,GPIO_PIN_SET)
-#define A2Off()HAL_GPIO_WritePin(A2_GPIO_Port, A2_Pin,GPIO_PIN_RESET)
+#define A_Pin GPIO_PIN_6
+#define A_GPIO_Port GPIOC
+#define Dir_Pin GPIO_PIN_7
+#define Dir_GPIO_Port GPIOC
 #define IDX_Enable() HAL_GPIO_WritePin(SleepIdx_GPIO_Port, SleepIdx_Pin,GPIO_PIN_SET)
 #define IDX_Disable() HAL_GPIO_WritePin(SleepIdx_GPIO_Port, SleepIdx_Pin,GPIO_PIN_RESET)
-#define IDX_A() HAL_GPIO_ReadPin(A_GPIO_Port, A_Pin)
-#define IDX_B() HAL_GPIO_ReadPin(B_GPIO_Port, B_Pin)
+#define IDX_CW() HAL_GPIO_WritePin(Dir_GPIO_Port, Dir_Pin,GPIO_PIN_RESET)
+#define IDX_CCW() HAL_GPIO_WritePin(Dir_GPIO_Port, Dir_Pin,GPIO_PIN_SET)
 #define IDX_HomeOn() HAL_GPIO_ReadPin(IntIndex_GPIO_Port, IntIndex_Pin)==1
 #define IDX_HomeOff() HAL_GPIO_ReadPin(IntIndex_GPIO_Port, IntIndex_Pin)==0
-#define IDX_CCW()		TIM1->CCR1
-#define IDX_CW() 		TIM1->CCR2
+//#define IDX_CCW()		TIM1->CCR1
+//#define IDX_CW() 		TIM1->CCR2
 typedef  struct
 {
   enuStatus MainStatus;

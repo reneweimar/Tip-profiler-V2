@@ -17,7 +17,7 @@
 #include "i2c.h"
 #include "ssd1306.h"
 #include "stdio.h"
-#include <stdlib.h>
+#include <math.h>
 //-----------------------------------------------------------------------------
 //! \Side step size
 uint16_t WRK_SideStep;

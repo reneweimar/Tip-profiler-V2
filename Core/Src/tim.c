@@ -40,7 +40,7 @@ void MX_TIM1_Init(void)
   TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = {0};
 
   htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 31;//64000000/32/100 = 20kHz 
+  htim1.Init.Prescaler = 80;//31;//64000000/32/100 = 20kHz 
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim1.Init.Period = 99;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -215,29 +215,7 @@ void MX_TIM8_Init(void)
 void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef* tim_encoderHandle)
 {
 
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
-  if(tim_encoderHandle->Instance==TIM8)
-  {
-  /* USER CODE BEGIN TIM8_MspInit 0 */
-
-  /* USER CODE END TIM8_MspInit 0 */
-    /* TIM8 clock enable */
-    __HAL_RCC_TIM8_CLK_ENABLE();
-
-    __HAL_RCC_GPIOC_CLK_ENABLE();
-    /**TIM8 GPIO Configuration
-    PC6     ------> TIM8_CH1
-    PC7     ------> TIM8_CH2
-    */
-    GPIO_InitStruct.Pin = GPIO_PIN_6|GPIO_PIN_7;
-    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-    GPIO_InitStruct.Pull = GPIO_PULLUP;
-    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-  /* USER CODE BEGIN TIM8_MspInit 1 */
-
-  /* USER CODE END TIM8_MspInit 1 */
-  }
+ 
 }
 void HAL_TIM_Encoder_MspDeInit(TIM_HandleTypeDef* tim_encoderHandle)
 {
@@ -250,11 +228,6 @@ void HAL_TIM_Encoder_MspDeInit(TIM_HandleTypeDef* tim_encoderHandle)
     /* Peripheral clock disable */
     __HAL_RCC_TIM8_CLK_DISABLE();
 
-    /**TIM8 GPIO Configuration
-    PC6     ------> TIM8_CH1
-    PC7     ------> TIM8_CH2
-    */
-    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_6|GPIO_PIN_7);
 
   /* USER CODE BEGIN TIM8_MspDeInit 1 */
 

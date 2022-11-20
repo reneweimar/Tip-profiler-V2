@@ -48,6 +48,7 @@ typedef struct
   uint8_t IsInStartPosition;
   uint16_t Ratio;
   uint32_t TimeOut;
+  uint8_t Direction;
   float P;
 	float I;
 	float D;

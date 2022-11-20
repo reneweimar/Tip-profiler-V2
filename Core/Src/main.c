@@ -107,7 +107,7 @@ HAL_Init();
   MX_TIM1_Init();
   MX_TIM3_Init();
   MX_TIM5_Init();
-  MX_TIM8_Init();
+  //MX_TIM8_Init();
   MX_TIM6_Init();
   //TODO MX_USART1_UART_Init();
 
@@ -120,7 +120,7 @@ HAL_Init();
   PWR_Init();
   HAL_Delay(500);
   //TODO CLI_Init();
-  HAL_TIM_Encoder_Start(&htim8,TIM_CHANNEL_ALL); 
+  //HAL_TIM_Encoder_Start(&htim8,TIM_CHANNEL_ALL); 
   //TIM8->CNT = 32767; //Encoder 0 value
   HAL_ADC_Start_DMA(&hadc1,(uint32_t*) &ADC_Converted_Values,2);
   HAL_TIM_Base_Start (&htim6);
@@ -148,6 +148,29 @@ HAL_Init();
         USR_ShowScreen(a,1);
         a=0;
     }
+    if (gIDX_Motor.SetPosition < gIDX_Motor.GetPosition)
+	  {
+		  TIM1->CCR1 = 50;
+		  TIM1->CCR2 = 0;
+		  gIDX_Motor.Direction = 0;
+      IDX_Enable();
+		  IDX_CW();
+	  }
+	  else if (gIDX_Motor.SetPosition > gIDX_Motor.GetPosition)
+	  {
+		  TIM1->CCR1 = 50;
+		  TIM1->CCR2 = 0;
+		  gIDX_Motor.Direction = 1;
+		  IDX_Enable();
+      IDX_CCW();
+	  }
+	  else
+	  {
+		  TIM1->CCR1 = 0;
+		  TIM1->CCR2 = 0;
+      IDX_Disable();
+	  }
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
